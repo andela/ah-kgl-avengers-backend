@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
 =======
 
 app.get('/', (req, res) => {
-    res.status(200).send({message: 'hello'})
+    res.status(200).send({message: 'Welcome to Authors Haven'})
 })
 >>>>>>> [start #165020195] set up babel for transpiling es6 to es65
 const PORT = process.env.PORT || 3000;
