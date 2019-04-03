@@ -37,3 +37,4 @@ node_modules
 # Additional development ignore file
 .env
 package-lock.json
+.idea
