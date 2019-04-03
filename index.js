@@ -8,7 +8,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.status(200).send({message: 'hello'})
+    res.status(200).send({message: 'Welcome to Authors Haven'})
 })
 const PORT = process.env.PORT || 3000;
 
