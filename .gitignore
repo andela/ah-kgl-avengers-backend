@@ -34,9 +34,12 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
+<<<<<<< HEAD
 # Additional development ignore file
 .env
 package-lock.json
+=======
+>>>>>>> [start #165020195] set up babel for transpiling es6 to es65
 # nyc_output
 .nyc_output
 
