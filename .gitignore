@@ -8,6 +8,9 @@ npm-debug.log*
 # File for environment variables
 .env
 
+# Package-lock file
+package-lock.json
+
 # Runtime data
 pids
 *.pid
