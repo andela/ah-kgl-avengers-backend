@@ -1,48 +1,51 @@
-const mongoose = require("mongoose");
-const router = require("express").Router();
-const passport = require("passport");
-const User = mongoose.model("User");
+ import express from  "express";
+import passport from "passport";
+
+import models from  '../../models';
+
+const router = express.Router();
+const User = models.User;
 
 router.get("/user", function(req, res, next) {
-    User.findById(req.payload.id)
-        .then(function(user) {
-            if (!user) {
-                return res.sendStatus(401);
-            }
-            return res.json({ user: user.toAuthJSON() });
-        })
-        .catch(next);
+    // User.findById(req.payload.id)
+    //     .then(function(user) {
+    //         if (!user) {
+    //             return res.sendStatus(401);
+    //         }
+    //         return res.json({ user: user.toAuthJSON() });
+    //     })
+    //     .catch(next);
 });
 
 router.put("/user", function(req, res, next) {
-    User.findById(req.payload.id)
-        .then(function(user) {
-            if (!user) {
-                return res.sendStatus(401);
-            }
-
-            // only update fields that were actually passed...
-            if (typeof req.body.user.username !== "undefined") {
-                user.username = req.body.user.username;
-            }
-            if (typeof req.body.user.email !== "undefined") {
-                user.email = req.body.user.email;
-            }
-            if (typeof req.body.user.bio !== "undefined") {
-                user.bio = req.body.user.bio;
-            }
-            if (typeof req.body.user.image !== "undefined") {
-                user.image = req.body.user.image;
-            }
-            if (typeof req.body.user.password !== "undefined") {
-                user.setPassword(req.body.user.password);
-            }
-
-            return user.save().then(function() {
-                return res.json({ user: user.toAuthJSON() });
-            });
-        })
-        .catch(next);
+    // User.findById(req.payload.id)
+    //     .then(function(user) {
+    //         if (!user) {
+    //             return res.sendStatus(401);
+    //         }
+    //
+    //         // only update fields that were actually passed...
+    //         if (typeof req.body.user.username !== "undefined") {
+    //             user.username = req.body.user.username;
+    //         }
+    //         if (typeof req.body.user.email !== "undefined") {
+    //             user.email = req.body.user.email;
+    //         }
+    //         if (typeof req.body.user.bio !== "undefined") {
+    //             user.bio = req.body.user.bio;
+    //         }
+    //         if (typeof req.body.user.image !== "undefined") {
+    //             user.image = req.body.user.image;
+    //         }
+    //         if (typeof req.body.user.password !== "undefined") {
+    //             user.setPassword(req.body.user.password);
+    //         }
+    //
+    //         return user.save().then(function() {
+    //             return res.json({ user: user.toAuthJSON() });
+    //         });
+    //     })
+    //     .catch(next);
 });
 
 router.post("/users/login", function(req, res, next) {
@@ -63,25 +66,30 @@ router.post("/users/login", function(req, res, next) {
         }
 
         if (user) {
-            return res.json({ user: user.toAuthJSON() });
+            // return res.json({ user: user.toAuthJSON() });
         } else {
             return res.status(422).json(info);
         }
     })(req, res, next);
 });
 
-router.post("/users", function(req, res, next) {
-    const user = new User();
-
-    user.username = req.body.user.username;
-    user.email = req.body.user.email;
-    user.setPassword(req.body.user.password);
-
-    user.save()
-        .then(function() {
-            return res.json({ user: user.toAuthJSON() });
-        })
-        .catch(next);
+router.post("/users", (req, res, next) => {
+    const {
+        email,username,password: hash
+    } = req.body;
+    User.create({email,username,hash}).then((user) => {
+        if (user) {
+            res.status(201).json({
+                status: res.statusCode,
+                message: 'user created',
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    username: user.username,
+                },
+            });
+        }
+    }).catch(next);
 });
 
 module.exports = router;

@@ -1,16 +1,20 @@
-const fs = require("fs"),
-    http = require("http"),
-    path = require("path"),
-    methods = require("methods"),
-    express = require("express"),
-    bodyParser = require("body-parser"),
-    session = require("express-session"),
-    cors = require("cors"),
-    passport = require("passport"),
-    errorhandler = require("errorhandler"),
-    mongoose = require("mongoose");
+// import fs from "fs";
+// import http from "http";
+// import path  from "path";
+// import methods  from "methods";
+import express  from "express";
+import bodyParser  from "body-parser";
+import session  from "express-session";
+import cors  from "cors";
+// import passport  from "passport";
+import errorhandler  from "errorhandler";
+import ENV from 'dotenv';
+import models from './models';
+
+ENV.config();
 
 const isProduction = process.env.NODE_ENV === "production";
+const sequelize = models.sequelize;
 
 // Create global app object
 const app = express();
@@ -37,15 +41,6 @@ app.use(
 if (!isProduction) {
     app.use(errorhandler());
 }
-
-if (isProduction) {
-    mongoose.connect(process.env.MONGODB_URI);
-} else {
-    mongoose.connect("mongodb://localhost/conduit");
-    mongoose.set("debug", true);
-}
-
-require("./models/User");
 
 app.use(require("./routes"));
 
@@ -76,7 +71,7 @@ if (!isProduction) {
 }
 
 // production error handler
-// no stacktraces leaked to user
+// no stack traces leaked to user
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.json({
@@ -87,7 +82,11 @@ app.use(function(err, req, res, next) {
     });
 });
 
-// finally, let's start our server...
-const server = app.listen(process.env.PORT || 3000, function() {
-    console.log("Listening on port " + server.address().port);
+// Create or Update database tables and start the server
+
+sequelize.sync().then(() => {
+    const server = app.listen(process.env.PORT || 3000, function() {
+        console.log("Listening on port " + server.address().port);
+    });
 });
+
