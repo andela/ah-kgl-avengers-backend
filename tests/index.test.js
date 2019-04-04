@@ -17,7 +17,6 @@ describe('Root test', () => {
                 done();
             });
     });
-<<<<<<< HEAD
 
     it('should not pass as the URL provided is not valid and returns error object', (done) => {
         chai.request(app)
@@ -28,6 +27,4 @@ describe('Root test', () => {
                 done();
             });
     });
-=======
->>>>>>> 8567040330a7a51363f03ca668b8ef43b1c30ca9
 })
