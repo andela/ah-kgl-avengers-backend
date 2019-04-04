@@ -8,7 +8,7 @@ chai.use(chaitHttp);
 
 // testing the root rout
 describe('Root test', () => {
-    it('should pass as the response is json object and with message', (done) => {
+    it('should return a response with status code 200 and JSON object', (done) => {
         chai.request(app)
             .get('/')
             .end((err, res) => {
