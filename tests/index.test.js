@@ -17,4 +17,14 @@ describe('Root test', () => {
                 done();
             });
     });
+
+    it('should not pass as the URL provided is not valid and returns error object', (done) => {
+        chai.request(app)
+            .get('/ddddd')
+            .end((err, res) => {
+                res.should.have.status(404);
+                res.should.be.a('object');
+                done();
+            });
+    });
 })

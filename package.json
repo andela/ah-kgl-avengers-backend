@@ -7,13 +7,9 @@
     "test": "nyc --reporter=text mocha --exit --require @babel/register --require @babel/polyfill ./tests/*",
     "start": "node index.js",
     "dev": "nodemon index.js --exec babel-node",
-<<<<<<< HEAD
     "build": "babel ./server --out-dir dist",
     "ci-test": "echo \"No test specified\"",
-    "coverage": "echo \"Coverage not yet impremented \" "
-=======
-    "build": "babel ./server --out-dir dist"
->>>>>>> [start #165020195] set up babel for transpiling es6 to es65
+    "coverage": "echo \"Coverage not yet impremented \""
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
@@ -31,13 +27,8 @@
     "jsonwebtoken": "^8.3.0",
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
-<<<<<<< HEAD
-    "mongoose": "^5.4.21",
-    "mocha": "^6.0.2",
-=======
     "mocha": "^6.0.2",
     "mongoose": "^5.2.2",
->>>>>>> [start #165020195] set up babel for transpiling es6 to es65
     "mongoose-unique-validator": "^2.0.1",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
@@ -47,14 +38,11 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
-=======
->>>>>>> [start #165020195] set up babel for transpiling es6 to es65
     "@babel/cli": "^7.4.3",
     "@babel/core": "^7.4.3",
     "@babel/node": "^7.2.2",
