@@ -1,7 +1,6 @@
 import express from 'express';
 import session from 'express-session';
 import cors from 'cors';
-import passport from 'passport';
 import errorhandler from 'errorhandler';
 
 const isProduction = process.env.NODE_ENV === "production";

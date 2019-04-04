@@ -9,7 +9,7 @@
     "dev": "nodemon index.js --exec babel-node",
     "build": "babel ./server --out-dir dist",
     "ci-test": "echo \"No test specified\"",
-    "coverage": "echo \"Coverage not yet impremented \""
+    "coverage": "nyc report --reporter=text-lcov | coveralls"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
