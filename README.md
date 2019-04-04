@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.com/andela/ah-kgl-avengers-backend.svg?branch=develop)](https://travis-ci.com/andela/ah-kgl-avengers-backend)
+
+
 Authors Haven - A Social platform for the creative at heart.
 =======
 
