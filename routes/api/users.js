@@ -1,4 +1,4 @@
- import express from  "express";
+import express from  "express";
 import models from '../../models';
 
 const router = express.Router();
@@ -23,4 +23,4 @@ router.post("/users", (req, res, next) => {
     }).catch(next);
 });
 
-module.exports = router;
+export default router;
