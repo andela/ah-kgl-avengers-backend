@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
     }
   },{
     hooks: {
+      //hash the password before creating a user
       beforeCreate(user) {
         user.salt = crypto.randomBytes(16).toString('hex');
         user.hash = crypto.pbkdf2Sync(user.hash,user.salt,1000,512,'sha512',).toString('hex');
