@@ -5,6 +5,7 @@ import cors  from "cors";
 import errorhandler  from "errorhandler";
 import ENV from 'dotenv';
 import models from './models';
+import routes from './routes';
 
 ENV.config();
 
@@ -37,7 +38,7 @@ if (!isProduction) {
     app.use(errorhandler());
 }
 
-app.use(require("./routes"));
+app.use(routes);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
