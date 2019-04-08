@@ -10,7 +10,11 @@
     "build": "babel ./server --out-dir dist",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start:heroku": "babel-node index.js",
-    "heroku-postbuild": "npm install"
+    "heroku-postbuild": "npm install",
+    "migration:generate": "node_modules/.bin/sequelize migrations:generate --name",
+    "migrate": "node_modules/.bin/sequelize db:migrate",
+    "migrate:refresh": "npm run migrate:reset && npm run migrate",
+    "migrate:reset": "node_modules/.bin/sequelize db:migrate:undo:all"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
@@ -30,7 +34,6 @@
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "mocha": "^6.0.2",
-    "mongoose-unique-validator": "^2.0.1",
     "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
