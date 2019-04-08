@@ -9,6 +9,8 @@
     "dev": "nodemon index.js --exec babel-node",
     "build": "babel ./server --out-dir dist",
     "coverage": "nyc report --reporter=text-lcov | coveralls"
+    "start:heroku": "babel-node index.js",
+    "heroku-postbuild": "npm install",
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
