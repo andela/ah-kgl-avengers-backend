@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./index.js --exec babel-node"
+    "start": "nodemon ./index.js --exec babel-node",
+    "start:heroku": "babel-node index.js",
+    "heroku-postbuild": "npm install",
+    "ci-test": "echo \"No test specified\"",
+    "coverage": "echo \"Coverage not yet implemented \" "
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
@@ -23,6 +27,9 @@
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "morgan": "^1.9.0",
+    "mongoose": "^5.4.21",
+    "mongoose-unique-validator": "^2.0.1",
+    "morgan": "^1.9.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pg": "^7.9.0",
@@ -38,6 +45,13 @@
     "@babel/preset-env": "^7.4.3",
     "@babel/register": "^7.4.0",
     "nodemon": "^1.18.10",
-    "sequelize-cli": "^5.4.0"
+    "sequelize-cli": "^5.4.0",
+    "slug": "^1.1.0",
+    "underscore": "^1.9.1",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4"
   }
 }
