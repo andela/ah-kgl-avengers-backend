@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/andela/ah-kgl-avengers-backend.svg?branch=develop)](https://travis-ci.com/andela/ah-kgl-avengers-backend)
+[![Build Status](https://travis-ci.com/andela/ah-kgl-avengers-backend.svg?branch=develop)](https://travis-ci.com/andela/ah-kgl-avengers-backend) [![Coverage Status](https://coveralls.io/repos/github/andela/ah-kgl-avengers-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/ah-kgl-avengers-backend?branch=develop)
 
 
 Authors Haven - A Social platform for the creative at heart.
