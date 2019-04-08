@@ -9,7 +9,7 @@
     "start:heroku": "babel-node index.js",
     "heroku-postbuild": "npm install",
     "ci-test": "echo \"No test specified\"",
-    "coverage": "echo \"Coverage not yet impremented \" "
+    "coverage": "echo \"Coverage not yet implemented \" "
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
