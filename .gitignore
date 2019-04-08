@@ -36,4 +36,8 @@ node_modules
 
 # Additional development ignore file
 .env
-.idea/
+
+package-lock.json
+# nyc_output
+.nyc_output
+.idea
