@@ -63,7 +63,6 @@ passport.use(
   )
 );
 
-
 // Facebook strategy
 passport.use('facebookOAuth',
   new FacebookToken({

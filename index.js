@@ -3,6 +3,7 @@ import session from 'express-session';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
+import passport from 'passport';
 import models from './models';
 import routes from './routes';
 import './config/passport';
@@ -27,6 +28,9 @@ app.use(
     saveUninitialized: false
   })
 );
+
+// initialize the passport
+app.use(passport.initialize());
 
 if (!isProduction) {
   app.use(errorhandler());
