@@ -1,6 +1,9 @@
 import models from '../models';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+
+dotenv.config()
 
 const { User } = models;
 
@@ -37,7 +40,7 @@ class Users {
     /**
    * @param {Object} req
    * @param {Object} res
-   * @returns {Object} Returns the User Object
+   * @returns {Object} Returns the User Object and Token used for the authentication
    */
 
    static async signin(req, res) {
@@ -67,7 +70,7 @@ class Users {
     }
 
     if (hash === hashInputpwd) {
-      const token = jwt.sign({ id, email }, 'finallytoken');
+      const token = jwt.sign({ id, email, exp: ((Date.now() / 1000) + (60 * 60)) }, process.env.SECRET);
       return res.status(200).json({
         status: 200,
         token,
