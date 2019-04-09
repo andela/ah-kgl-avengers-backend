@@ -8,7 +8,7 @@ dotenv.config();
 
 const { User } = models;
 
-const { should } = chai;
+chai.should();
 
 chai.use(chaiHttp);
 
