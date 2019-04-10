@@ -1,8 +1,25 @@
 import models from '../models';
 
-const BlackList = models.BlacklistTokens;
+const { User, BlackList } = models;
 
 export default {
+  create: (req, res, next) => {
+    const {
+      email, username, password: hash
+    } = req.body;
+    User.create({ email, username, hash }).then((user) => {
+      res.status(201).json({
+        status: res.statusCode,
+        message: 'user created',
+        user: {
+          id: user.id,
+          email: user.email,
+          username: user.username,
+        },
+      });
+    }).catch(err => next(err));
+  },
+
   logout: (req, res, next) => {
     const { exp } = req.user;
     const token = req.headers.authorization.split(' ')[1];
