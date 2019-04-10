@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Authors Haven | signup</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css?family=Arimo"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" type="text/css" media="screen" href="./signup.css" />
+    <link rel="stylesheet" href="../grid.css" />
+  </head>
+  <body>
+    <div class="container">
+      <nav class="nav">
+        <a href="#" class="nav-logo left">
+          <img
+            src="../assets/ah_logo_A1_Rectangle_54_pattern.png"
+            alt=""
+            srcset=""
+          />
+          <img
+            src="../assets/ah_logo_text_white_A1_Rectangle_56_pattern.png"
+            alt=""
+            srcset=""
+          />
+        </a>
+      </nav>
+
+      <div class="row">
+        <div class="col-8 aside">
+          <h1 class="tagline">
+            <span>If you do not express your own original ideas</span>
+            <span> You will have betrayed yourself</span>
+          </h1>
+
+          <div class="img-group">
+            <img
+              src="../assets/developers_2_A1_Rectangle_58_pattern.png"
+              alt=""
+              srcset=""
+              class="img-back img-author-sitting"
+            />
+            <img
+              src="../assets/developers_5_A0_Rectangle_35_pattern.png"
+              alt=""
+              srcset=""
+              class="img-front"
+            />
+          </div>
+        </div>
+        <div class="col-4 center">
+          <form class="card">
+            <h3 class="card-title">sign <span>up</span></h3>
+            <div class="card-content">
+              <div class="input-group">
+                <label for="">username</label>
+                <input type="text" placeholder="snow" />
+                <div class="errors">
+                  <div class="error">User name already exists</div>
+                </div>
+              </div>
+              <div class="input-group">
+                <label for="">email</label>
+                <input type="email" placeholder="snowice@company.com" />
+              </div>
+              <div class="input-group">
+                <label for="">password</label>
+                <input
+                  type="password"
+                  placeholder="password"
+                  pattern="[a-zA-Z0-9]"
+                />
+              </div>
+              <div class="input-group">
+                <label for="">confirm password</label>
+                <input
+                  type="password"
+                  placeholder="password"
+                  pattern="[a-zA-Z0-9]"
+                />
+              </div>
+            </div>
+            <div class="card-action">
+              <button class="btn btn-signup">
+                sign up
+              </button>
+            </div>
+            <div class="card-spacer"></div>
+            <div class="card-footer">
+              <p>
+                Already have an account?
+                <a href="../signinTemplate/signin.html">sign in</a>
+              </p>
+              <p>
+                By signing up you agree to all
+                <a href="#">terms and conditions</a>
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
