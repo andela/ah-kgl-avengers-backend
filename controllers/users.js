@@ -6,7 +6,7 @@ class Users {
     static async createUser(req, res) {
         const {id, displayName, emails, provider} = req.user;
         try {
-            const existingUser = await User.findOne({where: {"provider": id}});
+            const existingUser = await User.findOne({where: {"provider": `${provider}: ${id}`}});
             if (existingUser) {
                 return res.status(200).send({
                     status: res.statusCode,
@@ -24,7 +24,11 @@ class Users {
                 data: newUser,
             })
         } catch (e) {
-            return e.message;
+          console.log(e);
+          res.status(422).send({
+            status: res.statusCode,
+            error: `${e}`
+          });
         }
     }
 }
