@@ -1,10 +1,11 @@
 import express from 'express';
 import passport from 'passport';
 import userControllers from '../../controllers/users';
+import userValidations from '../../middlewares/userValidation';
 
 const router = express.Router();
 
-router.post('/auth/signup', userControllers.createUserLocal);
+router.post('/auth/signup', userValidations.signup, userControllers.createUserLocal);
 router.post('/auth/login', userControllers.signinLocal);
 router.get('/activation/:id', userControllers.activateUserAccount);
 

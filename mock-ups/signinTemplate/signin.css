@@ -1,0 +1,88 @@
+.container {
+  margin: 0;
+  width: 100%;
+}
+
+.nav {
+  width: 80%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.nav-logo img:last-of-type {
+  margin-bottom: 1px;
+  height: 36px;
+}
+
+.signup-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  width: 350px;
+  height: 54px;
+  background-color: #ffffff;
+}
+
+.signup-options .btn {
+  height: 48px;
+  line-height: 48px;
+  margin: 0 8px;
+}
+
+.options-delimiter {
+  display: block;
+  text-align: center;
+  margin: 24px 8px;
+  padding: 0;
+  color: #888888;
+  font-weight: 400;
+}
+
+.options-delimiter:first-of-type {
+  padding: 0 0 24px;
+}
+
+.delimiter-box {
+  margin: 16px 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.delimiter-box div {
+  height: 2px;
+  width: 125px;
+  border-radius: 5px;
+  background-color: #88888850;
+}
+.options-delimiter:last-of-type {
+  padding: 0;
+}
+
+.card-content .input-group:first-of-type {
+  margin-top: 3rem;
+}
+.btn.btn-signup {
+  margin-top: 3rem;
+}
+
+@media only screen and (max-width: 48em) {
+  form.card {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .signup-options {
+    width: 300px;
+  }
+  .options-delimiter:first-of-type {
+    margin-top: 8px;
+  }
+  .card-footer {
+    padding: 3.5rem 8px 0.5rem;
+  }
+  .card-footer p {
+    line-height: 1rem;
+  }
+}
