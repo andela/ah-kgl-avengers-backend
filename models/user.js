@@ -44,7 +44,7 @@ export default (sequelize, DataTypes) => {
       beforeCreate(user) {
         if (user.hash) {
           user.salt = crypto.randomBytes(16).toString('hex');
-          user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 64, 'sha512').toString('hex'); 
+          user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 64, 'sha512').toString('hex');
         }
       }
     }
