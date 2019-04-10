@@ -1,7 +1,8 @@
 import passport from "passport";
 import dotenv from 'dotenv';
 import strategies from "passport-local";
-import facebookStrategy from 'passport-facebook-token';
+import FacebookToken from 'passport-facebook-token';
+import GooglePlusToken from 'passport-google-plus-token';
 import models from '../models/';
 
 dotenv.config();
@@ -33,7 +34,7 @@ passport.use(
 
 // Facebook strategy
 passport.use('facebookOAuth',
-    new facebookStrategy({
+    new FacebookToken({
         clientID: process.env.FB_APP_CLIENT_ID,
         clientSecret: process.env.FB_APP_CLIENT_SECRET,
     },
@@ -43,3 +44,14 @@ passport.use('facebookOAuth',
     )
 );
 
+//Google Strategy
+passport.use('googleOAuth',
+  new GooglePlusToken({
+    clientID: process.env.GOOGLE_APP_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET
+  },
+  async (accessToken, refreshToken, profile, done) => {
+    console.log(profile);
+    done(null, profile)
+  })
+);
