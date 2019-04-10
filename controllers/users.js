@@ -2,12 +2,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
-<<<<<<< HEAD
 import models from '../models';
-=======
-import userModels from '../models/';
-const { User } = userModels;
->>>>>>> feature(reset password): send a reset email with a token [update #165020204]
 
 dotenv.config();
 
@@ -174,6 +169,7 @@ class Users {
   static async resetPassword(req, res) {
     // check if email exists in the database
     const userEmail = req.body.email;
+
     const result = await User.findAll({
       where: {
         email: userEmail
@@ -215,7 +211,6 @@ class Users {
   * @param {object} res
   * @returns {object} res
   */
-
   static async updatePassword(req, res) {
     // verify token
     const { token } = req.params.token;
