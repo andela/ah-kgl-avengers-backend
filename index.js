@@ -60,7 +60,7 @@ if (!isProduction) {
       res.status(err.status || 500);
       res.json({
         errors: {
-          message: `${err.message}, please check your connection`,
+          message: `${err.message}, please check your connection`
         }
       });
     }
@@ -69,7 +69,7 @@ if (!isProduction) {
       res.status(err.status || 500);
       res.json({
         errors: {
-          message: `${err.message}, access denied, please sign in again`,
+          message: `${err.message}, access denied, please sign in again`
         }
       });
     }
@@ -87,7 +87,6 @@ app.use((err, req, res, next) => {
       error: {}
     }
   });
-  next();
 });
 
 // Create or Update database tables and start express server
