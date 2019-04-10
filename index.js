@@ -1,15 +1,16 @@
-import express  from "express";
-import session  from "express-session";
-import cors  from "cors";
-import errorhandler  from "errorhandler";
+import express from 'express';
+import session from 'express-session';
+import cors from 'cors';
+import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
 import models from './models';
 import routes from './routes';
+import './config/passport';
 
 ENV.config();
 
-const isProduction = process.env.NODE_ENV === "production";
-const sequelize = models.sequelize;
+const isProduction = process.env.NODE_ENV === 'production';
+const { sequelize } = models;
 
 // create global app object
 const app = express();
@@ -28,7 +29,7 @@ app.use(
 );
 
 if (!isProduction) {
-    app.use(errorhandler());
+  app.use(errorhandler());
 }
 
 app.use(routes);
@@ -66,22 +67,21 @@ if (!isProduction) {
 
 // production error handler
 // no stack traces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500);
-    res.json({
-        errors: {
-            message: err.message,
-            error: {}
-        }
-    });
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json({
+    errors: {
+      message: err.message,
+      error: {}
+    }
+  });
 });
 
 // Create or Update database tables and start express server
 sequelize.sync().then(() => {
-    const server = app.listen(process.env.PORT || 3000, function() {
-        console.log("Listening on port " + server.address().port);
-    });
+  const server = app.listen(process.env.PORT || 3000, () => {
+    console.log(`Listening on port ${server.address().port}`);
+  });
 });
 
 export default app;
-

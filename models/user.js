@@ -28,23 +28,29 @@ export default (sequelize, DataTypes) => {
     },
     hash: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
     },
     bio: {
       type: DataTypes.STRING,
       allowNull: true,
+    },
+    provider: {
+      type: DataTypes.TEXT,
+      allowNull: true
     }
-  },{
+  }, {
     hooks: {
-      //hash the password before creating a user
+      // hash the password before creating a user
       beforeCreate(user) {
-        user.salt = crypto.randomBytes(16).toString('hex');
-        user.hash = crypto.pbkdf2Sync(user.hash,user.salt,1000,512,'sha512',).toString('hex');
+        if ('password' in user) {
+          user.salt = crypto.randomBytes(16).toString('hex');
+          user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 512, 'sha512').toString('hex');
+        }
       }
     }
   });
 
-  User.associate = function(models) {
+  User.associate = function (models) {
     // associations can be defined here
   };
 
