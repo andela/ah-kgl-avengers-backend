@@ -6,7 +6,6 @@ import dotenv from 'dotenv';
 dotenv.config()
 
 const { User } = models;
-
 class Users {
 
     /**
@@ -19,11 +18,21 @@ class Users {
             email, username, password: hash
           } = req.body;
 
+          // check if the email exists
+          const userFind = await User.findOne({ where: { email: email } });
+          if(userFind) {
+            res.status(400).send({
+              status: 400,
+              errorMessage: 'the user with that email exists'
+            })
+          }
+
+          // if there is the server error that the user can not be saved
           const user = await User.create( { email, username, hash } );
           if(!user) {
-              return res.status(400).send({
-                  status: 400,
-                  errorMessage: 'You have to provide all datas'
+              return res.status(500).send({
+                  status: 500,
+                  errorMessage: 'some Error occured'
               })
           } 
           return res.status(201).json({
@@ -45,6 +54,7 @@ class Users {
 
    static async signin(req, res) {
     const { email, password } = req.body;
+    // check first if the email exists in the db
      const user = await User.findOne({ where: { email: email } })
      if(!user) {
        return res.status(400).send({
@@ -65,7 +75,7 @@ class Users {
     if(hash !== hashInputpwd) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'The password is wrong',
+        errorMessage: 'The password is not correct',
       })
     }
 
