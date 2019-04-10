@@ -5,7 +5,6 @@ import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import FacebookToken from 'passport-facebook-token';
 import GooglePlusToken from 'passport-google-plus-token';
 import models from '../models';
-import blacklisttokens from '../models/blacklisttokens';
 
 dotenv.config();
 
