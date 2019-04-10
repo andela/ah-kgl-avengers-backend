@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import open from 'open';
 import models from '../models/index';
 import readTime from '../helpers/readingTime';
 
@@ -618,7 +619,39 @@ const articles = {
         });
       }
     }
-  }
+  },
+
+  // social share
+
+  fbShare: async (req, res) => {
+    const { slug } = req.params;
+    const link = `${process.env.SERVER_ADDRESS}/articles/${slug}`;
+    res.status(200).send({
+      status: res.statusCode,
+      message: 'facebook share',
+      url: link
+    });
+    open(`https:www.facebook.com/sharer/sharer.php?u=https://${link}`);
+  },
+
+  twitterShare: async (req, res) => {
+    const { body } = req.article;
+    res.status(200).send({
+      status: res.statusCode,
+      message: 'twitter share'
+    });
+    open(`https://twitter.com/intent/tweet?text=${body}`);
+  },
+
+  emailShare: async (req, res) => {
+    const { title, body } = req.article;
+    res.status(200).send({
+      status: res.statusCode,
+      message: 'email share',
+      title
+    });
+    open(`mailto:?subject=${title}&body=${body}`);
+}
 };
 
 export default articles;

@@ -259,4 +259,43 @@ describe('Article ', () => {
         done();
       });
   });
+
+  it('should share articles ', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.post1.slug}/facebook-share`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.should.be.an('Object');
+        done();
+      });
+  });
+
+  it('should share articles ', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.post1.slug}/twitter-share`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.should.be.an('Object');
+        done();
+      });
+  });
+
+  it('should share articles ', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.post1.slug}/email-share`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.should.be.an('Object');
+        done();
+      });
+  });
 });

@@ -52,21 +52,36 @@ export default (sequelize, DataTypes) => {
     provider: {
       type: DataTypes.TEXT,
       allowNull: true
+<<<<<<< HEAD
     },
+=======
+    }
+>>>>>>> [Starts #165020205] social-login-with-passport
   }, {
     hooks: {
       // hash the password before creating a user
       beforeCreate(user) {
+<<<<<<< HEAD
         if (user.hash) {
           user.salt = crypto.randomBytes(16).toString('hex');
           user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 64, 'sha512').toString('hex');
+=======
+        if ('password' in user) {
+          user.salt = crypto.randomBytes(16).toString('hex');
+          user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 512, 'sha512').toString('hex');
+>>>>>>> [Starts #165020205] social-login-with-passport
         }
       }
     }
   });
 
+<<<<<<< HEAD
   User.associate = (models) => {
     User.hasMany(models.Comments, {});
+=======
+  User.associate = function (models) {
+    // associations can be defined here
+>>>>>>> [Starts #165020205] social-login-with-passport
   };
 
   return User;
