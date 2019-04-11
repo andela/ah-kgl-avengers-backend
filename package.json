@@ -20,7 +20,14 @@
   "license": "MIT",
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+    "babel-eslint": "^10.0.1",
+>>>>>>> [Feature #165020201] Testing mail activation function
     "@sendgrid/mail": "^6.3.1",
+=======
+>>>>>>> [Feature #165020201] Testing mail activation function
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
