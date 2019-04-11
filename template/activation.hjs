@@ -31,17 +31,6 @@
     .btn-primary {
       background-color: #38c4b0;
     }
-<<<<<<< HEAD
-
-<<<<<<< HEAD
-=======
-    a {
-      color: white;
-    }
-
->>>>>>> [Feature #165020201] Add handlebars template
-=======
->>>>>>> [Feature #165020201] Testing mail activation function
     .btn-primary:hover {
       background: #2a9c8b;
       color: white;
