@@ -62,7 +62,4 @@ router.put(
 // The Route to get the user profile
 router.get('/users/profile/:username', userControllers.getProfile);
 
-router.post('/v1/oauth/google', passport.authenticate('googleOAuth',
-  { session: false }), userControllers.createUser);
-
 export default router;
