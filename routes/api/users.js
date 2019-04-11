@@ -40,7 +40,7 @@ router.post('/users', (req, res, next) => {
 router.get('/activation/:id', (req, res, next) => {
   const { id } = req.params;
   User.update({ activated: 1 }, { where: { id } })
-    .then(user => res.status(201).send({
+    .then(() => res.status(201).send({
       status: res.statusCode,
       message: 'Your account updated successfuly',
       data: user,
