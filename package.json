@@ -31,7 +31,6 @@
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
-    "handlebars": "^4.1.2",
     "jsonwebtoken": "^8.5.1",
     "handlebars": "^4.1.1",
     "method-override": "^2.3.10",
