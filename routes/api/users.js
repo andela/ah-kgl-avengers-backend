@@ -42,4 +42,5 @@ router.post('/oauth/google', passport.authenticate('googleOAuth',
 router.post('/users/reset', Users.resetPassword);
 router.put('/users/reset/:token', Users.updatePassword);
 
+
 export default router;

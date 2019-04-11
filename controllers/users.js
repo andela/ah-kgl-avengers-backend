@@ -168,11 +168,10 @@ class Users {
   */
   static async resetPassword(req, res) {
     // check if email exists in the database
-    const userEmail = req.body.email;
-
+    const {email} = req.body.email;
     const result = await User.findAll({
       where: {
-        email: userEmail
+        email
       }
     });
     if (result.length === 0) {
