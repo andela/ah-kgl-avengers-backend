@@ -1,6 +1,9 @@
 import models from '../models/';
-
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 const User = models.User;
+
+dotenv.config();
 
 class Users {
     static async createUser(req, res) {
@@ -8,8 +11,13 @@ class Users {
         try {
             const existingUser = await User.findOne({where: {"provider": `${provider}: ${id}`}});
             if (existingUser) {
+              const token = jwt.sign({ id, emails,
+                exp: ((Date.now() / 1000) + (60 * 60)) },
+                process.env.SECRET
+              );
                 return res.status(200).send({
                     status: res.statusCode,
+                    token,
                     data: {
                       id: existingUser.id,
                       username: existingUser.username,
@@ -24,8 +32,13 @@ class Users {
                 username: displayName
             });
             const newUser = await user.save();
+          const token = jwt.sign({ id, emails,
+            exp: ((Date.now() / 1000) + (60 * 60)) },
+            process.env.SECRET
+          );
             res.status(201).send({
                 status: res.statusCode,
+                token,
                 data: {
                   id: newUser.id,
                   username: newUser.username,
