@@ -51,7 +51,6 @@ passport.use('googleOAuth',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET
   },
   async (accessToken, refreshToken, profile, done) => {
-    console.log(profile);
     done(null, profile)
   })
 );
