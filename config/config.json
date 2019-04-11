@@ -5,7 +5,7 @@
     "logging": false
   },
   "test": {
-    "use_env_variable": "DATABASE_TEST",
+    "use_env_variable": "DATABASE_URL",
     "dialect": "postgres"
   },
   "production": {
