@@ -1,35 +1,31 @@
+import sinon from 'sinon';
+import nodeMailer from 'nodemailer';
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import mailer from '../config/verificationMail';
 
+const sandBox = sinon.createSandbox();
 chai.should();
 chai.use(chaiHttp);
 
-const sendemail = () => {
-  const data = {
-    name: 'Jean Bosco',
-    body: `You’re almost ready to start enjoying Author’s Heaven. 
-            Simply click the button below to verify your email address.`,
-    email: 'bosco7209@gmail.com',
-    subject: 'Account activation',
-    url: 'http://localhost:3000/api/sendActivation'
-  };
-  return mailer.sentActivationMail(data);
+const data = {
+  name: 'Jean Bosco',
+  email: 'bosco7209@gmail.com',
+  subject: 'Account activation',
+  url: 'http://localhost:3000/api/sendActivation'
 };
 
-describe('Should send email to the user', function () {
-  this.timeout(10000);
+describe('Should send email to the user', () => {
+  it('Sending verification mail after user registred', async () => {
+    const transport = {
+      sendMail: params => params
+    };
+    sandBox.stub(nodeMailer, 'createTransport').returns(transport);
+    const res = await mailer.sentActivationMail(data);
 
-  it('Send activation email', async () => {
-    await sendemail()
-      .then((res) => {
-        res.should.be.an('object');
-        res.should.have.property('messageId');
-        res.should.have.property('response');
-        res.should.have.property('envelope');
-      })
-      .catch((err) => {
-        throw err;
-      });
+    res.should.be.an('Object');
+    res.should.have.property('from', process.env.SENDER);
+    res.should.have.property('to', data.email);
+    res.should.have.property('subject', data.subject);
   });
 });

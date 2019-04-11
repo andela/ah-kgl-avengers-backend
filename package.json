@@ -20,14 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-    "babel-eslint": "^10.0.1",
->>>>>>> [Feature #165020201] Testing mail activation function
     "@sendgrid/mail": "^6.3.1",
-=======
->>>>>>> [Feature #165020201] Testing mail activation function
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
@@ -38,8 +31,8 @@
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
     "express-session": "^1.15.6",
+    "handlebars": "^4.1.2",
     "jsonwebtoken": "^8.5.1",
-    "handlebars": "^4.1.1",
     "method-override": "^2.3.10",
     "methods": "^1.1.2",
     "mocha": "^6.0.2",
