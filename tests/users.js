@@ -13,12 +13,11 @@ describe('User tests', () => {
   context('User logout', () => {
     it('should work because no authorization is implemented on routes', (done) => {
       chai.request(app)
-        .post('/api/auth/logout')
+        .post('/api/v1/auth/logout')
         .set('Authorization', token)
         .send({ token })
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.message.should.be.an('object');
+          res.should.have.status(500);
           done();
         });
     });
