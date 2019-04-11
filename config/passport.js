@@ -35,7 +35,6 @@ passport.use(
   )
 );
 
-<<<<<<< HEAD
 /*
  * The passport strategy to authorize and authenticate the user using JWT token
  *  Them middleware will check first the token in headers
@@ -48,13 +47,6 @@ passport.use(
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken('Authorization'),
       secretOrKey: process.env.SECRET,
       passReqToCallback: true
-=======
-// Facebook strategy
-passport.use('facebookOAuth',
-    new FacebookToken({
-        clientID: process.env.FB_APP_CLIENT_ID,
-        clientSecret: process.env.FB_APP_CLIENT_SECRET,
->>>>>>> [Starts #165020205] google-social-login
     },
     async (req, jwtPayload, done) => {
       try {
@@ -118,18 +110,4 @@ passport.use(
   )
 );
 
-<<<<<<< HEAD
 export default passport;
-=======
-//Google Strategy
-passport.use('googleOAuth',
-  new GooglePlusToken({
-    clientID: process.env.GOOGLE_APP_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET
-  },
-  async (accessToken, refreshToken, profile, done) => {
-    console.log(profile);
-    done(null, profile)
-  })
-);
->>>>>>> [Starts #165020205] google-social-login
