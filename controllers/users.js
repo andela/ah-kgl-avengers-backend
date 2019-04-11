@@ -10,7 +10,12 @@ class Users {
             if (existingUser) {
                 return res.status(200).send({
                     status: res.statusCode,
-                    data: existingUser,
+                    data: {
+                      id: existingUser.id,
+                      username: existingUser.username,
+                      email: existingUser.email,
+                      provider: existingUser.provider
+                    },
                 });
             }
             const user = new User({
@@ -21,7 +26,12 @@ class Users {
             const newUser = await user.save();
             res.status(201).send({
                 status: res.statusCode,
-                data: newUser,
+                data: {
+                  id: newUser.id,
+                  username: newUser.username,
+                  email: newUser.email,
+                  provider: existingUser.provider
+                },
             })
         } catch (e) {
           console.log(e);
