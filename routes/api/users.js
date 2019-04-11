@@ -27,6 +27,7 @@ router.post('/users', (req, res, next) => {
 
 // Facebook Authentication Routes
 router.post('/v1/oauth/facebook', passport.authenticate('facebookOAuth',
+                                                        
   { session: false }), userControllers.createUser);
 
 router.post('/v1/oauth/google', passport.authenticate('googleOAuth',
