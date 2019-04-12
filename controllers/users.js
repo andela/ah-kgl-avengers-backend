@@ -46,11 +46,10 @@ class Users {
                   provider: existingUser.provider
                 },
             })
-        } catch (e) {
-          console.log(e);
+        } catch (error) {
           res.status(422).send({
             status: res.statusCode,
-            error: `${e}`
+            error: error
           });
         }
     }

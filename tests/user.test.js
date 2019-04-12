@@ -1,7 +1,10 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import dotenv from 'dotenv';
 import app from '../index';
 import models from '../models';
+
+dotenv.config();
 
 const { User } = models;
 
@@ -9,9 +12,10 @@ const { should } = chai;
 
 chai.use(chaiHttp);
 
-const googleToken = 'ya29.GlvoBssozS3e4mgyckGahaQKaUqdZ1UUKkfIdRfTc8Eoc9dZM8BX3b2NjPKht2ak8DPdiNBNGJ6tnXEykoqrVdXjYsdD24L8s2xfLfO0nqIs4VTKVSRYhf1viCJb';
-const facebookToken = 'EAAEzaHJ8KTABAO406UiOaJUDIiTEynWbw1slue8tyxTEEqWnaY0U6HJVCKbKtvE5SX0DNFb2ZASUzbJR80wwdbYzeFlD9aKZBlwljykOtwtIepAp1ZBP7uGZByZBRo2XZBSCy20Yafj7AYTuaY3s3L1F3iR43hylZCuMZAZAq0HR4W9FaGWrT3eZCSclwm9uirMUVfqaVCc7jvmtFN0viMk9ZAiDUHSPbSDE82saloGv6c0OgZDZD';
-// testing facebook strategy
+const googleToken = process.env.GOOGLE_TOKEN;
+const facebookToken = process.env.FACEBOOK_TOKEN;
+
+// testing facebook and google strategy
 describe('Social login routes', () => {
   before(() => {
     User.destroy({
@@ -20,7 +24,7 @@ describe('Social login routes', () => {
     });
   });
 
-  it('should return an object with status 200', (done) => {
+  it('should return an object with status 200 when a user login with Google OAuth', (done) => {
     chai.request(app)
       . post('/api/v1/oauth/google')
       .send({ access_token: googleToken })
@@ -30,7 +34,7 @@ describe('Social login routes', () => {
       });
   });
 
-  it('should return an object with status 200', (done) => {
+  it('should return an object with status 200 when a user login in with facebook OAuth', (done) => {
     chai.request(app)
       . post('/api/v1/oauth/facebook')
       .send({ access_token: facebookToken })
