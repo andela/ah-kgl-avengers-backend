@@ -6,9 +6,9 @@
 		"parser": "babel-eslint"
 },
 	"env": {
-			"browser": true,
-			"node": true,
-			"mocha": true
+		"browser": true,
+		"node": true,
+		"mocha": true
 		},
 		"rules": {
 		"one-var": 0,
@@ -27,11 +27,11 @@
 			"requireReturnDescription": true
 		}],
 		"require-jsdoc": ["error", {
-				"require": {
-						"FunctionDeclaration": true,
-						"MethodDefinition": true,
-						"ClassDeclaration": true
-				}
+			"require": {
+				"FunctionDeclaration": true,
+				"MethodDefinition": true,
+				"ClassDeclaration": true
+			}
 		}]
 	}
 }
