@@ -17,7 +17,7 @@ const getToken = () => {
     password: 'hello',
   };
   return chai.request(app)
-    .post('/api/users/signup')
+    .post('/api/v1/auth/signup')
     .send(user);
 };
 
