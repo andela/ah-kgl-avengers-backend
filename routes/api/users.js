@@ -4,8 +4,8 @@ import Users from '../../controllers';
 
 const router = express.Router();
 
-router.post('/auth/signup', Users.createUser);
-router.post('/auth/login', Users.signin);
+router.post('/auth/signup', Users.createUserLocal);
+router.post('/auth/login', Users.signinLocal);
 
 // for testing the passport authentication of the JWT token
 router.get('/test', passport.authenticate('jwt', { session: false }), (req, res) => {

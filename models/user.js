@@ -34,17 +34,17 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    provider: {
-      type: DataTypes.TEXT,
-      allowNull: true
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
     }
   }, {
     hooks: {
       // hash the password before creating a user
       beforeCreate(user) {
-        if ('password' in user) {
+        if (user.hash) {
           user.salt = crypto.randomBytes(16).toString('hex');
-          user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 512, 'sha512').toString('hex');
+          user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 64, 'sha512').toString('hex'); 
         }
       }
     }

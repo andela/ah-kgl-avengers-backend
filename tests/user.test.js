@@ -94,24 +94,4 @@ describe('User', () => {
         });
     });
   });
-
-  describe('/USER object in models', () => {
-    it('should pass and returns the User object from the db that was created', async () => {
-      await User.create({ username: 'berria', email: 'checky@tests.com', hash: 'test' })
-        .then((res) => {
-          res.should.be.a('object');
-        })
-        .catch(err => console.log(err));
-    });
-
-    it('should pass and returns the error array', async () => {
-      await User.create({ username: 'berria', email: 'checky@tests.com', password: 'test' })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          err.errors.should.be.a('array');
-        });
-    });
-  });
 });

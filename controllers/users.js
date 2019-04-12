@@ -62,7 +62,7 @@ class Users {
       });
     }
     const {
-      salt, hash, id,
+      salt, hash, id
     } = user;
     const hashInputpwd = crypto.pbkdf2Sync(
       password,
