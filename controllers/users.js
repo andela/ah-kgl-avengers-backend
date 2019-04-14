@@ -220,8 +220,9 @@ class Users {
         message: 'password not matching',
       });
     }
-
+    
     try {
+
       jwt.verify(token, process.env.SECRET);
     } catch (err) {
       return res.status(404).send({
