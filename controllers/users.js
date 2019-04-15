@@ -234,7 +234,7 @@ class Users {
 
     // update password
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 512, 'sha512',).toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 512, 'sha512').toString('hex');
     await User.update({
       salt,
       hash,
