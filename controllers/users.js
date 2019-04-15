@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
 import models from '../models';
+import mailer from '../config/verificationMail';
 
 dotenv.config();
 
@@ -23,29 +24,50 @@ class Users {
       email, username, password: hash
     } = req.body;
 
-
-    const userFind = await User.findOne({ where: { email } });
-    if (userFind) {
-      res.status(400).send({
-        status: 400,
-        errorMessage: 'the user with that email exists'
-      });
-    }
-
-    const user = await User.create({ email, username, hash });
-    if (!user) {
-      return res.status(500).send({
-        status: 500,
-        errorMessage: 'some Error occured'
-      });
-    }
-    return res.status(201).json({
-      status: 201,
-      message: 'user created',
-      user: {
-        email: user.email,
-        username: user.username,
+    try {
+      const userFind = await User.findOne({ where: { email } });
+      if (userFind) {
+        res.status(400).send({
+          status: 400,
+          errorMessage: 'the user with that email exists'
+        });
       }
+
+      const user = await User.create({ email, username, hash });
+      if (!user) {
+        return res.status(500).send({
+          status: 500,
+          errorMessage: 'some Error occured'
+        });
+      }
+
+      mailer.sentActivationMail({ name: username, id: user.id, email });
+
+      return res.status(201).json({
+        status: 201,
+        message: 'user created',
+        user: {
+          email: user.email,
+          username: user.username,
+        }
+      });
+    } catch (e) {
+      return e;
+    }
+  }
+
+  /**
+   *
+   * @param {*} req request object.
+   * @param {*} res response object.
+   * @returns {Object} returns the User Object
+   */
+  static async activateUserAccount(req, res) {
+    const { id } = req.params;
+    await User.update({ activated: 1 }, { where: { id } });
+    return res.status(201).send({
+      status: res.statusCode,
+      message: 'Your account updated successfuly',
     });
   }
 
@@ -133,6 +155,13 @@ class Users {
         username: displayName
       });
       const newUser = await user.save();
+
+      mailer.sentActivationMail({
+        name: displayName,
+        id: newUser.id,
+        email: newUser.email
+      });
+
       const token = jwt.sign({
         id,
         emails,

@@ -66,7 +66,6 @@
     "eslint-plugin-react": "^7.12.4",
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
-    "sequelize-cli": "^5.4.0",
-    "underscore": "^1.9.1"
+    "sequelize-cli": "^5.4.0"
   }
 }
