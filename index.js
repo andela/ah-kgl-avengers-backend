@@ -45,8 +45,6 @@ app.use((req, res, next) => {
   next(err);
 });
 
-// / error handlers
-
 // development error handler
 // will print stacktrace
 if (!isProduction) {
@@ -78,8 +76,8 @@ app.use((err, req, res, next) => {
 
 // Create or Update database tables and start express server
 sequelize.sync().then(() => {
-  const server = app.listen(process.env.PORT || 3000, () => {
-    console.log(`Listening on port ${server.address().port}`);
+  app.listen(process.env.PORT || 3000, () => {
+    console.log('server started');
   });
 });
 
