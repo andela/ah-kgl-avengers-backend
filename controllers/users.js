@@ -168,7 +168,7 @@ class Users {
   */
   static async resetPassword(req, res) {
     // check if email exists in the database
-    const {email} = req.body;
+    const { email } = req.body;
     const result = await User.findAll({
       where: {
         email,
@@ -182,11 +182,11 @@ class Users {
     }
 
     // create a JWT token
-    const token = await jwt.sign({ userEmail }, process.env.SECRET, { expiresIn: '2h' });
+    const token = await jwt.sign({ email }, process.env.SECRET, { expiresIn: '2h' });
     // send email using sendgrid
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
-      to: userEmail,
+      to: email,
       from: 'info@authorhaven.com',
       subject: 'Sending with SendGrid is Fun',
       html: `
@@ -222,7 +222,6 @@ class Users {
     }
 
     try {
-
       jwt.verify(token, process.env.SECRET);
     } catch (err) {
       return res.status(404).send({
