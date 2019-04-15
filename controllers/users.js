@@ -168,10 +168,10 @@ class Users {
   */
   static async resetPassword(req, res) {
     // check if email exists in the database
-    const {email} = req.body.email;
+    const {email} = req.body;
     const result = await User.findAll({
       where: {
-        email
+        email,
       }
     });
     if (result.length === 0) {
@@ -220,7 +220,7 @@ class Users {
         message: 'password not matching',
       });
     }
-    
+
     try {
 
       jwt.verify(token, process.env.SECRET);
