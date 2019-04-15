@@ -94,4 +94,17 @@ describe('User', () => {
         });
     });
   });
+
+  describe('Reset password', () => {
+    it('it should fail with email not registered', (done) => {
+      chai.request(app)
+        .post('/api/v1/users/reset')
+        .send({ email: 'fridolinho@gmail.com' })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.should.be.a('object');
+          done();
+        });
+    });
+  });
 });

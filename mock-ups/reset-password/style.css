@@ -1,0 +1,53 @@
+.content {
+	padding-top: 200px;
+}
+
+.w3-card {
+	background-color: #f7f8fb;
+	padding: 30px;
+}
+.w3-card input {
+	padding: 0;
+}
+
+.w3-card h2 {
+	text-align: center;
+	color: #57aedb;
+}
+
+.w3-card h3 {
+	text-align: center;
+}
+
+.w3-card p {
+
+	color: #8998b6;
+}
+
+.w3-card input {
+	border: 1px solid #8998b6;
+	border-radius: 5px;
+	padding: 10px 15px;
+}
+
+.w3-container {
+	padding: 0;
+}
+
+.w3-card a {
+	text-decoration: none;
+}
+
+.w3-button {
+	background-color: #57aedb;
+	margin-top: 20px;
+	width: 100%;
+	color: white;
+	padding: 10px 20px;
+}
+
+.left img {
+	width: 100px;
+	margin-top: 50px;
+}
+

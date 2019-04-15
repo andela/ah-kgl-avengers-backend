@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import sgMail from '@sendgrid/mail';
 import models from '../models';
 
 dotenv.config();
@@ -157,6 +158,95 @@ class Users {
         });
       }
     }
+  }
+
+  /**
+  * reset user password
+  * @param {object} req
+  * @param {object} res
+  * @returns {object} res
+  */
+  static async resetPassword(req, res) {
+    // check if email exists in the database
+    const { email } = req.body;
+    const result = await User.findAll({
+      where: {
+        email,
+      }
+    });
+    if (result.length === 0) {
+      return res.status(404).send({
+        status: res.statusCode,
+        message: 'email not found',
+      });
+    }
+
+    // create a JWT token
+    const token = await jwt.sign({ email }, process.env.SECRET, { expiresIn: '2h' });
+    // send email using sendgrid
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    const msg = {
+      to: email,
+      from: 'info@authorhaven.com',
+      subject: 'Sending with SendGrid is Fun',
+      html: `
+      <p>
+       You are receiving this email because you requested a password reset for your authorhaven account,<br>
+       Click on the reset link bellow to reset or ignore this message, if you didn't make password reset request<br>
+       <a href='http://localhost:3000/api/v1/update_password/${token}' target='_blank'>Reset Password</a>
+      </p>
+     `,
+    };
+
+    sgMail.send(msg).then(() => res.status(200).send({
+      status: res.statusCode,
+      message: 'Reset email sent! check your email',
+    }));
+  }
+
+  /**
+  * update user password
+  * @param {object} req
+  * @param {object} res
+  * @returns {object} res
+  */
+  static async updatePassword(req, res) {
+    // verify token
+    const { token } = req.params.token;
+    const { password, password2 } = req.body;
+    if (password !== password2) {
+      return res.status(400).send({
+        status: res.statusCode,
+        message: 'password not matching',
+      });
+    }
+
+    try {
+      jwt.verify(token, process.env.SECRET);
+    } catch (err) {
+      return res.status(404).send({
+        status: res.statusCode,
+        message: `${err.message}, go to reset again`,
+      });
+    }
+
+    const email = jwt.verify(token, process.env.SECRET).userEmail;
+
+    // update password
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 512, 'sha512').toString('hex');
+    await User.update({
+      salt,
+      hash,
+    }, {
+      where: {
+        email,
+      }
+    });
+    return res.status(200).send({
+      status: res.statusCode,
+      message: 'Password successfully updated'
+    });
   }
 }
 
