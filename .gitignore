@@ -42,4 +42,3 @@ package-lock.json
 .nyc_output
 .idea
 sendgrid.env
-sendgrid.env
