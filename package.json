@@ -20,6 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "babel-eslint": "^10.0.1",
     "body-parser": "^1.18.3",
     "chai": "^4.2.0",
     "chai-http": "^4.2.1",
@@ -40,6 +41,7 @@
     "passport-facebook-token": "^3.3.0",
     "passport-google-oauth": "^2.0.0",
     "passport-google-plus-token": "^2.1.0",
+    "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.9.0",
     "request": "^2.87.0",

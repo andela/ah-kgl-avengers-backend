@@ -3,6 +3,7 @@ import session from 'express-session';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
+import passport from 'passport';
 import models from './models';
 import routes from './routes';
 import './config/passport';
@@ -28,6 +29,9 @@ app.use(
   })
 );
 
+// initialize the passport
+app.use(passport.initialize());
+
 if (!isProduction) {
   app.use(errorhandler());
 }
@@ -52,16 +56,24 @@ app.use((req, res, next) => {
 // will print stacktrace
 if (!isProduction) {
   app.use((err, req, res, next) => {
-    console.log(err.stack);
+    if (err.message === 'Failed to fetch user profile') {
+      res.status(err.status || 500);
+      res.json({
+        errors: {
+          message: `${err.message}, please check your connection`,
+        }
+      });
+    }
 
-    res.status(err.status || 500);
-
-    res.json({
-      errors: {
-        message: err.message,
-        error: err
-      }
-    });
+    if (err.message === 'Invalid Credentials') {
+      res.status(err.status || 500);
+      res.json({
+        errors: {
+          message: `${err.message}, access denied, please sign in again`,
+        }
+      });
+    }
+    next();
   });
 }
 
@@ -75,6 +87,7 @@ app.use((err, req, res, next) => {
       error: {}
     }
   });
+  next();
 });
 
 // Create or Update database tables and start express server

@@ -1,13 +1,14 @@
 {
-	"root": true,
+  "root": true,
   "extends": "airbnb",
+  "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 6,
-    "parser": "babel-eslint"
+    "ecmaVersion": 6
 },
 	"env": {
 	    "browser": true,
-	    "node": true,
+      "node": true,
+      "es6": true,
 	    "mocha": true
     },
     "rules": {
@@ -18,8 +19,12 @@
     "no-param-reassign": 0,
     "comma-dangle": 0,
     "curly": ["error", "multi-line"],
-    "import/no-unresolved": [2, { "commonjs": true }],
-    "no-shadow": ["error", { "allow": ["req", "res", "err"] }],
+    "import/no-unresolved": [2, {
+      "commonjs": true
+    }],
+    "no-shadow": ["error", {
+      "allow": ["req", "res", "err"]
+    }],
     "valid-jsdoc": ["error", {
       "requireReturn": true,
       "requireReturnType": true,
@@ -27,11 +32,11 @@
       "requireReturnDescription": true
     }],
     "require-jsdoc": ["error", {
-        "require": {
-            "FunctionDeclaration": true,
-            "MethodDefinition": true,
-            "ClassDeclaration": true
-        }
+      "require": {
+        "FunctionDeclaration": true,
+        "MethodDefinition": true,
+        "ClassDeclaration": true
+      }
     }]
   }
 }

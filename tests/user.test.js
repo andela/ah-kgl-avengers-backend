@@ -8,15 +8,16 @@ dotenv.config();
 
 const { User } = models;
 
-const { should } = chai;
+chai.should();
 
 chai.use(chaiHttp);
 
 const googleToken = process.env.GOOGLE_TOKEN;
 const facebookToken = process.env.FACEBOOK_TOKEN;
 
-// testing facebook and google strategy
-describe('Social login routes', () => {
+
+describe('User', () => {
+  // delete all datas in the table of users before doing tests
   before(() => {
     User.destroy({
       where: {},
@@ -42,5 +43,55 @@ describe('Social login routes', () => {
         res.body.should.be.a('object');
         done();
       });
+  });
+
+  describe('/POST User Signup', () => {
+    it('should pass and returs the status:200 as the user provides all required datas for login', (done) => {
+      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'test' };
+      chai.request(app)
+        .post('/api/v1/auth/signup')
+        .send(newUser)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(201);
+          done();
+        });
+    });
+
+    it('should pass and returns status:400 as the user is already in db', (done) => {
+      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'test' };
+      chai.request(app)
+        .post('/api/v1/auth/signup')
+        .send(newUser)
+        .end((err, res) => {
+          res.should.have.status(400);
+          done();
+        });
+    });
+  });
+
+  describe('/POST Signin', () => {
+    it('should pass and returns the status:200 and the object with token', (done) => {
+      const signUser = { email: 'checka@tests.com', password: 'test' };
+      chai.request(app)
+        .post('/api/v1/auth/login')
+        .send(signUser)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(200);
+          done();
+        });
+    });
+    it('should pass and returns the error object and status:400 as password doen not match', (done) => {
+      const signUser = { email: 'checka@tests.com', password: 'tesst' };
+      chai.request(app)
+        .post('/api/v1/auth/login')
+        .send(signUser)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
+    });
   });
 });

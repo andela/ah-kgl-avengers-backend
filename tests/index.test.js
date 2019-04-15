@@ -2,7 +2,7 @@ import chai from 'chai';
 import chaitHttp from 'chai-http';
 import app from '../index';
 
-const should = chai.should();
+chai.should();
 
 chai.use(chaitHttp);
 
