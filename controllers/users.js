@@ -130,6 +130,7 @@ class Users {
           }
         });
       }
+
       const user = new User({
         provider,
         email: emails[0].value,
@@ -226,7 +227,7 @@ class Users {
    */
   static async updatePassword(req, res) {
     // verify token
-    const { token } = req.params.token;
+    const { token } = req.params;
     const { password, password2 } = req.body;
     if (password !== password2) {
       return res.status(400).send({
@@ -244,11 +245,11 @@ class Users {
       });
     }
 
-    const email = jwt.verify(token, process.env.SECRET).userEmail;
+    const { email } = jwt.verify(token, process.env.SECRET);
 
     // update password
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 512, 'sha512').toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
     await User.update(
       {
         salt,

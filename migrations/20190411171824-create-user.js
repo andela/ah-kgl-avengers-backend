@@ -3,22 +3,23 @@ export default {
     id: {
       allowNull: false,
       primaryKey: true,
-      type: Sequelize.UUID,
+      type: Sequelize.UUID
     },
     username: {
       type: Sequelize.STRING,
       allowNull: false,
+      unique: true
     },
     email: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     image: {
       type: Sequelize.STRING
     },
     activated: {
       type: Sequelize.INTEGER,
-      defaultValue: 0,
+      defaultValue: 0
     },
     following: {
       type: Sequelize.JSON
@@ -27,13 +28,13 @@ export default {
       type: Sequelize.JSON
     },
     salt: {
-      type: Sequelize.STRING(1024),
+      type: Sequelize.STRING(1024)
     },
     hash: {
-      type: Sequelize.STRING(1024),
+      type: Sequelize.STRING(1024)
     },
     bio: {
-      type: Sequelize.STRING,
+      type: Sequelize.STRING
     },
     provider: {
       type: Sequelize.TEXT,
@@ -42,12 +43,12 @@ export default {
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
-      defaultValue: Sequelize.fn('now'),
+      defaultValue: Sequelize.fn('now')
     },
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
-      defaultValue: Sequelize.fn('now'),
+      defaultValue: Sequelize.fn('now')
     }
   }),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
