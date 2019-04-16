@@ -4,14 +4,12 @@ import cors from 'cors';
 import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
 import passport from 'passport';
-import models from './models';
 import routes from './routes';
 import './config/passport';
 
 ENV.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
-const { sequelize } = models;
 
 // create global app object
 const app = express();
@@ -50,8 +48,6 @@ app.use((req, res, next) => {
   next(err);
 });
 
-// / error handlers
-
 // development error handler
 // will print stacktrace
 if (!isProduction) {
@@ -60,7 +56,7 @@ if (!isProduction) {
       res.status(err.status || 500);
       res.json({
         errors: {
-          message: `${err.message}, please check your connection`,
+          message: `${err.message}, please check your connection`
         }
       });
     }
@@ -69,7 +65,7 @@ if (!isProduction) {
       res.status(err.status || 500);
       res.json({
         errors: {
-          message: `${err.message}, access denied, please sign in again`,
+          message: `${err.message}, access denied, please sign in again`
         }
       });
     }
@@ -87,12 +83,12 @@ app.use((err, req, res, next) => {
       error: {}
     }
   });
-  next();
 });
 
 // Create or Update database tables and start express server
-sequelize.sync().then(() => {
-  app.listen(process.env.PORT || 3000);
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log('server started');
 });
 
 export default app;

@@ -1,7 +1,7 @@
-require('@babel/register');
 const path = require('path');
+require('@babel/register');
 
-module.exports = {
+module.exports =  {
   'config': path.resolve('config', 'config.js'),
   'models-path': path.resolve('models'),
   'seeders-path': path.resolve('seeders'),
