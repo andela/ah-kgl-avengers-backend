@@ -22,6 +22,21 @@ export default (sequelize, DataTypes) => {
         isEmail: true,
       }
     },
+    image: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    activated: {
+      type: DataTypes.INTEGER,
+    },
+    following: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
+    followers: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
     salt: {
       type: DataTypes.TEXT,
       allowNull: true,
@@ -34,10 +49,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
-    image: {
-      type: DataTypes.STRING,
-      allowNull: true,
-    }
+    provider: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
   }, {
     hooks: {
       // hash the password before creating a user
@@ -50,7 +65,7 @@ export default (sequelize, DataTypes) => {
     }
   });
 
-  User.associate = function (models) {
+  User.associate = (models) => {
     // associations can be defined here
   };
 

@@ -92,9 +92,7 @@ app.use((err, req, res, next) => {
 
 // Create or Update database tables and start express server
 sequelize.sync().then(() => {
-  const server = app.listen(process.env.PORT || 3000, () => {
-    console.log(`Listening on port ${server.address().port}`);
-  });
+  app.listen(process.env.PORT || 3000);
 });
 
 export default app;
