@@ -49,7 +49,7 @@ describe('User', () => {
   });
 
   describe('/POST User Signup', () => {
-    it('should pass and returs the status:200 as the user provides all required datas for login', (done) => {
+    it('should pass and returs the status:201 as the user provides all required datas for signup', (done) => {
       const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testtest4' };
       chai
         .request(app)
