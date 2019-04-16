@@ -4,14 +4,12 @@ import cors from 'cors';
 import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
 import passport from 'passport';
-import models from './models';
 import routes from './routes';
 import './config/passport';
 
 ENV.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
-const { sequelize } = models;
 
 // create global app object
 const app = express();
@@ -88,10 +86,9 @@ app.use((err, req, res, next) => {
 });
 
 // Create or Update database tables and start express server
-sequelize.sync().then(() => {
-  app.listen(process.env.PORT || 3000, () => {
-    console.log('server started');
-  });
+
+app.listen(process.env.PORT || 3000, () => {
+  console.log('server started');
 });
 
 export default app;

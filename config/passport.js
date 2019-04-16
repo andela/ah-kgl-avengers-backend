@@ -5,11 +5,12 @@ import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import FacebookToken from 'passport-facebook-token';
 import GooglePlusToken from 'passport-google-plus-token';
 import models from '../models';
+import blacklisttokens from '../models/blacklisttokens';
 
 dotenv.config();
 
 const LocalStrategy = strategies.Strategy;
-const { User } = models;
+const { User, BlacklistTokens } = models;
 
 passport.use(
   'signup',
@@ -57,6 +58,15 @@ passport.use(
         if (!user) {
           return done(null, false, { message: 'user does not exist' });
         }
+
+        const tokenCheck = await BlacklistTokens.findOne({
+          where: { token: req.headers.authorization.split(' ')[1] }
+        });
+
+        if (tokenCheck) {
+          done(null, false, { message: 'user logged out' });
+        }
+
         return done(null, jwtPayload);
       } catch (err) {
         return done(err);

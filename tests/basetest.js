@@ -10,7 +10,7 @@ chai.use(chaiHttp);
  * Log in the User to get the token that can be used in other files
  * The method will be called where needed the token after login.
  */
-const getToken = () => {
+const getUserToken = () => {
   const user = {
     username: 'prince',
     email: 'prince@gmail.com',
@@ -22,4 +22,4 @@ const getToken = () => {
     .send(user);
 };
 
-export default getToken;
+export default getUserToken;
