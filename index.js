@@ -10,6 +10,10 @@ import './config/passport';
 ENV.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
+<<<<<<< HEAD
+=======
+const { sequelize } = models;
+>>>>>>> c1eedde48ebab3f27f10fc3786af82e1515667e5
 
 // create global app object
 const app = express();
