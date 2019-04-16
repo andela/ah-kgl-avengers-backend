@@ -3,12 +3,12 @@ import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import app from '../index';
 import models from '../models';
-import baseTest from './base.test';
+import userToken from './basetest';
 
 dotenv.config();
 
 const { User } = models;
-const token = baseTest.getToken();
+const token = userToken();
 
 chai.should();
 
@@ -50,7 +50,7 @@ describe('User', () => {
 
   describe('/POST User Signup', () => {
     it('should pass and returs the status:200 as the user provides all required datas for login', (done) => {
-      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'test' };
+      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testtest4' };
       chai
         .request(app)
         .post('/api/v1/auth/signup')
@@ -63,7 +63,7 @@ describe('User', () => {
     });
 
     it('should pass and returns status:400 as the user is already in db', (done) => {
-      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'test' };
+      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testtest4' };
       chai
         .request(app)
         .post('/api/v1/auth/signup')
@@ -76,20 +76,20 @@ describe('User', () => {
   });
 
   describe('/POST Signin', () => {
-    it('should pass and returns the status:200 and the object with token', (done) => {
-      const signUser = { email: 'checka@tests.com', password: 'test' };
+    it('should fail as the user is not activated', (done) => {
+      const signUser = { email: 'checka@tests.com', password: 'testtest4' };
       chai
         .request(app)
         .post('/api/v1/auth/login')
         .send(signUser)
         .end((err, res) => {
           res.body.should.be.a('object');
-          res.should.have.status(200);
+          res.should.have.status(400);
           done();
         });
     });
     it('should pass and returns the error object and status:400 as password doen not match', (done) => {
-      const signUser = { email: 'checka@tests.com', password: 'tesst' };
+      const signUser = { email: 'checka@tests.com', password: 'tessttest4' };
       chai
         .request(app)
         .post('/api/v1/auth/login')
@@ -117,15 +117,14 @@ describe('User', () => {
   });
 
   context('User logout', () => {
-    it('should work because no authorization is implemented on routes', (done) => {
+    it('should return 401 as the user is not loged in and we cant aunthenticate', (done) => {
       chai
         .request(app)
-        .post('/api/auth/logout')
-        .set('Authorization', token)
-        .send({ token })
+        .post('/api/v1/auth/logout')
+        .set('Authorization', `Bearer ${token}`)
+        .send()
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.message.should.be.an('object');
+          res.should.have.status(401);
           done();
         });
     });

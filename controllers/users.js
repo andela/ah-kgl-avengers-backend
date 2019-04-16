@@ -7,7 +7,7 @@ import mailer from '../config/verificationMail';
 
 dotenv.config();
 
-const { User, BlackList } = models;
+const { User, BlacklistTokens } = models;
 
 /**
  * @description User Controller class
@@ -23,15 +23,7 @@ class Users {
     const { email, username, password: hash } = req.body;
 
     try {
-      const userFind = await User.findOne({ where: { email } });
-      if (userFind) {
-        res.status(400).send({
-          status: 400,
-          errorMessage: 'the user with that email exists'
-        });
-      }
-
-      const user = await User.create({ email, username, hash });
+      const user = await User.create({ email: email.trim(), username: username.trim(), hash });
       if (!user) {
         return res.status(500).send({
           status: 500,
@@ -77,9 +69,9 @@ class Users {
   static async signinLocal(req, res) {
     const { email, password } = req.body;
     const user = await User.findOne({ where: { email } });
-    if (!user) {
+    if (user.activated === 0) {
       return res.status(400).send({
-        errorMessage: `The User with email ${email} is not registered`
+        errorMessage: `The account with email ${email} is not activated`
       });
     }
     const { salt, hash, id } = user;
@@ -284,7 +276,7 @@ class Users {
   static async logout(req, res, next) {
     const { exp } = req.user;
     const token = req.headers.authorization.split(' ')[1];
-    BlackList.create({ token, expires: new Date(exp * 1000) })
+    BlacklistTokens.create({ token, expires: new Date(exp * 1000) })
       .then(() => res.status(200).json({
         status: res.statusCode,
         message: 'user logged out'

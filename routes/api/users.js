@@ -6,7 +6,7 @@ import userValidations from '../../middlewares/userValidation';
 const router = express.Router();
 
 router.post('/auth/signup', userValidations.signup, userControllers.createUserLocal);
-router.post('/auth/login', userControllers.signinLocal);
+router.post('/auth/login', userValidations.login, userControllers.signinLocal);
 router.get('/activation/:id', userControllers.activateUserAccount);
 
 // for testing the passport authentication of the JWT token
@@ -28,9 +28,13 @@ router.post(
 );
 
 // Reset password
-router.post('/users/reset', userControllers.resetPassword);
-router.put('/users/reset/:token', userControllers.updatePassword);
+router.post('/auth/reset', userControllers.resetPassword);
+router.put('/auth/reset/:token', userControllers.updatePassword);
 
-router.post('/auth/logout', userControllers.logout);
+router.post(
+  '/auth/logout',
+  passport.authenticate('jwt', { session: false }),
+  userControllers.logout
+);
 
 export default router;
