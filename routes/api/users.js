@@ -65,5 +65,10 @@ router.delete(
   passport.authenticate('jwt', { session: false }, null),
   userControllers.unfollow
 );
+// The Routes for the user Updating the account
+router.put('/users/profile/:id/update', passport.authenticate('jwt', { session: false }), userControllers.updateProfile);
+
+// The Route to get the user profile
+router.get('/users/profile/:id', passport.authenticate('jwt', { session: false }), userControllers.getProfile);
 
 export default router;
