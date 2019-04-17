@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon ./index.js --exec babel-node",
     "test": " NODE_ENV=test npm run migrate && NODE_ENV=test nyc --reporter=text mocha --exit --require @babel/register --require @babel/polyfill ./tests/*",
+    "test_travis": "NODE_ENV=test nyc --reporter=text mocha --exit --require @babel/register --require @babel/polyfill ./tests/*",
     "dev": "nodemon index.js --exec babel-node",
     "build": "babel ./server --out-dir dist",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
