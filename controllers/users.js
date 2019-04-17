@@ -32,7 +32,7 @@ class Users {
         followers: JSON.stringify({ ids: [] })
       });
       if (!user) {
-        return res.status(500).send({
+        return res.status(500).json({
           status: 500,
           errorMessage: 'Some Error occurred'
         });
@@ -44,12 +44,13 @@ class Users {
         status: 201,
         message: 'user created',
         user: {
+          id: user.id,
           email: user.email,
           username: user.username
         }
       });
     } catch (e) {
-      return e;
+      return res.send({ error: e });
     }
   }
 
@@ -350,7 +351,8 @@ class Users {
       });
     }
     await User.update(
-      { username: body.username, bio: body.bio, image: body.image }, { where: { id } }
+      { username: body.username, bio: body.bio, image: req.file ? req.file.url : null },
+      { where: { id } }
     );
     const updatedInfo = await User.findOne({ where: { id } });
     return res.status(200).send({

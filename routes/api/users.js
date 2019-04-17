@@ -2,6 +2,7 @@ import express from 'express';
 import passport from 'passport';
 import userControllers from '../../controllers/users';
 import userValidations from '../../middlewares/userValidation';
+import multerConfig from '../../config/multerConfig';
 
 const router = express.Router({});
 
@@ -66,7 +67,7 @@ router.delete(
   userControllers.unfollow
 );
 // The Routes for the user Updating the account
-router.put('/users/profile/:id/update', passport.authenticate('jwt', { session: false }), userControllers.updateProfile);
+router.put('/users/profile/:id/update', passport.authenticate('jwt', { session: false }), multerConfig, userControllers.updateProfile);
 
 // The Route to get the user profile
 router.get('/users/profile/:id', passport.authenticate('jwt', { session: false }), userControllers.getProfile);
