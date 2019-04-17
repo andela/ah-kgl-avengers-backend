@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import models from '../models/index';
 
 const { article } = models;
@@ -16,20 +17,66 @@ const articles = {
         title, body, author, status, tagList,
       } = req.body;
 
-      const slug = title.toLowerCase().split(' ').join('-');
-      const description = body.substring(0, 30);
       const flag = status === undefined ? 'Draft' : 'Published';
       const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
 
+      const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
+      const description = body.substring(0, 100);
+
       const queryArticle = await article.create({
-        title, body, author, slug, description, status: flag, tagList: tags
+        title, body, author, slug, description, status: flag, tagList: tags,
       });
+
       return res.status(201).send({
         status: res.statusCode,
-        data: queryArticle
+        article: {
+          id: queryArticle.id,
+          title: queryArticle.title,
+          description: queryArticle.description,
+          body: queryArticle.body,
+          slug: queryArticle.slug,
+          tags: [queryArticle.taglines]
+        }
       });
     } catch (err) {
-      return res.send(err);
+      return res.send(err.message);
+    }
+  },
+
+  // update an Article
+  updateAnArticle: async (req, res) => {
+    try {
+      const oldSlug = req.params.slug;
+      const { title, body } = req.body;
+      const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
+      const description = body.substring(0, 100);
+
+      await article.update({
+        title, body, slug, description,
+      },
+      { where: { slug: oldSlug } });
+      const updateThisArticle = await article.findOne({ where: { slug } });
+      if (!updateThisArticle) {
+        return res.status(404).send({
+          status: res.statusCode,
+          errorMessage: 'Article not found, please create a new article instead',
+        });
+      }
+      return res.status(200).send({
+        status: res.statusCode,
+        article: {
+          title: updateThisArticle.title,
+          body: updateThisArticle.body,
+          slug: updateThisArticle.slug,
+        }
+      });
+    } catch (err) {
+      if (err.message) {
+        res.status(500).send({
+          status: res.statusCode,
+          errorMessage: 'No article to update, please create an article first',
+        });
+      }
     }
   },
 
@@ -95,7 +142,36 @@ const articles = {
       status: res.statusCode,
       articles: response,
     });
-  }
+  },
+
+  viewAnArticle: async (req, res) => {
+    const { slug } = req.params;
+    try {
+      const viewOneArticle = await article.findOne({ where: { slug } });
+      if (!viewOneArticle) {
+        return res.status(404).send({
+          status: res.statusCode,
+          errorMessage: 'No article found, please create an article first'
+        });
+      }
+      return res.status(200).send({
+        status: res.statusCode,
+        article: {
+          title: viewOneArticle.title,
+          body: viewOneArticle.body,
+          description: viewOneArticle.description,
+          slug: viewOneArticle.slug,
+        }
+      });
+    } catch (error) {
+      if (error.message) {
+        return res.status(500).send({
+          status: res.statusCode,
+          errorMessage: error.message,
+        });
+      }
+    }
+  },
 };
 
 export default articles;
