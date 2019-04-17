@@ -1,8 +1,9 @@
 import crypto from 'crypto';
 import models from '../models/index';
 
-const { article } = models;
 const tempUser = '2dd9e22b-d19d-4501-a6b5-00bb4ebd9b3e'; // This line has to be deleted.
+const { article, User } = models;
+
 const articles = {
 
   /*
@@ -147,8 +148,9 @@ const articles = {
   viewAnArticle: async (req, res) => {
     const { slug } = req.params;
     try {
+      const findAuthor = await User.findOne();
       const viewOneArticle = await article.findOne({ where: { slug } });
-      if (!viewOneArticle) {
+      if (!viewOneArticle && !findAuthor) {
         return res.status(404).send({
           status: res.statusCode,
           errorMessage: 'No article found, please create an article first'
@@ -161,6 +163,12 @@ const articles = {
           body: viewOneArticle.body,
           description: viewOneArticle.description,
           slug: viewOneArticle.slug,
+          author: {
+            username: findAuthor.username,
+            bio: findAuthor.bio,
+            image: findAuthor.image,
+            following: findAuthor.following
+          }
         }
       });
     } catch (error) {
