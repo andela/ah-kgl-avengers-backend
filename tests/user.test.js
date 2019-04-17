@@ -114,6 +114,18 @@ describe('User', () => {
           done();
         });
     });
+
+    it('it should send reset email ', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/users/reset')
+        .send({ email: 'checka@tests.com' })
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.should.be.a('object');
+          done();
+        });
+    });
   });
 
   context('User logout', () => {

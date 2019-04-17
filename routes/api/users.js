@@ -37,4 +37,17 @@ router.post(
   userControllers.logout
 );
 
+// User functionality
+router.get(
+  '/users/authors',
+  passport.authenticate('jwt', { session: false }),
+  userControllers.getAllAuthors
+);
+router.get(
+  '/profiles/:username',
+  passport.authenticate('jwt', { session: false }),
+  userValidations.validUser,
+  userControllers.getOneAuthor
+);
+
 export default router;

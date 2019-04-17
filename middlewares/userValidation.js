@@ -141,5 +141,35 @@ export default {
         errors
       })
       : next();
+  },
+
+  validUser: async (req, res, next) => {
+    const { username } = req.params;
+
+    // Array to hold all errors
+    const errors = [];
+
+    if (!username.trim()) {
+      errors.push('username can not be empty');
+    }
+
+    // username exists
+    try {
+      if (username.trim()) {
+        const user = await User.findOne({ where: { username } });
+        if (!user) {
+          errors.push('user not found');
+        }
+      }
+    } catch (e) {
+      next(e);
+    }
+
+    return errors.length > 0
+      ? res.status(400).json({
+        status: res.statusCode,
+        errors
+      })
+      : next();
   }
 };
