@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
+import Sequelize from 'sequelize';
 import models from '../models';
 import mailer from '../config/verificationMail';
 
@@ -23,7 +24,13 @@ class Users {
     const { email, username, password: hash } = req.body;
 
     try {
-      const user = await User.create({ email: email.trim(), username: username.trim(), hash });
+      const user = await User.create({
+        email: email.trim(),
+        username: username.trim(),
+        hash,
+        following: [],
+        followers: [],
+      });
       if (!user) {
         return res.status(500).send({
           status: 500,
@@ -271,7 +278,7 @@ class Users {
    *
    * @param {object} req
    * @param {object} res
-   * @param {object} next
+   * @param {function} next
    * @returns {object} res
    */
   static async logout(req, res, next) {
@@ -283,6 +290,134 @@ class Users {
         message: 'user logged out'
       }))
       .catch(err => next(err));
+  }
+
+  /**
+   * A user can follow another user
+   * @param {object} req
+   * @param {object} res
+   * @return {object} res
+   * */
+  static async follow(req, res) {
+    const { username } = req.params;
+    const { id } = req.user;
+    try {
+      const userExists = await User.findOne({
+        where: {
+          username,
+          id: { [Sequelize.Op.ne]: id },
+        },
+        attributes: ['id', 'username', 'bio', 'image', 'followers']
+      });
+
+      if (!userExists) {
+        return res.status(404).json({
+          status: res.statusCode,
+          message: 'the user you want to follow doesn\'t exist',
+        });
+      }
+
+      const user = await User.findOne({ where: { id }, attributes: ['following'] });
+
+      //  check if the user is already followed
+      const followingUsers = user.dataValues.following;
+      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
+      if (existInFollowing) {
+        return res.status(400).json({
+          status: 400,
+          message: 'user already followed',
+        });
+      }
+
+      // add a new user to the list of followed users
+      followingUsers.push(userExists.dataValues.id);
+      await User.update(
+        { following: followingUsers },
+        { where: { id } }
+      );
+
+      // update the followed user's followers list
+      const followedUsersFollowers = userExists.dataValues.followers;
+      followedUsersFollowers.push(id);
+      await User.update({ followers: followedUsersFollowers }, { where: { username } });
+
+      return res.status(201).json({
+        status: res.statusCode,
+        profile: {
+          username: userExists.username,
+          image: userExists.image,
+          bio: userExists.bio,
+          following: true,
+        }
+      });
+    } catch (e) {
+      return res.status(500).json({
+        status: res.statusCode,
+        message: 'something went wrong on the server'
+      });
+    }
+  }
+
+  /**
+   * A user can un-follow another user he/she was following
+   * @param {object} req
+   * @param {object} res
+   * @return {object} res
+   * */
+  static async unfollow(req, res) {
+    const { username } = req.params;
+    const { id } = req.user;
+    try {
+      const userExists = await User.findOne({ where: { username }, attributes: ['id', 'username', 'bio', 'image', 'followers'] });
+
+      if (!userExists) {
+        return res.status(404).json({
+          status: res.statusCode,
+          message: 'the user you want to unfollow doesn\'t exist',
+        });
+      }
+
+      const user = await User.findOne({ where: { id }, attributes: ['following'] });
+      //  check if the user is already followed
+      let followingUsers = user.dataValues.following;
+      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
+
+      if (!existInFollowing) {
+        return res.status(400).json({
+          status: 400,
+          message: 'user not followed',
+        });
+      }
+
+      followingUsers = followingUsers.filter(
+        followedUser => followedUser !== userExists.dataValues.id
+      );
+
+      // update the un-followed user's followers list
+      let followedUsersFollowers = userExists.dataValues.followers;
+      followedUsersFollowers = followedUsersFollowers.filter(followerID => followerID !== id);
+      await User.update({ followers: followedUsersFollowers }, { where: { username } });
+
+      await User.update(
+        { following: followingUsers },
+        { where: { id } }
+      );
+
+      return res.status(201).json({
+        status: res.statusCode,
+        profile: {
+          username: userExists.username,
+          image: userExists.image,
+          bio: userExists.bio,
+          following: false,
+        }
+      });
+    } catch (e) {
+      return res.status(500).json({
+        status: res.statusCode,
+        message: 'something went wrong on the server'
+      });
+    }
   }
 }
 

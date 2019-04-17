@@ -30,11 +30,11 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
     },
     following: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
       allowNull: true,
     },
     followers: {
-      type: DataTypes.JSON,
+      type: DataTypes.JSONB,
       allowNull: true,
     },
     salt: {

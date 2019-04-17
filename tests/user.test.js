@@ -2,13 +2,8 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import app from '../index';
-import models from '../models';
-import userToken from './basetest';
 
 dotenv.config();
-
-const { User } = models;
-const token = userToken();
 
 chai.should();
 
@@ -16,16 +11,10 @@ chai.use(chaiHttp);
 
 const googleToken = process.env.GOOGLE_TOKEN;
 const facebookToken = process.env.FACEBOOK_TOKEN;
+const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testtest4' };
+let tokenValue;
 
 describe('User', () => {
-  // delete all datas in the table of users before doing tests
-  before(() => {
-    User.destroy({
-      where: {},
-      truncate: true
-    });
-  });
-
   it('should return an object with status 200 when a user login with Google OAuth', (done) => {
     chai
       .request(app)
@@ -48,9 +37,8 @@ describe('User', () => {
       });
   });
 
-  describe('/POST User Signup', () => {
-    it('should pass and returs the status:201 as the user provides all required datas for signup', (done) => {
-      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testtest4' };
+  context('/POST User Signup', () => {
+    it('should pass and returns the status:201 as the user provides all required data', (done) => {
       chai
         .request(app)
         .post('/api/v1/auth/signup')
@@ -63,7 +51,6 @@ describe('User', () => {
     });
 
     it('should pass and returns status:400 as the user is already in db', (done) => {
-      const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testtest4' };
       chai
         .request(app)
         .post('/api/v1/auth/signup')
@@ -88,7 +75,8 @@ describe('User', () => {
           done();
         });
     });
-    it('should pass and returns the error object and status:400 as password doen not match', (done) => {
+
+    it('should pass and returns the error object and status:400 as password doesn\'t  match', (done) => {
       const signUser = { email: 'checka@tests.com', password: 'tessttest4' };
       chai
         .request(app)
@@ -97,6 +85,34 @@ describe('User', () => {
         .end((err, res) => {
           res.body.should.be.a('object');
           res.should.have.status(400);
+          done();
+        });
+    });
+  });
+
+  context('Follow another user', () => {
+    it('should return a 201 status code and user profile', (done) => {
+      chai.request(app)
+        .post(`/api/v1/profiles/${newUser.username}/follow`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send()
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.profile.should.be.an('object');
+          done();
+        });
+    });
+  });
+
+  context('Un-follow another user', () => {
+    it('should return a 201 status code and user profile', (done) => {
+      chai.request(app)
+        .delete(`/api/v1/profiles/${newUser.username}/follow`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send()
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.profile.should.be.an('object');
           done();
         });
     });
@@ -117,11 +133,11 @@ describe('User', () => {
   });
 
   context('User logout', () => {
-    it('should return 401 as the user is not loged in and we cant aunthenticate', (done) => {
+    it('should return 401 as the user is not logged in and we cant authenticate', (done) => {
       chai
         .request(app)
         .post('/api/v1/auth/logout')
-        .set('Authorization', `Bearer ${token}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
         .send()
         .end((err, res) => {
           res.should.have.status(401);
