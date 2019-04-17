@@ -23,7 +23,9 @@ export default {
       references: {
         model: 'Users',
         key: 'id',
-      }
+      },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
     },
     slug: {
       type: Sequelize.STRING,
@@ -41,7 +43,7 @@ export default {
       type: Sequelize.INTEGER,
       allowNull: false,
     },
-    taglists: {
+    tagList: {
       type: Sequelize.JSON,
       allowNull: true,
     },

@@ -22,7 +22,7 @@ describe('User', () => {
   before(() => {
     User.destroy({
       where: {},
-      truncate: true
+      truncate: { cascade: true }
     });
   });
 

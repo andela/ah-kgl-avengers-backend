@@ -40,7 +40,7 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       defaultValue: 0,
     },
-    taglists: {
+    tagList: {
       type: DataTypes.JSON,
       allowNull: true,
     },
