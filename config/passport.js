@@ -54,6 +54,14 @@ passport.use(
           where: { id: jwtPayload.id },
           attributes: { exclude: ['password'] }
         });
+        if (user.activated === 0) {
+          return done(
+            null, false,
+            {
+              errorMessage: 'Please first activate your account',
+            }
+          );
+        }
         if (!user) {
           return done(null, false, { message: 'user does not exist' });
         }

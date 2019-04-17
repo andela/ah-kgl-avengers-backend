@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
 import ENV from 'dotenv';
-import User from './user';
 import configs from '../config/config';
 
 ENV.config();
@@ -11,7 +10,7 @@ const basename = path.basename(__filename);
 
 const env = process.env.NODE_ENV || 'development';
 const config = configs[env];
-const db = { User };
+const db = {};
 
 let sequelize;
 if (config.use_env_variable) {

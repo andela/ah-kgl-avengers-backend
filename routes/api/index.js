@@ -1,9 +1,11 @@
 import express from 'express';
 import userRouter from './users';
+import articleRouter from './articles';
 
 const router = express.Router();
 
 router.use('/', userRouter);
+router.use('/', articleRouter);
 
 router.use((err, req, res, next) => {
   if (err.name === 'ValidationError') {

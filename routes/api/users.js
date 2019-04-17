@@ -21,6 +21,7 @@ router.post(
   userControllers.createUserSocial
 );
 
+// Google Authentication Routes
 router.post(
   '/oauth/google',
   passport.authenticate('googleOAuth', { session: false }, null),

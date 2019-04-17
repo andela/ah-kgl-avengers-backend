@@ -42,9 +42,10 @@ package-lock.json
 # nyc_output
 .nyc_output
 
-# idea editors
+# code editors
 .idea
 .env
+.vscode
 
 #sendgrid
 sendgrid.env
