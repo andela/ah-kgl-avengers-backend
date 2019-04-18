@@ -1,16 +1,17 @@
-import request from 'request';
+import chai from 'chai';
+import chaihttp from 'chai-http';
+import app from '../index';
+
+chai.use(chaihttp);
+
+const user = {
+  email: 'tester1@test.com',
+  password: 'testuser',
+};
 
 export default {
-  getTestUser: () => {
-    const newUser = {
-      email: 'avengerstest@testa.com',
-      password: 'avengersfirst',
-      username: 'ironman',
-    };
-
-    // first signup the user
-    request.post('/api/v1/auth/signup', { body: newUser }).on('response', (response) => {
-      request.get(`/api/v1/activation/${response.user.id}`);
-    });
-  }
+  getUserToken: () => chai
+    .request(app)
+    .post('/api/v1/auth/login')
+    .send(user)
 };

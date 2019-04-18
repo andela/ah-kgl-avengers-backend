@@ -18,7 +18,7 @@ class Users {
    * Adds two numbers together.
    * @param {Object} req .
    * @param {Object} res The User Object.
-   * @returns {Object} The informations of User created.
+   * @returns {Object} created user data
    */
   static async createUserLocal(req, res) {
     const { email, username, password: hash } = req.body;
@@ -28,13 +28,13 @@ class Users {
         email: email.trim(),
         username: username.trim(),
         hash,
-        following: [],
-        followers: []
+        following: JSON.stringify({ ids: [] }),
+        followers: JSON.stringify({ ids: [] })
       });
       if (!user) {
         return res.status(500).send({
           status: 500,
-          errorMessage: 'some Error occured'
+          errorMessage: 'some Error occurred'
         });
       }
 
@@ -356,7 +356,7 @@ class Users {
       const user = await User.findOne({ where: { id }, attributes: ['following'] });
 
       //  check if the user is already followed
-      const followingUsers = user.dataValues.following;
+      const followingUsers = JSON.parse(user.dataValues.following).ids;
       const existInFollowing = followingUsers.find(followID => followID === userExists.id);
       if (existInFollowing) {
         return res.status(400).json({
@@ -367,12 +367,19 @@ class Users {
 
       // add a new user to the list of followed users
       followingUsers.push(userExists.dataValues.id);
-      await User.update({ following: followingUsers }, { where: { id } });
+      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
 
       // update the followed user's followers list
-      const followedUsersFollowers = userExists.dataValues.followers;
+      const followedUsersFollowers = JSON.parse(userExists.dataValues.followers).ids;
       followedUsersFollowers.push(id);
-      await User.update({ followers: followedUsersFollowers }, { where: { username } });
+      await User.update(
+        {
+          followers: JSON.stringify({ ids: followedUsersFollowers })
+        },
+        {
+          where: { username }
+        }
+      );
 
       return res.status(201).json({
         status: res.statusCode,
@@ -385,6 +392,7 @@ class Users {
       });
     } catch (e) {
       return res.status(500).json({
+        error: e,
         status: res.statusCode,
         message: 'something went wrong on the server'
       });
@@ -415,7 +423,7 @@ class Users {
 
       const user = await User.findOne({ where: { id }, attributes: ['following'] });
       //  check if the user is already followed
-      let followingUsers = user.dataValues.following;
+      let followingUsers = JSON.parse(user.dataValues.following).ids;
       const existInFollowing = followingUsers.find(followID => followID === userExists.id);
 
       if (!existInFollowing) {
@@ -430,13 +438,20 @@ class Users {
       );
 
       // update the un-followed user's followers list
-      let followedUsersFollowers = userExists.dataValues.followers;
-      followedUsersFollowers = followedUsersFollowers.filter(followerID => followerID !== id);
-      await User.update({ followers: followedUsersFollowers }, { where: { username } });
+      let unfollowedUserFollowers = JSON.parse(userExists.dataValues.followers).ids;
+      unfollowedUserFollowers = unfollowedUserFollowers.filter(followerID => followerID !== id);
+      await User.update(
+        {
+          followers: JSON.stringify({ ids: unfollowedUserFollowers })
+        },
+        {
+          where: { username }
+        }
+      );
 
-      await User.update({ following: followingUsers }, { where: { id } });
+      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
 
-      return res.status(201).json({
+      return res.status(200).json({
         status: res.statusCode,
         profile: {
           username: userExists.username,
@@ -447,6 +462,7 @@ class Users {
       });
     } catch (e) {
       return res.status(500).json({
+        error: e,
         status: res.statusCode,
         message: 'something went wrong on the server'
       });

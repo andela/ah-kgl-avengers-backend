@@ -1,9 +1,10 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
+  up: (queryInterface, Sequelize) => queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";').then(() => queryInterface.createTable('Users', {
     id: {
       allowNull: false,
       primaryKey: true,
-      type: Sequelize.UUID
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.literal('uuid_generate_v4()')
     },
     username: {
       type: Sequelize.STRING,
@@ -22,10 +23,10 @@ export default {
       defaultValue: 0
     },
     following: {
-      type: Sequelize.JSON
+      type: Sequelize.JSONB,
     },
     followers: {
-      type: Sequelize.JSON
+      type: Sequelize.JSONB,
     },
     salt: {
       type: Sequelize.STRING(1024)
@@ -50,6 +51,6 @@ export default {
       type: Sequelize.DATE,
       defaultValue: Sequelize.fn('now')
     }
-  }),
+  })),
   down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
 };
