@@ -2,36 +2,37 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import app from '../index';
-import models from '../models';
-import userToken from './basetest';
-
-dotenv.config();
+import info from './basetest';
+import models from '../models/index';
 
 const { User } = models;
-const token = userToken();
 
+dotenv.config();
 chai.should();
-
 chai.use(chaiHttp);
 
 const googleToken = process.env.GOOGLE_TOKEN;
 const facebookToken = process.env.FACEBOOK_TOKEN;
 
-describe('User', () => {
-  // delete all datas in the table of users before doing tests
-  before(() => {
-    User.destroy({
-      where: {},
-      truncate: { cascade: true }
-    });
-  });
+let token;
 
+before(async () => {
+  const data = await info.user();
+  token = data.user.id;
+});
+
+after(async () => {
+  await User.destroy({ where: {}, truncate: { cascade: true } });
+});
+
+describe('User', () => {
   it('should return an object with status 200 when a user login with Google OAuth', (done) => {
     chai
       .request(app)
       .post('/api/v1/oauth/google')
       .send({ access_token: googleToken })
       .end((err, res) => {
+        if (err) done(err);
         res.body.should.be.a('object');
         done();
       });
@@ -43,6 +44,7 @@ describe('User', () => {
       .post('/api/v1/oauth/facebook')
       .send({ access_token: facebookToken })
       .end((err, res) => {
+        if (err) done(err);
         res.body.should.be.a('object');
         done();
       });
@@ -56,6 +58,7 @@ describe('User', () => {
         .post('/api/v1/auth/signup')
         .send(newUser)
         .end((err, res) => {
+          if (err) done(err);
           res.body.should.be.a('object');
           res.should.have.status(201);
           done();
@@ -69,6 +72,7 @@ describe('User', () => {
         .post('/api/v1/auth/signup')
         .send(newUser)
         .end((err, res) => {
+          if (err) done(err);
           res.should.have.status(400);
           done();
         });
@@ -83,6 +87,7 @@ describe('User', () => {
         .post('/api/v1/auth/login')
         .send(signUser)
         .end((err, res) => {
+          if (err) done(err);
           res.body.should.be.a('object');
           res.should.have.status(400);
           done();
@@ -95,6 +100,7 @@ describe('User', () => {
         .post('/api/v1/auth/login')
         .send(signUser)
         .end((err, res) => {
+          if (err) done(err);
           res.body.should.be.a('object');
           res.should.have.status(400);
           done();
@@ -109,6 +115,7 @@ describe('User', () => {
         .post('/api/v1/users/reset')
         .send({ email: 'fridolinho@gmail.com' })
         .end((err, res) => {
+          if (err) done(err);
           res.should.have.status(404);
           res.should.be.a('object');
           done();
@@ -124,6 +131,7 @@ describe('User', () => {
         .set('Authorization', `Bearer ${token}`)
         .send()
         .end((err, res) => {
+          if (err) done(err);
           res.should.have.status(401);
           done();
         });

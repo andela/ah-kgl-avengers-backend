@@ -2,37 +2,26 @@ import chai from 'chai';
 import dotenv from 'dotenv';
 import chaiHttp from 'chai-http';
 import app from '../index';
-import models from '../models';
-import logInUser from './basetest';
+import info from './basetest';
 
 dotenv.config();
-const { User } = models;
 chai.should();
 chai.use(chaiHttp);
 
-const facebookToken = process.env.FACEBOOK_TOKEN;
-
-let userToken, userId;
 let articleSlug;
+let userId;
 
 before(async () => {
-  await User.destroy({
-    where: {},
-    truncate: true
-  }).then(async () => {
-    await logInUser()
-      .then((res) => {
-        userToken = res.body.user.token;
-        userId = res.body.user.id;
-      });
-  });
+  const data = await info.user();
+  userId = data.user.id;
 });
 
 describe('Author should handle article ', () => {
-  it('Author should be able to create an article', (done) => {
+  it('Author should be able to view the feeds', (done) => {
     chai.request(app)
       .get('/api/v1/article/feeds')
       .end((err, res) => {
+        if (err) done(err);
         res.should.have.status(200);
         res.should.be.an('Object');
         res.body.should.have.property('articles');
@@ -45,6 +34,7 @@ describe('Author should handle article ', () => {
     chai.request(app)
       .get('/api/v1/articles')
       .end((err, res) => {
+        if (err) done(err);
         res.should.have.status(200);
         res.should.be.an('Object');
         res.body.should.have.property('articles');
@@ -55,8 +45,9 @@ describe('Author should handle article ', () => {
 
   it('Author should be able get his/her drafted articles', (done) => {
     chai.request(app)
-      .get('/api/v1/articles')
+      .get('/api/v1/articles/draft')
       .end((err, res) => {
+        if (err) done(err);
         res.should.have.status(200);
         res.should.be.an('Object');
         res.body.should.have.property('articles');
@@ -75,6 +66,7 @@ describe('Author should handle article ', () => {
         author: userId
       })
       .end((err, res) => {
+        if (err) done(err);
         articleSlug = res.body.article.slug;
         res.body.should.have.property('status').eql(201);
         res.body.should.be.an('Object');
@@ -86,6 +78,7 @@ describe('Author should handle article ', () => {
     chai.request(app)
       .delete(`/api/v1/articles/${articleSlug}`)
       .end((err, res) => {
+        if (err) done(err);
         res.should.have.status(200);
         res.should.be.an('Object');
         res.body.should.have.property('message');
@@ -103,6 +96,7 @@ describe('Author should handle article ', () => {
         author: userId
       })
       .end((err, res) => {
+        if (err) done(err);
         res.body.should.be.an('Object');
         res.body.should.have.property('status').eql(404);
         res.body.should.have.property('errorMessage').eql('Article not found, please create a new article instead');

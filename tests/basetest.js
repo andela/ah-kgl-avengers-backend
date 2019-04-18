@@ -1,45 +1,37 @@
 // here we create the user and get the token
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-import app from '../index';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import models from '../models';
 
-chai.use(chaiHttp);
+dotenv.config();
 
+const { User } = models;
 /*
  * login Method
  * Log in the User to get the token that can be used in other files
  * The method will be called where needed the token after login.
  */
-const getUserToken = () => {
-  const user = {
-    username: 'prince',
-    email: 'prince@gmail.com',
-    password: 'hello12345'
-  };
-  return chai
-    .request(app)
-    .post('/api/v1/auth/signup')
-    .send(user);
+
+const info = {
+  user: async () => {
+    const newUser = {
+      username: 'Bobooooo',
+      email: 'testinguu@tests.com',
+      hash: 'testinguser',
+      activated: 1,
+    };
+    try {
+      const user = await User.findOne({ where: { email: newUser.email } });
+      if (user === null) {
+        const { id, email } = await User.create(newUser);
+        const token = jwt.sign({ id, email, exp: Date.now() / 1000 + 60 * 60 }, process.env.SECRET);
+        return { user: { id, token } };
+      }
+      return { user };
+    } catch (error) {
+      return error;
+    }
+  }
 };
 
-const activateAccount = async () => {
-  await getUserToken()
-    .then(res => chai
-      .request(app)
-      .get(`/api/v1/activation/${res.body.user.id}`));
-};
-
-const logInUser = async () => {
-  const user = {
-    username: 'prince',
-    email: 'prince@gmail.com',
-    password: 'hello12345'
-  };
-  await activateAccount();
-  return chai
-    .request(app)
-    .post('/api/v1/auth/login')
-    .send(user);
-};
-
-export default logInUser;
+export default info;

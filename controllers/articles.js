@@ -17,7 +17,6 @@ const articles = {
       const {
         title, body, author, status, tagList,
       } = req.body;
-
       const flag = status === undefined ? 'Draft' : 'Published';
       const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
 
@@ -27,7 +26,6 @@ const articles = {
       const queryArticle = await article.create({
         title, body, author, slug, description, status: flag, tagList: tags,
       });
-
       return res.status(201).send({
         status: res.statusCode,
         article: {
@@ -40,7 +38,7 @@ const articles = {
         }
       });
     } catch (err) {
-      return res.send(err.message);
+      throw err;
     }
   },
 
@@ -107,12 +105,16 @@ const articles = {
   * and the status of the article (Published).
   */
   getAllPublished: async (req, res) => {
-    // const { author } = req.user;
-    const response = await article.findAll({ where: { author: tempUser, status: 'Published', deleted: 0 } });
-    return res.status(200).send({
-      status: res.statusCode,
-      articles: response,
-    });
+    try {
+      // const { author } = req.user;
+      const response = await article.findAll({ where: { author: tempUser, status: 'Published', deleted: 0 } });
+      return res.status(200).send({
+        status: res.statusCode,
+        articles: response,
+      });
+    } catch (error) {
+      throw error;
+    }
   },
 
   /*
@@ -121,11 +123,15 @@ const articles = {
   */
   getAllDraft: async (req, res) => {
     // const { author } = req.user;
-    const response = await article.findAll({ where: { author: tempUser, status: 'Draft', deleted: 0 } });
-    return res.status(200).send({
-      status: res.statusCode,
-      articles: response,
-    });
+    try {
+      const response = await article.findAll({ where: { author: tempUser, status: 'Draft', deleted: 0 } });
+      return res.status(200).send({
+        status: res.statusCode,
+        articles: response,
+      });
+    } catch (error) {
+      throw error;
+    }
   },
 
   /*
@@ -133,16 +139,20 @@ const articles = {
    * and the status of the article (Published).
    */
   getFeeds: async (req, res) => {
-    const response = await article.findAll({
-      where: {
-        status: 'Published',
-        deleted: 0
-      }
-    });
-    return res.status(200).send({
-      status: res.statusCode,
-      articles: response,
-    });
+    try {
+      const response = await article.findAll({
+        where: {
+          status: 'Published',
+          deleted: 0
+        }
+      });
+      return res.status(200).send({
+        status: res.statusCode,
+        articles: response,
+      });
+    } catch (error) {
+      throw error;
+    }
   },
 
   viewAnArticle: async (req, res) => {
