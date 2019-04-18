@@ -2,25 +2,33 @@ import chai from 'chai';
 import dotenv from 'dotenv';
 import chaiHttp from 'chai-http';
 import app from '../index';
+import models from '../models';
 
 dotenv.config();
-
+const { User } = models;
 chai.should();
 chai.use(chaiHttp);
 
 const facebookToken = process.env.FACEBOOK_TOKEN;
+
 let userToken, userId;
 let articleSlug;
 
 before((done) => {
-  chai.request(app)
-    .post('/api/v1/oauth/facebook')
-    .send({ access_token: facebookToken })
-    .end((req, res) => {
-      userToken = res.body.token;
-      userId = res.body.data.id;
-      done();
-    });
+  User.destroy({
+    where: {},
+    truncate: { cascade: true }
+  }).then(() => {
+    chai.request(app)
+      .post('/api/v1/oauth/facebook')
+      .send({ access_token: facebookToken })
+      .end((err, res) => {
+        if (err) done(err);
+        userToken = res.body.token;
+        userId = res.body.data.id;
+        done();
+      });
+  });
 });
 
 describe('Author should handle article ', () => {

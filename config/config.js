@@ -9,7 +9,7 @@ module.exports = {
     logging: false
   },
   test: {
-    use_env_variable: 'DATABASE_URL',
+    use_env_variable: 'DATABASE_TEST',
     dialect: 'postgres',
     logging: false,
   },
