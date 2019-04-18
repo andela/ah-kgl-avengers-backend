@@ -1,6 +1,10 @@
 language: node_js
+
 node_js:
   - stable
+    
+addons:
+  postgresql: "9.6"
 
 services:
   - postgresql
@@ -10,6 +14,7 @@ before_script:
   - psql -c "CREATE USER test_user WITH PASSWORD 'test';" -U postgres
   - psql -U postgres test_db -c 'CREATE EXTENSION "uuid-ossp";'
   - npm run migrate
+  - npm run seed:travis
 
 script:
   - echo "Integration test starts....."
