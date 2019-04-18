@@ -13,6 +13,7 @@
     "heroku-postbuild": "npm install",
     "migration:generate": "node_modules/.bin/sequelize migrations:generate --name",
     "migrate": "node_modules/.bin/sequelize db:migrate",
+    "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
     "migrate:refresh": "npm run migrate:reset && npm run migrate",
     "migrate:reset": "node_modules/.bin/sequelize db:migrate:undo:all"
   },
@@ -65,7 +66,6 @@
     "eslint-plugin-react": "^7.12.4",
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
-    "request": "^2.88.0",
     "sequelize-cli": "^5.4.0"
   }
 }
