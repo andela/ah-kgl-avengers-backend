@@ -20,7 +20,7 @@ const articles = {
       const flag = status === undefined ? 'Draft' : 'Published';
       const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
 
-      const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
+      const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 40)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
 
       const queryArticle = await article.create({
@@ -46,14 +46,18 @@ const articles = {
   updateAnArticle: async (req, res) => {
     try {
       const oldSlug = req.params.slug;
-      const { title, body } = req.body;
+      const { title, body, tagList } = req.body;
       const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
 
-      await article.update({
-        title, body, slug, description,
-      },
-      { where: { slug: oldSlug } });
+      await article.update(
+        {
+          title, body, slug, description, tagList
+        },
+        {
+          where: { slug: oldSlug }
+        }
+      );
       const updateThisArticle = await article.findOne({ where: { slug } });
       if (!updateThisArticle) {
         return res.status(404).send({
@@ -67,6 +71,7 @@ const articles = {
           title: updateThisArticle.title,
           body: updateThisArticle.body,
           slug: updateThisArticle.slug,
+          tagList: updateThisArticle.tagList,
         }
       });
     } catch (err) {
@@ -173,6 +178,7 @@ const articles = {
           body: viewOneArticle.body,
           description: viewOneArticle.description,
           slug: viewOneArticle.slug,
+          tagList: viewOneArticle.tagList,
           author: {
             username: findAuthor.username,
             bio: findAuthor.bio,
