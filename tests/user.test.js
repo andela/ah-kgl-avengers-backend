@@ -114,18 +114,6 @@ describe('User', () => {
           done();
         });
     });
-
-    it('it should send reset email ', (done) => {
-      chai
-        .request(app)
-        .post('/api/v1/users/reset')
-        .send({ email: 'checka@tests.com' })
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.should.be.a('object');
-          done();
-        });
-    });
   });
 
   context('User logout', () => {
@@ -137,6 +125,30 @@ describe('User', () => {
         .send()
         .end((err, res) => {
           res.should.have.status(401);
+          done();
+        });
+    });
+  });
+
+  describe('user functionality', () => {
+    it('it should fail because user is not authenticated', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/authors')
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.should.be.a('object');
+          done();
+        });
+    });
+
+    it('it should fail because user is not authenticated', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/profiles/fridz')
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.should.be.a('object');
           done();
         });
     });
