@@ -10,6 +10,7 @@ chai.use(chaiHttp);
 
 const facebookToken = process.env.FACEBOOK_TOKEN;
 let userToken, userId;
+let articleSlug;
 
 before((done) => {
   chai.request(app)
@@ -69,6 +70,7 @@ describe('Author should handle article ', () => {
         author: userId
       })
       .end((err, res) => {
+        articleSlug = res.body.article.slug;
         res.body.should.have.property('status').eql(201);
         res.body.should.be.an('Object');
         done();
@@ -76,10 +78,8 @@ describe('Author should handle article ', () => {
   });
 
   it('Author should be able to delete an article', (done) => {
-    const slug = 'this-is-my-first-try-of-article';
-
     chai.request(app)
-      .put(`/api/v1/articles/${slug}`)
+      .delete(`/api/v1/articles/${articleSlug}`)
       .end((err, res) => {
         res.should.have.status(200);
         res.should.be.an('Object');
