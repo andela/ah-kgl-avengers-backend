@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import chaiHttp from 'chai-http';
 import app from '../index';
 import models from '../models';
+import logInUser from './basetest';
 
 dotenv.config();
 const { User } = models;
@@ -14,19 +15,15 @@ const facebookToken = process.env.FACEBOOK_TOKEN;
 let userToken, userId;
 let articleSlug;
 
-before((done) => {
-  User.destroy({
+before(async () => {
+  await User.destroy({
     where: {},
-    truncate: { cascade: true }
-  }).then(() => {
-    chai.request(app)
-      .post('/api/v1/oauth/facebook')
-      .send({ access_token: facebookToken })
-      .end((err, res) => {
-        if (err) done(err);
-        userToken = res.body.token;
-        userId = res.body.data.id;
-        done();
+    truncate: true
+  }).then(async () => {
+    await logInUser()
+      .then((res) => {
+        userToken = res.body.user.token;
+        userId = res.body.user.id;
       });
   });
 });
