@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import models from '../models/index';
 
-const tempUser = '2dd9e22b-d19d-4501-a6b5-00bb4ebd9b3e'; // This line has to be deleted.
 const { article, User } = models;
 
 const articles = {
@@ -17,10 +16,10 @@ const articles = {
       const {
         title, body, author, status, tagList,
       } = req.body;
-      const flag = status === undefined ? 'Draft' : 'Published';
+      const flag = status === undefined ? 'Draft' : status;
       const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
 
-      const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 40)}${crypto.randomBytes(5).toString('hex')}`;
+      const slug = `${title.toLowerCase().split(' ').join('-').substring(0, 40)}-${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
 
       const queryArticle = await article.create({
@@ -34,7 +33,7 @@ const articles = {
           description: queryArticle.description,
           body: queryArticle.body,
           slug: queryArticle.slug,
-          tags: [queryArticle.taglines]
+          tags: [queryArticle.tagList]
         }
       });
     } catch (err) {
@@ -91,18 +90,29 @@ const articles = {
    * we set the flag to the article that it is deletes.
    */
   deleteArticle: async (req, res) => {
-    const { slug } = req.params;
-    const row = await article.update({ deleted: 1 }, { where: { slug, deleted: 0 } });
-    if (row[0] === 0) {
-      return res.status(404).send({
+    try {
+      const { id } = req.user;
+      const { slug } = req.params;
+      const content = await article.findOne({ where: { slug, author: id, deleted: 0 } });
+      if (!content) {
+        return res.status(404).send({
+          status: res.statusCode,
+          message: 'No article found from provided information',
+        });
+      }
+      const row = await article.update({ deleted: 1 }, { where: { slug, deleted: 0 } });
+      if (row[0] !== 0) {
+        return res.status(200).send({
+          status: res.statusCode,
+          message: 'Article deleted successfully',
+        });
+      }
+    } catch (error) {
+      return res.status(500).send({
         status: res.statusCode,
-        message: 'No article found for this slug',
+        message: 'Failed to handle your request.'
       });
     }
-    return res.status(200).send({
-      status: res.statusCode,
-      message: 'Article deleted successfully',
-    });
   },
 
   /*
@@ -111,11 +121,22 @@ const articles = {
   */
   getAllPublished: async (req, res) => {
     try {
-      // const { author } = req.user;
-      const response = await article.findAll({ where: { author: tempUser, status: 'Published', deleted: 0 } });
+      const { id } = req.user;
+      const authorInfo = await User.findOne({ where: { id }, attributes: ['username', 'bio', 'image', 'following'] });
+      const response = await article.findAll({
+        where: {
+          author: id,
+          status: 'Published',
+          deleted: 0
+        },
+        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList']
+      });
+
+      response.forEach((element) => { element.author = authorInfo; });
       return res.status(200).send({
         status: res.statusCode,
         articles: response,
+        articlesCount: response.length,
       });
     } catch (error) {
       throw error;
@@ -127,12 +148,23 @@ const articles = {
   * and the status of the article (Draft).
   */
   getAllDraft: async (req, res) => {
-    // const { author } = req.user;
     try {
-      const response = await article.findAll({ where: { author: tempUser, status: 'Draft', deleted: 0 } });
+      const { id } = req.user;
+      const authorInfo = await User.findOne({ where: { id }, attributes: ['username', 'bio', 'image', 'following'] });
+      const response = await article.findAll({
+        where: {
+          author: id,
+          status: 'Draft',
+          deleted: 0
+        },
+        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList']
+      });
+
+      response.forEach((element) => { element.author = authorInfo; });
       return res.status(200).send({
         status: res.statusCode,
         articles: response,
+        articlesCount: response.length,
       });
     } catch (error) {
       throw error;
@@ -145,15 +177,24 @@ const articles = {
    */
   getFeeds: async (req, res) => {
     try {
-      const response = await article.findAll({
-        where: {
-          status: 'Published',
-          deleted: 0
-        }
+      const allArticles = await article.findAll({
+        where: { status: 'Published', deleted: 0 },
+        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList', 'author'],
+        limit: 20,
       });
+
+      for (const iterator of allArticles) {
+        const auth = User.findOne({
+          where: { id: iterator.author },
+          attributes: ['username', 'bio', 'image', 'following'],
+        });
+        iterator.author = auth;
+      }
+
       return res.status(200).send({
         status: res.statusCode,
-        articles: response,
+        articles: allArticles,
+        articlesCount: allArticles.length,
       });
     } catch (error) {
       throw error;
