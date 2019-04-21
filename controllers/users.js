@@ -44,13 +44,15 @@ class Users {
         status: 201,
         message: 'user created',
         user: {
-          id: user.id,
           email: user.email,
           username: user.username
         }
       });
     } catch (e) {
-      return res.send({ error: e });
+      return res.status(500).send({
+        status: 500,
+        errorMessage: 'Internal server error'
+      });
     }
   }
 
@@ -514,8 +516,8 @@ class Users {
    * @returns {object} res with the updated user informations
    */
   static async getProfile(req, res) {
-    const { id } = req.params;
-    const findUser = await User.findOne({ where: { id } });
+    const { username } = req.params;
+    const findUser = await User.findOne({ where: { username } });
     if (!findUser) {
       return res.status(400).send({
         status: 400,
