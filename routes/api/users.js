@@ -68,7 +68,7 @@ router.delete(
   userControllers.unfollow
 );
 // The Routes for the user Updating the account
-router.put('/users/profile/:id/update', checkToken(), multerConfig, userControllers.updateProfile);
+router.put('/users/profile/:username/update', checkToken(), multerConfig, userControllers.updateProfile);
 
 // The Route to get the user profile
 router.get('/users/profile/:username', userControllers.getProfile);

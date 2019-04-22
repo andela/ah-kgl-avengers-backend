@@ -49,9 +49,9 @@ class Users {
         }
       });
     } catch (e) {
-      return res.status(500).send({
-        status: 500,
-        errorMessage: 'Internal server error'
+      return res.status(400).send({
+        status: 400,
+        errorMessage: e.errors[0].message
       });
     }
   }
@@ -336,9 +336,9 @@ class Users {
    * @returns {*} user object
    */
   static async updateProfile(req, res) {
-    const { id } = req.params;
+    const { username } = req.params;
     const { body } = req;
-    const checkUser = await User.findOne({ where: { id } });
+    const checkUser = await User.findOne({ where: { username } });
     if (!checkUser) {
       return res.status(404).send({
         status: 404,
@@ -346,7 +346,7 @@ class Users {
       });
     }
 
-    if (id !== req.user.id) {
+    if (checkUser.id !== req.user.id) {
       return res.status(401).send({
         status: 401,
         errorMessage: 'You are not Authorized to update someone else\'s profile'
@@ -354,9 +354,9 @@ class Users {
     }
     await User.update(
       { username: body.username, bio: body.bio, image: req.file ? req.file.url : null },
-      { where: { id } }
+      { where: { username } }
     );
-    const updatedInfo = await User.findOne({ where: { id } });
+    const updatedInfo = await User.findOne({ where: { username } });
     return res.status(200).send({
       status: 200,
       message: 'The profile has been updated',
