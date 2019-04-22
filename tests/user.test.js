@@ -129,4 +129,28 @@ describe('User', () => {
         });
     });
   });
+
+  describe('user functionality', () => {
+    it('it should fail because user is not authenticated', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/authors')
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.should.be.a('object');
+          done();
+        });
+    });
+
+    it('it should fail because user is not authenticated', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/profiles/fridz')
+        .end((err, res) => {
+          res.should.have.status(401);
+          res.should.be.a('object');
+          done();
+        });
+    });
+  });
 });

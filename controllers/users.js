@@ -184,12 +184,12 @@ class Users {
   static async resetPassword(req, res) {
     // check if email exists in the database
     const { email } = req.body;
-    const result = await User.findAll({
+    const result = await User.findOne({
       where: {
         email
       }
     });
-    if (result.length === 0) {
+    if (!result) {
       return res.status(404).send({
         status: res.statusCode,
         message: 'email not found'
@@ -268,7 +268,7 @@ class Users {
   }
 
   /**
-   *
+   * user logout
    * @param {object} req
    * @param {object} res
    * @param {object} next
@@ -283,6 +283,42 @@ class Users {
         message: 'user logged out'
       }))
       .catch(err => next(err));
+  }
+
+  /**
+   * get a list of authors
+   * @param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @returns {object} res
+   */
+  static async getAllAuthors(req, res) {
+    const result = await User.findAll({ attributes: ['image', 'username', 'email'] });
+    res.status(200).send({
+      status: res.statusCode,
+      data: result
+    });
+  }
+
+  /**
+   * get author profile
+   * @param {object} req
+   * @param {object} res
+   * @param {object} next
+   * @returns {object} res
+   */
+  static async getOneAuthor(req, res) {
+    const { username } = req.params;
+    const profile = await User.findOne({
+      attributes: ['id', 'username', 'bio', 'image'],
+      where: {
+        username,
+      }
+    });
+    return res.status(200).send({
+      status: 200,
+      data: profile
+    });
   }
 }
 
