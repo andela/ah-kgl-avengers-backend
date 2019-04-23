@@ -34,7 +34,7 @@ class Users {
       if (!user) {
         return res.status(500).send({
           status: 500,
-          errorMessage: 'some Error occurred'
+          errorMessage: 'Some Error occurred'
         });
       }
 
@@ -349,7 +349,7 @@ class Users {
       if (!userExists) {
         return res.status(404).json({
           status: res.statusCode,
-          message: "the user you want to follow doesn't exist"
+          message: "The user you want to follow doesn't exist"
         });
       }
 
@@ -361,7 +361,7 @@ class Users {
       if (existInFollowing) {
         return res.status(400).json({
           status: 400,
-          message: 'user already followed'
+          message: 'User already followed'
         });
       }
 
@@ -394,7 +394,7 @@ class Users {
       return res.status(500).json({
         error: e,
         status: res.statusCode,
-        message: 'something went wrong on the server'
+        message: 'Something went wrong on the server'
       });
     }
   }
@@ -417,7 +417,7 @@ class Users {
       if (!userExists) {
         return res.status(404).json({
           status: res.statusCode,
-          message: "the user you want to unfollow doesn't exist"
+          message: "The user you want to unfollow doesn't exist"
         });
       }
 
@@ -429,7 +429,7 @@ class Users {
       if (!existInFollowing) {
         return res.status(400).json({
           status: 400,
-          message: 'user not followed'
+          message: 'User not followed'
         });
       }
 
@@ -464,7 +464,7 @@ class Users {
       return res.status(500).json({
         error: e,
         status: res.statusCode,
-        message: 'something went wrong on the server'
+        message: 'Something went wrong on the server'
       });
     }
   }
