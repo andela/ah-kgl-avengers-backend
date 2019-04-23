@@ -44,6 +44,7 @@ package-lock.json
 
 # idea editors
 .idea
+.env
 
 #sendgrid
 sendgrid.env
