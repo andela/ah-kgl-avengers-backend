@@ -113,14 +113,14 @@ class Users {
    */
   static async createUserSocial(req, res) {
     const {
-      id, displayName, emails, provider
+      displayName, emails, provider
     } = req.user;
     try {
       const existingUser = await User.findOne({ where: { username: displayName } && { provider } });
       if (existingUser) {
         const token = jwt.sign(
           {
-            id,
+            id: existingUser.id,
             emails,
             exp: Date.now() / 1000 + 60 * 60
           },
@@ -130,7 +130,6 @@ class Users {
           status: res.statusCode,
           token,
           data: {
-            id: existingUser.id,
             username: existingUser.username,
             email: existingUser.email,
             provider: existingUser.provider
@@ -153,7 +152,7 @@ class Users {
 
       const token = jwt.sign(
         {
-          id,
+          id: newUser.id,
           emails,
           exp: Date.now() / 1000 + 60 * 60
         },
@@ -163,7 +162,6 @@ class Users {
         status: res.statusCode,
         token,
         data: {
-          id: newUser.id,
           username: newUser.username,
           email: newUser.email,
           provider: newUser.provider
