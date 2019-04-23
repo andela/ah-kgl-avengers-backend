@@ -301,7 +301,7 @@ class Users {
    */
   static async getAllAuthors(req, res) {
     const result = await User.findAll({ attributes: ['image', 'username', 'email'] });
-    res.status(200).send({
+    return res.status(200).send({
       status: res.statusCode,
       data: result
     });

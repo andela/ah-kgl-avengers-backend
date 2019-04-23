@@ -16,12 +16,15 @@ const newUser = { username: 'berra', email: 'checka@tests.com', password: 'testt
 let tokenValue;
 
 before((done) => {
-  utils.getUserToken().then((res) => {
-    tokenValue = res.body.user.token;
-    done();
-  }).catch((e) => {
-    done();
-  });
+  utils
+    .getUserToken()
+    .then((res) => {
+      tokenValue = res.body.user.token;
+      done();
+    })
+    .catch(() => {
+      done();
+    });
 });
 
 describe('User', () => {
@@ -48,7 +51,6 @@ describe('User', () => {
         });
     });
   });
-
 
   context('/POST User Signup', () => {
     it('should pass and returns the status:201 as the user provides all required data', (done) => {
@@ -89,7 +91,7 @@ describe('User', () => {
         });
     });
 
-    it('should pass and returns the error object and status:400 as password doesn\'t  match', (done) => {
+    it("should pass and returns the error object and status:400 as password doesn't  match", (done) => {
       const signUser = { email: 'checka@tests.com', password: 'tessttest4' };
       chai
         .request(app)
@@ -105,7 +107,8 @@ describe('User', () => {
 
   context('Follow another user', () => {
     it('should return a 201 status code and user profile', (done) => {
-      chai.request(app)
+      chai
+        .request(app)
         .post('/api/v1/profiles/tester2/follow')
         .set('Authorization', `Bearer ${tokenValue}`)
         .send()
@@ -114,7 +117,8 @@ describe('User', () => {
           res.body.profile.should.be.an('object');
           // done();
           // });
-          chai.request(app)
+          chai
+            .request(app)
             .post('/api/v1/profiles/tester3/follow')
             .set('Authorization', `Bearer ${tokenValue}`)
             .send()
@@ -129,7 +133,8 @@ describe('User', () => {
 
   context('Un-follow another user', () => {
     it('should return a 200 status code and user profile', (done) => {
-      chai.request(app)
+      chai
+        .request(app)
         .delete('/api/v1/profiles/tester2/follow')
         .set('Authorization', `Bearer ${tokenValue}`)
         .send()
@@ -169,7 +174,8 @@ describe('User', () => {
     });
 
     it('should return a 401 status code because the token has been blacklisted', (done) => {
-      chai.request(app)
+      chai
+        .request(app)
         .post('/api/v1/profiles/tester3/follow')
         .set('Authorization', `Bearer ${tokenValue}`)
         .send()
