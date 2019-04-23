@@ -1,34 +1,34 @@
 import express from 'express';
-import passport from 'passport';
 import articlesController from '../../controllers/articles';
 import validation from '../../middlewares/articleValidation';
+import checkToken from '../../middlewares/passportCustom';
 
 const router = express.Router();
 
 
 router.get(
   '/article/feeds',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   articlesController.getFeeds
 );
 
 // selects all articles
 router.get(
   '/articles',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   articlesController.getAllPublishedArticles
 );
 
 router.get(
   '/articles/draft',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   articlesController.getAllDraftArticles
 );
 
 // Create articles
 router.post(
   '/articles',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   validation.article,
   articlesController.createArticle
 );
@@ -36,7 +36,7 @@ router.post(
 // Deletes a single article based on the slug
 router.delete(
   '/articles/:slug',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   validation.slug,
   articlesController.deleteArticle
 );
@@ -44,7 +44,7 @@ router.delete(
 // Edits an article based on a slug
 router.put(
   '/articles/:slug',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   validation.article,
   articlesController.updateArticle
 );
@@ -52,7 +52,7 @@ router.put(
 // selects an article based on a slug
 router.get(
   '/articles/:slug',
-  passport.authenticate('jwt', { session: false, }),
+  checkToken(),
   validation.slug,
   articlesController.viewArticle
 );

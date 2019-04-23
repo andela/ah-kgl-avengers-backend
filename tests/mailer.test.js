@@ -22,7 +22,6 @@ describe('Should send email to the user', () => {
     };
     sandBox.stub(nodeMailer, 'createTransport').returns(transport);
     const res = await mailer.sentActivationMail(data);
-
     res.should.be.an('Object');
     res.should.have.property('from', process.env.SENDER);
     res.should.have.property('to', data.email);

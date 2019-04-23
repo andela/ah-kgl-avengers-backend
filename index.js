@@ -83,6 +83,7 @@ app.use((err, req, res, next) => {
       error: {}
     }
   });
+  next();
 });
 
 // Create or Update database tables and start express server

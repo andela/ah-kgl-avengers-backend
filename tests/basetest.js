@@ -1,3 +1,4 @@
+
 // here we create the user and get the token
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
@@ -14,9 +15,9 @@ const { User } = models;
 
 const getUser = async () => {
   const newUser = {
-    username: 'boy',
-    email: 'boy@tests.com',
-    hash: 'boys123456',
+    username: 'prince',
+    email: 'prince@tests.com',
+    hash: 'prince123456',
     activated: 1,
   };
   try {

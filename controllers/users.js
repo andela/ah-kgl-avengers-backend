@@ -32,7 +32,7 @@ class Users {
         followers: JSON.stringify({ ids: [] })
       });
       if (!user) {
-        return res.status(500).send({
+        return res.status(500).json({
           status: 500,
           errorMessage: 'Some Error occurred'
         });
@@ -49,7 +49,10 @@ class Users {
         }
       });
     } catch (e) {
-      return e;
+      return res.status(400).send({
+        status: 400,
+        errorMessage: e.errors[0].message
+      });
     }
   }
 
@@ -327,6 +330,44 @@ class Users {
   }
 
   /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {*} user object
+   */
+  static async updateProfile(req, res) {
+    const { username } = req.params;
+    const { body } = req;
+    const checkUser = await User.findOne({ where: { username } });
+    if (!checkUser) {
+      return res.status(404).send({
+        status: 404,
+        errorMessage: 'The User is not registered'
+      });
+    }
+
+    if (checkUser.id !== req.user.id) {
+      return res.status(401).send({
+        status: 401,
+        errorMessage: 'You are not Authorized to update someone else\'s profile'
+      });
+    }
+    const updated = await User.update(
+      { username: body.username, bio: body.bio, image: req.file ? req.file.url : null },
+      { where: { username }, attributes: ['username', 'bio', 'image'], returning: true }
+    );
+    return res.status(200).send({
+      status: 200,
+      message: 'The profile has been updated',
+      profile: {
+        username: updated[1][0].username,
+        bio: updated[1][0].bio,
+        image: updated[1][0].image
+      },
+    });
+  }
+
+  /**
    * A user can follow another user
    * @param {object} req
    * @param {object} res
@@ -465,6 +506,39 @@ class Users {
         message: 'Something went wrong on the server'
       });
     }
+  }
+
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} res with the updated user informations
+   */
+  static async getProfile(req, res) {
+    const { username } = req.params;
+    const findUser = await User.findOne({ where: { username } });
+    if (!findUser) {
+      return res.status(400).send({
+        status: 400,
+        errorMessage: 'The User does not exist',
+      });
+    }
+
+    if (findUser.activated === 0) {
+      return res.status(400).send({
+        status: 400,
+        errorMessage: 'The User has not yet activated his/her account',
+      });
+    }
+
+    return res.status(200).send({
+      status: 200,
+      profile: {
+        username: findUser.username,
+        bio: findUser.bio,
+        image: findUser.image
+      }
+    });
   }
 }
 
