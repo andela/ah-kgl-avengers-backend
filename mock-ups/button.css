@@ -1,0 +1,48 @@
+.btn {
+  border: none;
+  min-width: 64px;
+  height: 36px;
+  padding: 0 16px;
+  text-transform: uppercase;
+  font-weight: 400;
+  text-align: center;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 36px;
+  text-decoration: none;
+  box-shadow: none;
+}
+.btn:focus {
+  outline: none;
+}
+
+.btn.btn-outline {
+  line-height: 32px;
+  background-color: transparent;
+  border: solid 2px #000000;
+}
+
+.btn.btn-icon {
+  padding-left: 12px;
+}
+.btn.icon,
+.material-icons {
+  display: inline-block;
+  font-size: inherit;
+  margin-right: 8px;
+  color: inherit;
+  line-height: inherit;
+  vertical-align: bottom;
+}
+/* } */
+
+.btn.btn-text {
+  padding-left: 8px;
+  padding-right: 8px;
+  color: inherit;
+}
+
+.btn.btn-raised {
+  /* @extend .z-depth-1-half; */
+}
+/* } */

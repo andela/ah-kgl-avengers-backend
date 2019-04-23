@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
+import Sequelize from 'sequelize';
 import models from '../models';
 import mailer from '../config/verificationMail';
 
@@ -17,17 +18,23 @@ class Users {
    * Adds two numbers together.
    * @param {Object} req .
    * @param {Object} res The User Object.
-   * @returns {Object} The informations of User created.
+   * @returns {Object} created user data
    */
   static async createUserLocal(req, res) {
     const { email, username, password: hash } = req.body;
 
     try {
-      const user = await User.create({ email: email.trim(), username: username.trim(), hash });
+      const user = await User.create({
+        email: email.trim(),
+        username: username.trim(),
+        hash,
+        following: JSON.stringify({ ids: [] }),
+        followers: JSON.stringify({ ids: [] })
+      });
       if (!user) {
         return res.status(500).send({
           status: 500,
-          errorMessage: 'some Error occured'
+          errorMessage: 'Some Error occurred'
         });
       }
 
@@ -271,7 +278,7 @@ class Users {
    * user logout
    * @param {object} req
    * @param {object} res
-   * @param {object} next
+   * @param {function} next
    * @returns {object} res
    */
   static async logout(req, res, next) {
@@ -294,7 +301,7 @@ class Users {
    */
   static async getAllAuthors(req, res) {
     const result = await User.findAll({ attributes: ['image', 'username', 'email'] });
-    res.status(200).send({
+    return res.status(200).send({
       status: res.statusCode,
       data: result
     });
@@ -312,13 +319,154 @@ class Users {
     const profile = await User.findOne({
       attributes: ['id', 'username', 'bio', 'image'],
       where: {
-        username,
+        username
       }
     });
     return res.status(200).send({
       status: 200,
       data: profile
     });
+  }
+
+  /**
+   * A user can follow another user
+   * @param {object} req
+   * @param {object} res
+   * @return {object} res
+   * */
+  static async follow(req, res) {
+    const { username } = req.params;
+    const { id } = req.user;
+    try {
+      const userExists = await User.findOne({
+        where: {
+          username,
+          id: { [Sequelize.Op.ne]: id }
+        },
+        attributes: ['id', 'username', 'bio', 'image', 'followers']
+      });
+
+      if (!userExists) {
+        return res.status(404).json({
+          status: res.statusCode,
+          message: "The user you want to follow doesn't exist"
+        });
+      }
+
+      const user = await User.findOne({ where: { id }, attributes: ['following'] });
+
+      //  check if the user is already followed
+      const followingUsers = JSON.parse(user.dataValues.following).ids;
+      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
+      if (existInFollowing) {
+        return res.status(400).json({
+          status: 400,
+          message: 'User already followed'
+        });
+      }
+
+      // add a new user to the list of followed users
+      followingUsers.push(userExists.dataValues.id);
+      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
+
+      // update the followed user's followers list
+      const followedUsersFollowers = JSON.parse(userExists.dataValues.followers).ids;
+      followedUsersFollowers.push(id);
+      await User.update(
+        {
+          followers: JSON.stringify({ ids: followedUsersFollowers })
+        },
+        {
+          where: { username }
+        }
+      );
+
+      return res.status(201).json({
+        status: res.statusCode,
+        profile: {
+          username: userExists.username,
+          image: userExists.image,
+          bio: userExists.bio,
+          following: true
+        }
+      });
+    } catch (e) {
+      return res.status(500).json({
+        error: e,
+        status: res.statusCode,
+        message: 'Something went wrong on the server'
+      });
+    }
+  }
+
+  /**
+   * A user can un-follow another user he/she was following
+   * @param {object} req
+   * @param {object} res
+   * @return {object} res
+   * */
+  static async unfollow(req, res) {
+    const { username } = req.params;
+    const { id } = req.user;
+    try {
+      const userExists = await User.findOne({
+        where: { username },
+        attributes: ['id', 'username', 'bio', 'image', 'followers']
+      });
+
+      if (!userExists) {
+        return res.status(404).json({
+          status: res.statusCode,
+          message: "The user you want to unfollow doesn't exist"
+        });
+      }
+
+      const user = await User.findOne({ where: { id }, attributes: ['following'] });
+      //  check if the user is already followed
+      let followingUsers = JSON.parse(user.dataValues.following).ids;
+      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
+
+      if (!existInFollowing) {
+        return res.status(400).json({
+          status: 400,
+          message: 'User not followed'
+        });
+      }
+
+      followingUsers = followingUsers.filter(
+        followedUser => followedUser !== userExists.dataValues.id
+      );
+
+      // update the un-followed user's followers list
+      let unfollowedUserFollowers = JSON.parse(userExists.dataValues.followers).ids;
+      unfollowedUserFollowers = unfollowedUserFollowers.filter(followerID => followerID !== id);
+      await User.update(
+        {
+          followers: JSON.stringify({ ids: unfollowedUserFollowers })
+        },
+        {
+          where: { username }
+        }
+      );
+
+      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
+
+      return res.status(200).json({
+        status: res.statusCode,
+        profile: {
+          username: userExists.username,
+          image: userExists.image,
+          bio: userExists.bio,
+          following: false
+        }
+      });
+    } catch (e) {
+      return res.status(500).json({
+        error: e,
+        status: res.statusCode,
+        message: 'Something went wrong on the server'
+      });
+    }
   }
 }
 

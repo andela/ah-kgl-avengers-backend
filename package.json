@@ -13,6 +13,8 @@
     "heroku-postbuild": "npm install",
     "migration:generate": "node_modules/.bin/sequelize migrations:generate --name",
     "migrate": "node_modules/.bin/sequelize db:migrate",
+    "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
+    "seed:travis": "node_modules/.bin/sequelize db:seed:all",
     "migrate:refresh": "npm run migrate:reset && npm run migrate",
     "migrate:reset": "node_modules/.bin/sequelize db:migrate:undo:all"
   },
@@ -46,7 +48,6 @@
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^7.9.0",
-    "request": "^2.87.0",
     "sequelize": "^5.2.11",
     "sinon": "^7.3.1",
     "slug": "^1.1.0",
