@@ -65,4 +65,31 @@ router.post(
   articlesController.rateArticle
 );
 
+// Create a bookmark based on the article id
+router.post(
+  '/bookmarks/:slug',
+  checkToken(),
+  validation.slug,
+  articlesController.createBookmark
+);
+
+router.get(
+  '/bookmarks',
+  checkToken(),
+  articlesController.getAllBookmarks
+);
+
+router.get(
+  '/bookmarks/:slug',
+  checkToken(),
+  validation.slug,
+  articlesController.getBookmarkedArticle
+);
+
+router.delete(
+  '/bookmarks/:slug',
+  checkToken(),
+  validation.slug,
+  articlesController.deleteBookmark
+);
 export default router;
