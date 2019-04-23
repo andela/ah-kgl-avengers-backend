@@ -1,0 +1,41 @@
+.editor-options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 8px auto;
+}
+.editor-options .btn-group {
+  margin: 0;
+  padding: 8px 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.editor-options .btn-group .btn:first-of-type {
+  color: #ffffff;
+  background-color: #2ea8f7;
+}
+.editor-options .btn-group .btn:last-of-type {
+  color: #2ea8f7;
+  border: #2ea8f7 1px solid;
+}
+.btn.btn-editor-publish {
+  color: #2ea8f7;
+  border: #2ea8f7 1px solid;
+  border-radius: 4px;
+}
+.editor-title,
+.editor-content {
+  padding: 16px 32px;
+}
+.editor-title,
+.editor-content {
+  color: #909090;
+}
+.container {
+  height: 100%;
+}
+.content-container {
+  height: calc(100% - 146px);
+}
