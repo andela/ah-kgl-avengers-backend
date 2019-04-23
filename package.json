@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./index.js --exec babel-node",
-    "test": " NODE_ENV=test npm run migrate && NODE_ENV=test nyc --reporter=text mocha --exit --require @babel/register --require @babel/polyfill ./tests/*",
-    "test_travis": "NODE_ENV=test nyc --reporter=text mocha --exit --require @babel/register --require @babel/polyfill ./tests/*",
-    "dev": "nodemon index.js --exec babel-node",
+    "test": "NODE_ENV=test nyc --reporter=text mocha --exit --require @babel/register --require @babel/polyfill ./tests/*",
     "build": "babel ./server --out-dir dist",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "start:heroku": "babel-node index.js",
@@ -15,7 +13,6 @@
     "migration:generate": "node_modules/.bin/sequelize migrations:generate --name",
     "migrate": "node_modules/.bin/sequelize db:migrate",
     "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
-    "seed:travis": "node_modules/.bin/sequelize db:seed:all",
     "migrate:refresh": "npm run migrate:reset && npm run migrate",
     "migrate:reset": "node_modules/.bin/sequelize db:migrate:undo:all"
   },

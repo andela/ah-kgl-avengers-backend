@@ -13,12 +13,6 @@ chai.use(chaiHttp);
 const googleToken = process.env.GOOGLE_TOKEN;
 const facebookToken = process.env.FACEBOOK_TOKEN;
 
-const newUser = {
-  username: 'berra',
-  email: 'checka@tests.com',
-  password: 'testtest4'
-};
-
 let tokenValue;
 
 before((done) => {
@@ -32,6 +26,7 @@ before((done) => {
       done();
     });
 });
+
 
 describe('User', () => {
   context('Oauth login', () => {
@@ -71,11 +66,12 @@ describe('User', () => {
       });
   });
   describe('/POST User Signup', () => {
+    const signupUser = { username: 'professional', email: 'prof@gmail.com', password: '123456789' };
     it('should pass and returs the status:201 as the user provides all required datas for signup', (done) => {
       chai
         .request(app)
         .post('/api/v1/auth/signup')
-        .send(newUser)
+        .send(signupUser)
         .end((err, res) => {
           res.body.should.be.a('object');
           res.should.have.status(201);
@@ -87,7 +83,7 @@ describe('User', () => {
       chai
         .request(app)
         .post('/api/v1/auth/signup')
-        .send(newUser)
+        .send(signupUser)
         .end((err, res) => {
           if (err) done(err);
           res.should.have.status(400);
@@ -98,11 +94,10 @@ describe('User', () => {
 
   describe('/POST Signin', () => {
     it('should pass as the user activated', (done) => {
-      const signUser = { email: 'prince@tests.com', password: 'prince123456' };
       chai
         .request(app)
         .post('/api/v1/auth/login')
-        .send(signUser)
+        .send({ email: 'tester2@test.com', password: 'testuser' })
         .end((err, res) => {
           if (err) done(err);
           res.body.should.be.a('object');
@@ -111,11 +106,10 @@ describe('User', () => {
         });
     });
     it('should fail and returns the error object and status:400 as password does not match', (done) => {
-      const signUser = { email: 'checka@tests.com', password: 'tessttest4' };
       chai
         .request(app)
         .post('/api/v1/auth/login')
-        .send(signUser)
+        .send({ email: 'tester2@test.com', password: 'testuser111' })
         .end((err, res) => {
           if (err) done(err);
           res.body.should.be.a('object');
@@ -177,7 +171,7 @@ describe('User', () => {
       const newProfile = { bio: 'I work at statefarm', image: 'hellothisistheimage' };
       chai
         .request(app)
-        .put(`/api/v1/users/profile/${newUser.username}/update`)
+        .put('/api/v1/users/profile/tester1/update')
         .set('Authorization', `Bearer ${tokenValue}`)
         .send(newProfile)
         .end((err, res) => {
@@ -190,7 +184,8 @@ describe('User', () => {
       const newProfile = { bio: 'I work at statefarm', image: 'hellothisistheimage' };
       chai
         .request(app)
-        .put(`/api/v1/users/profile/${newUser.username}/update`)
+        .put('/api/v1/users/profile/tester2/update')
+        .set('Authorization', `Bearer ${tokenValue}`)
         .send(newProfile)
         .end((err, res) => {
           if (err) done(err);
@@ -201,7 +196,7 @@ describe('User', () => {
     it('should pass as the user is viewing other\'s profile', (done) => {
       chai
         .request(app)
-        .get(`/api/v1/users/profile/${newUser.username}`)
+        .get('/api/v1/users/profile/tester1')
         .end((err, res) => {
           res.should.have.status(200);
           done();

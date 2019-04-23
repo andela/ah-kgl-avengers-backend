@@ -352,19 +352,18 @@ class Users {
         errorMessage: 'You are not Authorized to update someone else\'s profile'
       });
     }
-    await User.update(
+    const updated = await User.update(
       { username: body.username, bio: body.bio, image: req.file ? req.file.url : null },
-      { where: { username } }
+      { where: { username }, attributes: ['username', 'bio', 'image'], returning: true }
     );
-    const updatedInfo = await User.findOne({ where: { username } });
     return res.status(200).send({
       status: 200,
       message: 'The profile has been updated',
       profile: {
-        username: updatedInfo.username,
-        bio: updatedInfo.bio,
-        image: updatedInfo.image,
-      }
+        username: updated[1][0].username,
+        bio: updated[1][0].bio,
+        image: updated[1][0].image
+      },
     });
   }
 

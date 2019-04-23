@@ -18,7 +18,7 @@ before_script:
 
 script:
   - echo "Integration test starts....."
-  - npm run test_travis
+  - npm run test
 
 after_script:
   - npm run coverage

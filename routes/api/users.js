@@ -44,12 +44,12 @@ router.post(
 // User functionality
 router.get(
   '/users/authors',
-  passport.authenticate('jwt', { session: false }),
+  checkToken(),
   userControllers.getAllAuthors
 );
 router.get(
   '/profiles/:username',
-  passport.authenticate('jwt', { session: false }),
+  checkToken(),
   userValidations.validUser,
   userControllers.getOneAuthor
 );
@@ -57,14 +57,14 @@ router.get(
 // Follow
 router.post(
   '/profiles/:username/follow',
-  passport.authenticate('jwt', { session: false }, null),
+  checkToken(),
   userControllers.follow
 );
 
 // Un-follow
 router.delete(
   '/profiles/:username/follow',
-  passport.authenticate('jwt', { session: false }, null),
+  checkToken(),
   userControllers.unfollow
 );
 // The Routes for the user Updating the account
