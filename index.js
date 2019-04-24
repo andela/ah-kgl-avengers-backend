@@ -3,6 +3,7 @@ import session from 'express-session';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
+import morgan from 'morgan';
 import passport from 'passport';
 import routes from './routes';
 import './config/passport';
@@ -10,6 +11,7 @@ import './config/passport';
 ENV.config();
 
 const isProduction = process.env.NODE_ENV === 'production';
+const PORT = process.env.PORT || 3000;
 
 // create global app object
 const app = express();
@@ -17,7 +19,8 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
+app.use(morgan('dev'));
+app.use(passport.initialize());
 app.use(
   session({
     secret: 'authorshaven',
@@ -26,9 +29,6 @@ app.use(
     saveUninitialized: false
   })
 );
-
-// initialize the passport
-app.use(passport.initialize());
 
 if (!isProduction) {
   app.use(errorhandler());
@@ -87,9 +87,8 @@ app.use((err, req, res, next) => {
 });
 
 // Create or Update database tables and start express server
-
-app.listen(process.env.PORT || 3000, () => {
-  console.log('server started');
+app.listen(PORT, () => {
+  console.log(`Server running on port:${PORT}`);
 });
 
 export default app;
