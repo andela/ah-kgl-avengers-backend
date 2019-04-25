@@ -44,6 +44,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.JSON,
       allowNull: true,
     },
+    ratings: {
+      type: DataTypes.JSON,
+      allowNull: true,
+    },
   }, {});
   article.associate = (models) => {
     // associations can be defined here

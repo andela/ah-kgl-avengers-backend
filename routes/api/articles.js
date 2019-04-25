@@ -57,4 +57,12 @@ router.get(
   articlesController.viewArticle
 );
 
+// Rate an  article
+router.post(
+  '/articles/:slug',
+  checkToken(),
+  validation.rating,
+  articlesController.rateArticle
+);
+
 export default router;

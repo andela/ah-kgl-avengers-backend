@@ -43,6 +43,13 @@ const arcticleValidation = {
     validation(req.params, res, schema, next);
   },
 
+  rating: (req, res, next) => {
+    const schema = {
+      rating: Joi.number().min(1).max(5).required(),
+    };
+    validation(req.body, res, schema, next);
+  },
+
 };
 
 export default arcticleValidation;

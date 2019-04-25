@@ -63,8 +63,9 @@ class Users {
    * @returns {Object} returns the User Object
    */
   static async activateUserAccount(req, res) {
-    const { id } = req.params;
-    await User.update({ activated: 1 }, { where: { id } });
+    const { token } = req.params;
+    const { email } = jwt.verify(token, process.env.SECRET);
+    await User.update({ activated: 1 }, { where: { email } });
     return res.status(201).send({
       status: res.statusCode,
       message: 'Your account updated successfuly'

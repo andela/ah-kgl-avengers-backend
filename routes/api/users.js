@@ -9,7 +9,7 @@ const router = express.Router({});
 
 router.post('/auth/signup', userValidations.signup, userControllers.createUserLocal);
 router.post('/auth/login', userValidations.login, userControllers.signinLocal);
-router.get('/activation/:id', userControllers.activateUserAccount);
+router.get('/activation/:token', userControllers.activateUserAccount);
 
 // for testing the passport authentication of the JWT token
 router.get('/test', checkToken(), (req, res) => {
