@@ -147,7 +147,7 @@ const articles = {
           status: 'Published',
           deleted: 0
         },
-        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList'],
+        attributes,
         limit,
         offset
       });
