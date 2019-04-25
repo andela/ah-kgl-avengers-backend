@@ -14,45 +14,49 @@ class Likes {
    * @returns {Object}  Response object having message and status for liking artincle
    */
   static async likeArticle(req, res) {
-    const { slug } = req.params;
-    const { user } = req;
+    try {
+      const { slug } = req.params;
+      const { user } = req;
 
-    const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
-    if (!checkArticle) {
-      res.status(404).send({
-        status: 404,
-        errorMessage: 'The Article you are trying to like is not found'
+      const checkArticle = await article.findOne({ where: { slug, status: 'Published' } });
+      if (!checkArticle) {
+        res.status(404).send({
+          status: 404,
+          errorMessage: 'The Article you are trying to like is not found'
+        });
+      }
+
+      const arleadyLiked = await likes.findOne({
+        where: { userId: user.id, articleId: checkArticle.id }
       });
-    }
+      if (arleadyLiked && (arleadyLiked.status === 'disliked' || arleadyLiked.status === null)) {
+        await arleadyLiked.update({ status: 'liked' });
+        return res.status(200).send({
+          status: 200,
+          message: ' You have liked this article'
+        });
+      }
 
-    const arleadyLiked = await likes.findOne({
-      where: { userId: user.id, articleId: checkArticle.id }
-    });
-    if (arleadyLiked && (arleadyLiked.status === 'disliked' || arleadyLiked.status === null)) {
-      await arleadyLiked.update({ status: 'liked' });
+      if (arleadyLiked && arleadyLiked.status === 'liked') {
+        await arleadyLiked.update({ status: null });
+        return res.status(200).send({
+          status: 200,
+          message: 'You have successfully remove your like',
+        });
+      }
+
+      await likes.create({
+        userId: user.id,
+        articleId: checkArticle.id,
+        status: 'liked'
+      });
       return res.status(200).send({
         status: 200,
-        message: ' You have liked this article'
+        message: 'You have successfully liked this article'
       });
+    } catch (err) {
+      return err;
     }
-
-    if (arleadyLiked && arleadyLiked.status === 'liked') {
-      await arleadyLiked.update({ status: null });
-      return res.status(200).send({
-        status: 200,
-        message: 'You have successfully remove your like',
-      });
-    }
-
-    await likes.create({
-      userId: user.id,
-      articleId: checkArticle.id,
-      status: 'liked'
-    });
-    return res.status(201).send({
-      status: 201,
-      message: 'You have successfully liked this article'
-    });
   }
 
   /**
@@ -65,7 +69,7 @@ class Likes {
     const { slug } = req.params;
     const { user } = req;
 
-    const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
+    const checkArticle = await article.findOne({ where: { slug, status: 'Published' } });
     if (!checkArticle) {
       res.status(404).send({
         status: 404,
@@ -97,8 +101,8 @@ class Likes {
       articleId: checkArticle.id,
       status: 'disliked'
     });
-    return res.status(201).send({
-      status: 201,
+    return res.status(200).send({
+      status: 200,
       message: 'You have successfully disliked this article'
     });
   }
@@ -114,7 +118,7 @@ class Likes {
       const { slug } = req.params;
       const { user } = req;
 
-      const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
+      const checkArticle = await article.findOne({ where: { slug, status: 'Published' } });
       if (!checkArticle) {
         res.status(404).send({
           status: 404,
@@ -130,7 +134,7 @@ class Likes {
         await arleadyFavorited.update({ favorited: true });
         return res.status(200).send({
           status: 200,
-          message: ' You have favolited this article'
+          message: 'You have favorited this article'
         });
       }
 
@@ -148,7 +152,7 @@ class Likes {
         favorited: true
       });
       return res.status(201).send({
-        status: 201,
+        status: 200,
         message: 'You have successfully favorited this article'
       });
     } catch (err) {
@@ -165,10 +169,9 @@ class Likes {
   static async getFavorites(req, res) {
     try {
       const { user } = req;
-
       const findUser = await likes.findOne({ where: { userId: user.id, favorited: true } });
       if (!findUser) {
-        res.status(404).send({
+        return res.status(404).send({
           status: 404,
           errorMessage: 'You have not favorites articles'
         });
