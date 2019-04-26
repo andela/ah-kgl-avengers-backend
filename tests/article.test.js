@@ -150,4 +150,17 @@ describe('ARTICLE', () => {
         });
     });
   });
+  it('should return 3 published articles ', (done) => {
+    chai
+      .request(app)
+      .get('/api/v1/articles?limit=3&offset=2')
+      .set('Authorization', `Bearer ${tokens}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.articlesCount.should.eql(0);
+        res.body.should.be.an('Object');
+        done();
+      });
+  });
 });

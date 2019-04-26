@@ -137,6 +137,7 @@ const articles = {
   * and the status of the article (Published).
   */
   getAllPublishedArticles: async (req, res) => {
+    const { limit, offset } = req.query;
     try {
       const { id } = req.user;
       const authorInfo = await User.findOne({ where: { id }, attributes: ['username', 'bio', 'image', 'following'] });
@@ -147,6 +148,8 @@ const articles = {
           deleted: 0
         },
         attributes,
+        limit,
+        offset
       });
 
       response.forEach((element) => {
@@ -168,6 +171,7 @@ const articles = {
    * and the status of the article (Draft).
    */
   getAllDraftArticles: async (req, res) => {
+    const { limit, offset } = req.query;
     try {
       const { id } = req.user;
       const authorInfo = await User.findOne({ where: { id }, attributes: ['username', 'bio', 'image', 'following'] });
@@ -178,6 +182,8 @@ const articles = {
           deleted: 0
         },
         attributes,
+        limit,
+        offset
       });
 
       response.forEach((element) => {
@@ -199,11 +205,13 @@ const articles = {
    * and the status of the article (Published).
    */
   getFeeds: async (req, res) => {
+    const { limit, offset } = req.query;
     try {
       const allArticles = await article.findAll({
         where: { status: 'Published', deleted: 0 },
         attributes,
-        limit: 20,
+        limit,
+        offset
       });
 
       // eslint-disable-next-line no-restricted-syntax
