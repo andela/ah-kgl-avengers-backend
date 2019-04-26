@@ -32,7 +32,7 @@ const articles = {
         title, body, status, tagList
       } = req.body;
       const { id: author } = req.user;
-      const flag = status === undefined ? 'draft' : status;
+      const flag = status === undefined ? 'draft' : status.toLowerCase();
       const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
 
       const slug = `${title
@@ -62,7 +62,6 @@ const articles = {
         }
       });
     } catch (err) {
-      console.log(err);
       if (err.message) {
         res.status(500).send({
           error: 'Something happened on the server'
