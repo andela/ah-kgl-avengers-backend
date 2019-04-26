@@ -116,9 +116,7 @@ class Users {
    * @returns {Object} Returns the User Object or the error Object
    */
   static async createUserSocial(req, res) {
-    const {
-      displayName, emails, provider
-    } = req.user;
+    const { displayName, emails, provider } = req.user;
     try {
       const existingUser = await User.findOne({ where: { username: displayName } && { provider } });
       if (existingUser) {
@@ -144,7 +142,9 @@ class Users {
       const user = new User({
         provider,
         email: emails[0].value,
-        username: displayName
+        username: displayName,
+        following: JSON.stringify({ ids: [] }),
+        followers: JSON.stringify({ ids: [] })
       });
       const newUser = await user.save();
 
@@ -350,7 +350,7 @@ class Users {
     if (checkUser.id !== req.user.id) {
       return res.status(401).send({
         status: 401,
-        errorMessage: 'You are not Authorized to update someone else\'s profile'
+        errorMessage: "You are not Authorized to update someone else's profile"
       });
     }
     const updated = await User.update(
@@ -364,7 +364,7 @@ class Users {
         username: updated[1][0].username,
         bio: updated[1][0].bio,
         image: updated[1][0].image
-      },
+      }
     });
   }
 
@@ -380,16 +380,21 @@ class Users {
     try {
       const userExists = await User.findOne({
         where: {
-          username,
-          id: { [Sequelize.Op.ne]: id }
+          username
         },
-        attributes: ['id', 'username', 'bio', 'image', 'followers']
+        attributes: ['id', 'bio', 'image', 'followers']
       });
 
       if (!userExists) {
         return res.status(404).json({
           status: res.statusCode,
           message: "The user you want to follow doesn't exist"
+        });
+      }
+      if (userExists.id === id) {
+        return res.status(400).json({
+          status: res.statusCode,
+          message: 'Sorry! You can not follow your self'
         });
       }
 
@@ -424,7 +429,7 @@ class Users {
       return res.status(201).json({
         status: res.statusCode,
         profile: {
-          username: userExists.username,
+          username,
           image: userExists.image,
           bio: userExists.bio,
           following: true
@@ -445,19 +450,19 @@ class Users {
    * @param {object} res
    * @return {object} res
    * */
-  static async unfollow(req, res) {
+  static async unFollow(req, res) {
     const { username } = req.params;
     const { id } = req.user;
     try {
       const userExists = await User.findOne({
         where: { username },
-        attributes: ['id', 'username', 'bio', 'image', 'followers']
+        attributes: ['id', 'bio', 'image', 'followers']
       });
 
       if (!userExists) {
         return res.status(404).json({
           status: res.statusCode,
-          message: "The user you want to unfollow doesn't exist"
+          message: "The user you want to un-follow doesn't exist"
         });
       }
 
@@ -473,16 +478,14 @@ class Users {
         });
       }
 
-      followingUsers = followingUsers.filter(
-        followedUser => followedUser !== userExists.dataValues.id
-      );
+      followingUsers = followingUsers.filter(followedUser => followedUser !== userExists.id);
 
       // update the un-followed user's followers list
-      let unfollowedUserFollowers = JSON.parse(userExists.dataValues.followers).ids;
-      unfollowedUserFollowers = unfollowedUserFollowers.filter(followerID => followerID !== id);
+      let unFollowedUserFollowers = JSON.parse(userExists.dataValues.followers).ids;
+      unFollowedUserFollowers = unFollowedUserFollowers.filter(followerID => followerID !== id);
       await User.update(
         {
-          followers: JSON.stringify({ ids: unfollowedUserFollowers })
+          followers: JSON.stringify({ ids: unFollowedUserFollowers })
         },
         {
           where: { username }
@@ -494,7 +497,7 @@ class Users {
       return res.status(200).json({
         status: res.statusCode,
         profile: {
-          username: userExists.username,
+          username,
           image: userExists.image,
           bio: userExists.bio,
           following: false
@@ -502,9 +505,9 @@ class Users {
       });
     } catch (e) {
       return res.status(500).json({
-        error: e,
         status: res.statusCode,
-        message: 'Something went wrong on the server'
+        message: 'Something went wrong on the server',
+        error: e.message
       });
     }
   }
@@ -521,14 +524,14 @@ class Users {
     if (!findUser) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'The User does not exist',
+        errorMessage: 'The User does not exist'
       });
     }
 
     if (findUser.activated === 0) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'The User has not yet activated his/her account',
+        errorMessage: 'The User has not yet activated his/her account'
       });
     }
 

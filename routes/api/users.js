@@ -35,18 +35,10 @@ router.post('/auth/reset', userControllers.resetPassword);
 router.put('/auth/reset/:token', userControllers.updatePassword);
 
 // User logout
-router.post(
-  '/auth/logout',
-  checkToken(),
-  userControllers.logout
-);
+router.post('/auth/logout', checkToken(), userControllers.logout);
 
 // User functionality
-router.get(
-  '/users/authors',
-  checkToken(),
-  userControllers.getAllAuthors
-);
+router.get('/users/authors', checkToken(), userControllers.getAllAuthors);
 router.get(
   '/profiles/:username',
   checkToken(),
@@ -55,20 +47,17 @@ router.get(
 );
 
 // Follow
-router.post(
-  '/profiles/:username/follow',
-  checkToken(),
-  userControllers.follow
-);
+router.post('/profiles/:username/follow', checkToken(), userControllers.follow);
 
 // Un-follow
-router.delete(
-  '/profiles/:username/follow',
-  checkToken(),
-  userControllers.unfollow
-);
+router.delete('/profiles/:username/follow', checkToken(), userControllers.unFollow);
 // The Routes for the user Updating the account
-router.put('/users/profile/:username/update', checkToken(), multerConfig, userControllers.updateProfile);
+router.put(
+  '/users/profile/:username/update',
+  checkToken(),
+  multerConfig,
+  userControllers.updateProfile
+);
 
 // The Route to get the user profile
 router.get('/users/profile/:username', userControllers.getProfile);

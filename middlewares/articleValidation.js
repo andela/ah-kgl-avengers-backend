@@ -8,9 +8,9 @@ import Joi from 'joi';
  * @returns {*} response.
  */
 function validation(data, res, schema, next) {
-  const { error } = Joi.validate(data, schema, ({
+  const { error } = Joi.validate(data, schema, {
     abortEarly: false
-  }));
+  });
   if (!error) return next(error);
 
   const errors = [];
@@ -23,22 +23,32 @@ function validation(data, res, schema, next) {
     errors
   });
 }
-const arcticleValidation = {
-
+const articleValidation = {
   article: (req, res, next) => {
     const schema = {
-      title: Joi.string().min(5).trim().required(),
-      body: Joi.string().min(5).trim().required(),
+      title: Joi.string()
+        .min(5)
+        .trim()
+        .required(),
+      body: Joi.string()
+        .min(5)
+        .trim()
+        .required(),
       tagList: Joi.array(),
       categories: Joi.array(),
-      status: Joi.string().trim().min(5),
+      status: Joi.string()
+        .trim()
+        .min(5)
     };
     validation(req.body, res, schema, next);
   },
 
   slug: (req, res, next) => {
     const schema = {
-      slug: Joi.string().min(10).trim().required(),
+      slug: Joi.string()
+        .min(10)
+        .trim()
+        .required()
     };
     validation(req.params, res, schema, next);
   },
@@ -52,4 +62,4 @@ const arcticleValidation = {
 
 };
 
-export default arcticleValidation;
+export default articleValidation;

@@ -6,7 +6,6 @@ import utils from './utils';
 
 dotenv.config();
 
-
 chai.should();
 chai.use(chaiHttp);
 
@@ -26,7 +25,6 @@ before((done) => {
       done();
     });
 });
-
 
 describe('User', () => {
   context('Oauth login', () => {
@@ -67,7 +65,7 @@ describe('User', () => {
   });
   describe('/POST User Signup', () => {
     const signupUser = { username: 'professional', email: 'prof@gmail.com', password: '123456789' };
-    it('should pass and returs the status:201 as the user provides all required datas for signup', (done) => {
+    it('should create a new user', (done) => {
       chai
         .request(app)
         .post('/api/v1/auth/signup')
@@ -193,7 +191,7 @@ describe('User', () => {
           done();
         });
     });
-    it('should pass as the user is viewing other\'s profile', (done) => {
+    it("should pass as the user is viewing other's profile", (done) => {
       chai
         .request(app)
         .get('/api/v1/users/profile/tester1')
@@ -204,7 +202,7 @@ describe('User', () => {
     });
 
     context('User logout', () => {
-      it('should return 401 as the user is not loged in and we cant aunthenticate', (done) => {
+      it('should blacklist the token to log out the the user', (done) => {
         chai
           .request(app)
           .post('/api/v1/auth/logout')

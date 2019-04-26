@@ -1,5 +1,9 @@
 {
   "name": "express-authorshaven",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:andela/ah-kgl-avengers-backend.git"
+  },
   "version": "1.0.0",
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
@@ -70,6 +74,7 @@
     "eslint-plugin-react": "^7.12.4",
     "nodemon": "^1.18.10",
     "nyc": "^13.3.0",
-    "sequelize-cli": "^5.4.0"
+    "sequelize-cli": "^5.4.0",
+    "uuid": "^3.3.2"
   }
 }

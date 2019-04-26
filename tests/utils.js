@@ -1,17 +1,15 @@
 import chai from 'chai';
-import chaihttp from 'chai-http';
+import chaiHttp from 'chai-http';
 import app from '../index';
+import dataGenerator from './dataGenerator';
 
-chai.use(chaihttp);
+chai.use(chaiHttp);
 
-const user = {
-  email: 'tester1@test.com',
-  password: 'testuser',
-};
+const { email } = dataGenerator.user1;
 
 export default {
   getUserToken: () => chai
     .request(app)
     .post('/api/v1/auth/login')
-    .send(user)
+    .send({ email, password: 'testuser' })
 };
