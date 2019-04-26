@@ -1,7 +1,7 @@
 import crypto from 'crypto';
 import models from '../models/index';
 
-const { article, User } = models;
+const { article, User, bookmark } = models;
 const attributes = ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'ratings', 'categories', 'tagList'];
 
 /**
@@ -23,7 +23,7 @@ const getAverageRating = (data) => {
 const articles = {
 
   /*
-   * Deleting a post based to its slug.
+   * Crteating an article.
    *
    * For directly publishing an article, status flag has to be passed
    * into the request body object otherwise the article will be in drafted.
@@ -317,6 +317,174 @@ const articles = {
       });
     }
   },
+
+  /* Bookmarking and article so that one can come back
+  * and read it later.
+  */
+
+  createBookmark: async (req, res) => {
+    try {
+      const { slug } = req.params;
+      const { id: userId } = req.user;
+      if (!userId) {
+        res.status(401).send({
+          status: res.statusCode,
+          errorMessage: 'Please first login to bookmark this article',
+        });
+      }
+      const findArticle = await article.findOne({ where: { slug } });
+      const findUser = await User.findOne({ where: { id: findArticle.author } });
+      const checkExist = await bookmark.findOne({ where: { articleId: findArticle.id, userId } });
+      if (checkExist) {
+        return res.status(400).send({
+          status: res.statusCode,
+          errorMessage: 'You have already bookmarked this article',
+        });
+      }
+
+      const createBookmark = await bookmark.create({
+        userId, articleId: findArticle.id
+      });
+      if (createBookmark.articleId) {
+        return res.status(200).send({
+          status: res.statusCode,
+          message: `Article from ${findUser.username} has been bookmarked`,
+          data: {
+            title: findArticle.title,
+            body: findArticle.body,
+            description: findArticle.description,
+          }
+        });
+      }
+      return res.status(404).send({
+        status: res.statusCode,
+        errorMessage: 'The article your trying to bookmark does not exit',
+      });
+    } catch (error) {
+      if (error.message) {
+        return res.status(500).send({
+          status: res.statusCode,
+          errorMessage: 'Something went wrong',
+        });
+      }
+    }
+  },
+
+  /*
+  * get all bookmarked articles return
+  * them to the user.
+  */
+
+  getAllBookmarks: async (req, res) => {
+    const { id: userId } = req.user;
+    try {
+      const bookmarkedArticles = [];
+      const findBookmarks = await bookmark.findAll({ where: { userId } });
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const item of findBookmarks) {
+        // eslint-disable-next-line no-await-in-loop
+        const findBookmarkedArticle = await article.findOne({
+          where: { id: item.articleId },
+          attributes: ['title', 'slug', 'author'],
+        });
+        // eslint-disable-next-line no-await-in-loop
+        const author = await User.findOne({
+          where: { id: findBookmarkedArticle.author },
+          attributes: ['username', 'image'],
+        });
+        findBookmarkedArticle.author = author;
+        bookmarkedArticles.push(findBookmarkedArticle);
+      }
+
+      if (findBookmarks) {
+        return res.status(200).send({
+          status: res.statusCode,
+          data: bookmarkedArticles
+        });
+      }
+    } catch (error) {
+      if (error.message) {
+        res.status(500).send({
+          status: res.statusCode,
+          errorMessage: 'Something wnent wrong',
+        });
+      }
+    }
+  },
+
+  /*
+  * Retrieve a single bookmark
+  * for a user.
+  */
+  getBookmarkedArticle: async (req, res) => {
+    const { id: userId } = req.user;
+    const { slug } = req.params;
+    try {
+      const findBookmarks = await bookmark.findOne({ where: { userId } });
+      const findBookmarkedArticle = await article.findOne({
+        where: { slug, id: findBookmarks.articleId },
+        attributes: ['title', 'slug', 'author'],
+      });
+      const author = await User.findOne({
+        where: { id: findBookmarkedArticle.author }, attributes: ['username', 'image'],
+      });
+      findBookmarkedArticle.author = author;
+      if (findBookmarkedArticle === null) {
+        res.status(400).send({
+          status: res.statusCode,
+          errorMessage: 'Article not found',
+        });
+      }
+      res.status(200).send({
+        status: res.statusCode,
+        data: {
+          findBookmarkedArticle
+        }
+      });
+    } catch (error) {
+      if (error.message) {
+        res.status(500).send({
+          status: res.statusCode,
+          errorMessage: 'Something went wrong on the server',
+        });
+      }
+    }
+  },
+
+  /*
+  * delete an artile when a user is done
+  * a reading it.
+  */
+  deleteBookmark: async (req, res) => {
+    const { slug } = req.params;
+    const { id: userId } = req.user;
+    try {
+      const checkArticle = await article.findOne({ where: { slug } });
+      const checkBookmark = await bookmark.destroy({
+        where: { articleId: checkArticle.id, userId }
+      });
+      if (checkBookmark === 0) {
+        res.status(401).send({
+          status: res.statusCode,
+          message: 'No bookmarrk to delete',
+        });
+      }
+      if (checkBookmark) {
+        res.status(200).send({
+          status: res.statusCode,
+          message: 'Bookmark cleared successfully',
+        });
+      }
+    } catch (error) {
+      if (error.message) {
+        res.status(500).send({
+          status: res.statusCode,
+          message: 'Server Error',
+        });
+      }
+    }
+  }
 };
 
 export default articles;

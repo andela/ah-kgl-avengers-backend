@@ -76,7 +76,6 @@ passport.use(
 
         return done(null, jwtPayload);
       } catch (err) {
-        console.log(err);
         return done(null, false, { message: 'user does not exist' });
       }
     }

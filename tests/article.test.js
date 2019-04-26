@@ -79,6 +79,40 @@ describe('ARTICLE', () => {
         });
     });
 
+    it('User should be able to post a bookmark an article', (done) => {
+      chai.request(app)
+        .get('/api/v1/bookmarks')
+        .set('Authorization', `Bearer ${tokens}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.body.status.should.eql(200);
+          res.should.be.an('Object');
+          done();
+        });
+    });
+
+    it('User should be able to delete a bookmarked article', (done) => {
+      chai.request(app)
+        .get(`/api/v1/bookmarks/${articleSlug}`)
+        .set('Authorization', `Bearer ${tokens}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          done();
+        });
+    });
+
+    it('User should be able to view bookmarked article', (done) => {
+      chai.request(app)
+        .get(`/api/v1/bookmarks/${articleSlug}`)
+        .set('Authorization', `Bearer ${tokens}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          done();
+        });
+    });
+
     it('Author should be able to view the feeds', (done) => {
       chai.request(app)
         .get('/api/v1/article/feeds')
