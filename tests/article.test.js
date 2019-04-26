@@ -67,6 +67,18 @@ describe('ARTICLE', () => {
         });
     });
 
+    it('Authenticated user should be able to rate an article', (done) => {
+      chai.request(app)
+        .post(`/api/v1/article/${articleSlug}`)
+        .set('Authorization', `Bearer ${tokens}`)
+        .send({ rating: 4 })
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          done();
+        });
+    });
+
     it('Author should be able to view the feeds', (done) => {
       chai.request(app)
         .get('/api/v1/article/feeds')

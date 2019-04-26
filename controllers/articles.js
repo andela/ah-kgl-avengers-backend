@@ -2,6 +2,23 @@ import crypto from 'crypto';
 import models from '../models/index';
 
 const { article, User } = models;
+const attributes = ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'ratings', 'categories', 'tagList'];
+
+/**
+ * This function handle the rating  array and return the average rating of
+ * a certain rated article.
+ *
+ * @param {*} data The article that.
+ * @returns {*} Average rating value.
+ *
+ */
+const getAverageRating = (data) => {
+  const { ratings } = data;
+  const average = ratings === null ? 0
+    : ratings.reduce((sum, rating) => sum + rating, 0) / ratings.length;
+  return Number(average.toFixed(2));
+};
+
 
 const articles = {
 
@@ -73,12 +90,14 @@ const articles = {
           errorMessage: 'Article not found, please create a new article instead',
         });
       }
+      updateThisArticle.ratings = getAverageRating(updateThisArticle);
       return res.status(200).send({
         status: res.statusCode,
         article: {
           title: updateThisArticle.title,
           body: updateThisArticle.body,
           slug: updateThisArticle.slug,
+          ratings: updateThisArticle.ratings,
           tagList: updateThisArticle.tagList,
         }
       });
@@ -127,10 +146,13 @@ const articles = {
           status: 'Published',
           deleted: 0
         },
-        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList']
+        attributes,
       });
 
-      response.forEach((element) => { element.author = authorInfo; });
+      response.forEach((element) => {
+        element.ratings = getAverageRating(element);
+        element.author = authorInfo;
+      });
       return res.status(200).send({
         status: res.statusCode,
         articles: response,
@@ -142,9 +164,9 @@ const articles = {
   },
 
   /*
-* Retieving all the published articles based to the author
-* and the status of the article (Draft).
-*/
+   * Retieving all the published articles based to the author
+   * and the status of the article (Draft).
+   */
   getAllDraftArticles: async (req, res) => {
     try {
       const { id } = req.user;
@@ -155,10 +177,13 @@ const articles = {
           status: 'Draft',
           deleted: 0
         },
-        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList']
+        attributes,
       });
 
-      response.forEach((element) => { element.author = authorInfo; });
+      response.forEach((element) => {
+        element.ratings = getAverageRating(element);
+        element.author = authorInfo;
+      });
       return res.status(200).send({
         status: res.statusCode,
         articles: response,
@@ -177,7 +202,7 @@ const articles = {
     try {
       const allArticles = await article.findAll({
         where: { status: 'Published', deleted: 0 },
-        attributes: ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'categories', 'tagList', 'author'],
+        attributes,
         limit: 20,
       });
 
@@ -188,6 +213,7 @@ const articles = {
           attributes: ['username', 'bio', 'image', 'following'],
         });
         iterator.author = auth;
+        iterator.ratings = getAverageRating(iterator);
       }
 
       return res.status(200).send({
@@ -219,6 +245,7 @@ const articles = {
 
       const articlesAuthor = await User.findOne({ where: { id: oneArticle.author }, attributes: ['username', 'image'] });
       oneArticle.author = articlesAuthor;
+      oneArticle.ratings = getAverageRating(oneArticle);
       return res.status(200).send({
         status: res.statusCode,
         article: {
@@ -227,6 +254,7 @@ const articles = {
           description: oneArticle.description,
           slug: oneArticle.slug,
           tagList: oneArticle.tagList,
+          ratings: oneArticle.ratings,
           author: articlesAuthor
         }
       });
@@ -237,6 +265,48 @@ const articles = {
           errorMessage: error.message,
         });
       }
+    }
+  },
+
+  /*
+   * User should be able to rate an article.
+   *
+   * Only authenticated user will have access on this functionality
+   * of rating an article.
+   */
+  rateArticle: async (req, res) => {
+    const { slug } = req.params;
+    const { rating } = req.body;
+    try {
+      const result = await article.findOne({ where: { slug } });
+      if (!result) {
+        return res.status(404).send({
+          status: res.statusCode,
+          errorMessage: 'Article not found',
+        });
+      }
+      const ratings = result.ratings == null ? [Number(rating)]
+        : result.ratings.concat(Number(rating));
+
+      const updated = await article.update({ ratings }, {
+        where: { slug },
+        returning: true,
+      });
+
+      const data = updated[1][0].get();
+      data.ratings = getAverageRating(data);
+
+      delete data.id;
+      delete data.deleted;
+      return res.status(200).send({
+        status: res.statusCode,
+        data,
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: res.statusCode,
+        error: 'Server failed to handle your request',
+      });
     }
   },
 };
