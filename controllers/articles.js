@@ -230,6 +230,7 @@ const articles = {
   getFeeds: async (req, res) => {
     const { limit, offset } = req.query;
     try {
+      attributes.push('author');
       const allArticles = await article.findAll({
         where: { status: 'published', deleted: 0 },
         attributes,
