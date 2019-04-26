@@ -36,7 +36,7 @@ if (!isProduction) {
 
 app.use(routes);
 
-// setting up the root enpoint for the testing
+// setting up the root endpoint for the testing
 app.get('/', (req, res) => {
   res.status(200).send({ message: 'Welcome to Authors Haven' });
 });

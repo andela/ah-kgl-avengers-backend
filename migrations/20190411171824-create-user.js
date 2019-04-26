@@ -23,10 +23,10 @@ export default {
       defaultValue: 0
     },
     following: {
-      type: Sequelize.JSONB,
+      type: Sequelize.JSONB
     },
     followers: {
-      type: Sequelize.JSONB,
+      type: Sequelize.JSONB
     },
     salt: {
       type: Sequelize.STRING(1024)
@@ -52,5 +52,5 @@ export default {
       defaultValue: Sequelize.fn('now')
     }
   })),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('Users')
+  down: queryInterface => queryInterface.dropTable('Users')
 };

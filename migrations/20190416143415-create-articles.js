@@ -3,58 +3,60 @@ export default {
     id: {
       allowNull: false,
       primaryKey: true,
-      type: Sequelize.UUID,
+      type: Sequelize.UUID
     },
     title: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     body: {
       type: Sequelize.TEXT,
-      allowNull: false,
+      allowNull: false
     },
     description: {
       type: Sequelize.TEXT,
-      allowNull: false,
+      allowNull: false
     },
     author: {
       type: Sequelize.UUID,
       allowNull: false,
       references: {
         model: 'Users',
-        key: 'id',
+        key: 'id'
       },
       onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     slug: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     categories: {
       type: Sequelize.JSON,
-      allowNull: true,
+      allowNull: true
     },
     status: {
       type: Sequelize.STRING,
-      allowNull: false,
+      allowNull: false
     },
     deleted: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: false
     },
     tagList: {
       type: Sequelize.JSON,
-      allowNull: true,
+      allowNull: true
     },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE,
+      defaultValue: Sequelize.fn('now')
     },
     updatedAt: {
       allowNull: false,
       type: Sequelize.DATE,
+      defaultValue: Sequelize.fn('now')
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('articles')
+  down: queryInterface => queryInterface.dropTable('articles')
 };
