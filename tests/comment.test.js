@@ -7,7 +7,7 @@ import utils from './utils';
 chai.use(chaiHttp);
 chai.should();
 
-let token = '';
+let tokenValue = '';
 
 describe('Comments', () => {
   // get the token
@@ -15,7 +15,7 @@ describe('Comments', () => {
     utils
       .getUserToken()
       .then((res) => {
-        token = res.body.user.token;
+        tokenValue = res.body.user.token;
         done();
       })
       .catch(() => {
@@ -30,7 +30,7 @@ describe('Comments', () => {
     chai
       .request(app)
       .post(`/api/v1/articles/${dataGenerator.post1.slug}/comments`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .send(comment)
       .end((err, res) => {
         res.should.have.status(201);
@@ -74,7 +74,7 @@ describe('Comments', () => {
     chai
       .request(app)
       .delete(`/api/v1/articles/${dataGenerator.post1.slug}/comments/${dataGenerator.comment1.id}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .send()
       .end((err, res) => {
         res.should.have.status(200);

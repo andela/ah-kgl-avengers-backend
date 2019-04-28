@@ -9,14 +9,14 @@ dotenv.config();
 chai.should();
 chai.use(chaiHttp);
 
-let token;
+let tokenValue;
 
 describe('Author should handle article ', () => {
   before((done) => {
     utils
       .getUserToken()
       .then((res) => {
-        token = res.body.user.token;
+        tokenValue = res.body.user.token;
         done();
       })
       .catch(() => {
@@ -28,7 +28,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .post('/api/v1/articles')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: 'One to Many and One to One',
         body:
@@ -49,7 +49,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .put(`/api/v1/article/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: 'I am being updated',
         body: 'See they have update me'
@@ -65,7 +65,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get(`/api/v1/article/${dataGenerator.post2.slug}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.be.an('Object');
@@ -77,7 +77,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles/feeds')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(res);
         res.should.have.status(200);
@@ -92,7 +92,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .post(`/api/v1/articles/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .send({ rating: 4 })
       .end((err, res) => {
         if (err) done(err);
@@ -106,7 +106,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
@@ -121,7 +121,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
@@ -136,7 +136,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles/draft')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
@@ -151,7 +151,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .put('/api/v1/articles/working-now-with-aaron-dbc007065')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: '5 Things About Sequelize',
         body:
@@ -170,7 +170,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/bookmarks')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.body.status.should.eql(200);
@@ -183,7 +183,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.be.an('Object');
@@ -195,7 +195,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.be.an('Object');
@@ -207,7 +207,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .delete(`/api/v1/articles/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
@@ -220,7 +220,7 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles?limit=3')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.body.status.should.eql(200);
@@ -233,11 +233,11 @@ describe('Author should handle article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles?limit=3&offset=2')
-      .set('Authorization', `Bearer ${token}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
         res.body.status.should.eql(200);
-        res.body.articlesCount.should.eql(2);
+        res.body.articlesCount.should.eql(3);
         res.body.should.be.an('Object');
         done();
       });

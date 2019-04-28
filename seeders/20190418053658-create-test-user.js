@@ -1,3 +1,4 @@
+import crypto from 'crypto';
 import dataGenerator from '../tests/dataGenerator';
 
 const salt = crypto.randomBytes(16).toString('hex');
@@ -55,7 +56,7 @@ export default {
       activated: '1',
       following: JSON.stringify({ ids: [] }),
       followers: JSON.stringify({ ids: [] }),
-    }, dataGenerator.user1, dataGenerator.user2, dataGenerator.user3
+    }
   ],
   {},
   {

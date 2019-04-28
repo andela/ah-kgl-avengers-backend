@@ -1,5 +1,4 @@
 import express from 'express';
-import passport from 'passport';
 import likesControllers from '../../controllers/likes';
 import checkToken from '../../middlewares/passportCustom';
 

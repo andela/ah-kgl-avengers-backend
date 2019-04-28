@@ -9,7 +9,8 @@ export default {
         dataGenerator.post2,
         dataGenerator.post3,
         dataGenerator.post4,
-        dataGenerator.post5
+        dataGenerator.post5,
+        dataGenerator.post6
       ],
       {},
       {}

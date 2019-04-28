@@ -8,7 +8,6 @@ const { article, likes } = models;
  */
 class Likes {
   /**
-   * Adds two numbers together.
    * @param {Object} req .
    * @param {Object} res The User Object.
    * @returns {Object}  Response object having message and status for liking artincle
@@ -18,7 +17,7 @@ class Likes {
       const { slug } = req.params;
       const { user } = req;
 
-      const checkArticle = await article.findOne({ where: { slug, status: 'Published' } });
+      const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
       if (!checkArticle) {
         res.status(404).send({
           status: 404,
@@ -60,7 +59,6 @@ class Likes {
   }
 
   /**
-   * Adds two numbers together.
    * @param {Object} req .
    * @param {Object} res .
    * @returns {Object} returns the response after disliking the article.
@@ -69,7 +67,7 @@ class Likes {
     const { slug } = req.params;
     const { user } = req;
 
-    const checkArticle = await article.findOne({ where: { slug, status: 'Published' } });
+    const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
     if (!checkArticle) {
       res.status(404).send({
         status: 404,
@@ -108,7 +106,6 @@ class Likes {
   }
 
   /**
-   * Adds two numbers together.
    * @param {Object} req .
    * @param {Object} res .
    * @returns {Object} returns the response after favoriting the article.
@@ -118,7 +115,7 @@ class Likes {
       const { slug } = req.params;
       const { user } = req;
 
-      const checkArticle = await article.findOne({ where: { slug, status: 'Published' } });
+      const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
       if (!checkArticle) {
         res.status(404).send({
           status: 404,
@@ -161,7 +158,6 @@ class Likes {
   }
 
   /**
-   * Adds two numbers together.
    * @param {Object} req .
    * @param {Object} res .
    * @returns {Object} returns the response after favoriting the article.
