@@ -1,7 +1,9 @@
 import crypto from 'crypto';
 import models from '../models/index';
 
-const { article, User, bookmark } = models;
+const {
+  article, User, bookmark, likes
+} = models;
 const attributes = ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'ratings', 'categories', 'tagList'];
 
 /**
@@ -273,11 +275,8 @@ const articles = {
           errorMessage: 'No article found, please create an article first'
         });
       }
-
-      const articlesAuthor = await User.findOne({
-        where: { id: oneArticle.author },
-        attributes: ['username', 'image']
-      });
+      const findLikes = await likes.findAll({ where: { articleId: oneArticle.id, status: 'liked' } });
+      const articlesAuthor = await User.findOne({ where: { id: oneArticle.author }, attributes: ['username', 'image'] });
       oneArticle.author = articlesAuthor;
       oneArticle.ratings = getAverageRating(oneArticle);
       return res.status(200).send({
@@ -289,7 +288,8 @@ const articles = {
           slug: oneArticle.slug,
           tagList: oneArticle.tagList,
           ratings: oneArticle.ratings,
-          author: articlesAuthor
+          author: articlesAuthor,
+          likes: findLikes.length
         }
       });
     } catch (error) {
