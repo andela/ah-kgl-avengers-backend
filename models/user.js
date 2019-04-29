@@ -53,6 +53,11 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       allowNull: true
     },
+    role: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: -1,
+    }
   }, {
     hooks: {
       // hash the password before creating a user

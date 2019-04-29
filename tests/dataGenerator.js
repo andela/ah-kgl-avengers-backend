@@ -1,4 +1,3 @@
-// import uuid from 'uuid';
 import crypto from 'crypto';
 import moment from 'moment';
 
@@ -17,6 +16,7 @@ export default {
     salt,
     hash,
     email: 'tester1@test.com',
+    role: 0,
     activated: 1,
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
@@ -29,6 +29,7 @@ export default {
     salt,
     hash,
     email: 'tester2@test.com',
+    role: 0,
     activated: 1,
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
@@ -41,6 +42,7 @@ export default {
     salt,
     hash,
     email: 'tester3@test.com',
+    role: 1,
     activated: 1,
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
@@ -53,6 +55,7 @@ export default {
     salt,
     hash,
     email: 'tester4@test.com',
+    role: 0,
     activated: 1,
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
@@ -66,6 +69,7 @@ export default {
     hash,
     email: 'tester5@test.com',
     activated: 1,
+    role: 0,
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
   },

@@ -2,7 +2,6 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
-import Sequelize from 'sequelize';
 import models from '../models';
 import mailer from '../config/verificationMail';
 
@@ -85,7 +84,9 @@ class Users {
         errorMessage: `The account with email ${email} is not activated`
       });
     }
-    const { salt, hash, id } = user;
+    const {
+      salt, hash, id, role
+    } = user;
     const hashInputpwd = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 
     if (hash !== hashInputpwd) {
@@ -96,7 +97,9 @@ class Users {
     }
 
     if (hash === hashInputpwd) {
-      const token = jwt.sign({ id, email, exp: Date.now() / 1000 + 60 * 60 }, process.env.SECRET);
+      const token = jwt.sign({
+        id, role, email, exp: Date.now() / 1000 + 60 * 60
+      }, process.env.SECRET);
       return res.status(200).json({
         status: 200,
         user: {
@@ -123,6 +126,7 @@ class Users {
         const token = jwt.sign(
           {
             id: existingUser.id,
+            role: existingUser.role,
             emails,
             exp: Date.now() / 1000 + 60 * 60
           },
@@ -157,6 +161,7 @@ class Users {
       const token = jwt.sign(
         {
           id: newUser.id,
+          role: newUser.role,
           emails,
           exp: Date.now() / 1000 + 60 * 60
         },

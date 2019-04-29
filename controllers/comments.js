@@ -94,7 +94,7 @@ export default {
             where: { id: comment.author },
             attributes: ['username', 'image']
           });
-          const getLikes = await likeComments.findAndCountAll({ where: { commentId: comment.id } });
+          const getLikes = await likeComments.findAndCountAll({ where: { commentId: comment.id, status: 'liked' } });
           return {
             id: comment.id,
             createdAt: comment.createdAt,
