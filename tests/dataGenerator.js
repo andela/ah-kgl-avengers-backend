@@ -12,7 +12,7 @@ const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex
 export default {
   // user1 author
   user1: {
-    id: 'acb2f760-aa40-4983-a664-31c520eb656f',
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
     username: 'tester1',
     salt,
     hash,
@@ -21,9 +21,10 @@ export default {
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
   },
-  // user2 to be followed
+
+  // user2
   user2: {
-    id: '5a53493e-85b7-4957-9949-0703c1f096d5',
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa74',
     username: 'tester2',
     salt,
     hash,
@@ -32,9 +33,10 @@ export default {
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
   },
-  // user3 to be un-followed
+
+  // user3
   user3: {
-    id: '7ab265ea-a6b1-49d7-91f1-69afe8ed049b',
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa75',
     username: 'tester3',
     salt,
     hash,
@@ -43,6 +45,31 @@ export default {
     following: JSON.stringify({ ids: [] }),
     followers: JSON.stringify({ ids: [] })
   },
+
+  // user4
+  user4: {
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa76',
+    username: 'tester4',
+    salt,
+    hash,
+    email: 'tester4@test.com',
+    activated: 1,
+    following: JSON.stringify({ ids: [] }),
+    followers: JSON.stringify({ ids: [] })
+  },
+
+  // user5
+  user5: {
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa77',
+    username: 'tester5',
+    salt,
+    hash,
+    email: 'tester5@test.com',
+    activated: 1,
+    following: JSON.stringify({ ids: [] }),
+    followers: JSON.stringify({ ids: [] })
+  },
+
   // post1 published
   post1: {
     id: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
@@ -58,6 +85,7 @@ export default {
     createdAt,
     updatedAt
   },
+  
   // post2 published
   post2: {
     id: 'c90dee64-663d-4d8b-b34d-12acba22cd31',
@@ -88,15 +116,15 @@ export default {
     createdAt,
     updatedAt
   },
-  // post4 to update
+  // post4 to rate
   post4: {
     id: 'c90dee64-663d-4d8b-b34d-12acba22cd33',
-    author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
+    author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa74',
     title: 'this is my second disliked article',
     slug: 'this-is-my-second-disliked-article69f9fccd65',
     description: 'second disliked article',
     body:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+      'Lorem ipsum dolor sit amet,consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,

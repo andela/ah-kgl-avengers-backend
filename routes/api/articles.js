@@ -73,19 +73,14 @@ router.delete(
 
 // Rate an  article
 router.post(
-  '/articles/:slug',
+  '/articles/:slug/ratings',
   checkToken(),
   validation.rating,
   articlesController.rateArticle
 );
 
-// Rate an  article
-router.post(
-  '/articles/:slug',
-  checkToken(),
-  validation.rating,
-  articlesController.rateArticle
-);
+// Get article ratings
+router.get('/articles/:slug/ratings', articlesController.getArticleRatings);
 
 // Create a bookmark based on the article id
 router.post(

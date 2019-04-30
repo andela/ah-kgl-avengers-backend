@@ -65,6 +65,9 @@
   display: block;
   padding: 2px 0;
 }
+.trending-article-container .rating .icon {
+  color: #5e5e5f;
+}
 .trending-article-container .author-name {
   text-transform: capitalize;
 }
