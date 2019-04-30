@@ -16,15 +16,6 @@ export default {
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
     },
-    articleId: {
-      type: Sequelize.UUID,
-      references: {
-        model: 'articles',
-        key: 'id',
-      },
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    },
     commentId: {
       type: Sequelize.UUID,
       references: {

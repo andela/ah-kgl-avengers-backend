@@ -11,10 +11,6 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       allowNull: false
     },
-    articleId: {
-      type: DataTypes.UUID,
-      allowNull: false
-    },
     commentId: {
       type: DataTypes.UUID,
       allowNull: false
@@ -26,7 +22,6 @@ export default (sequelize, DataTypes) => {
   }, {});
   likeComments.associate = (models) => {
     likeComments.belongsTo(models.User, { foreignKey: 'userId' });
-    likeComments.belongsTo(models.article, { foreignKey: 'articleId' });
     likeComments.belongsTo(models.Comments, { foreignKey: 'commentId' });
   };
   return likeComments;

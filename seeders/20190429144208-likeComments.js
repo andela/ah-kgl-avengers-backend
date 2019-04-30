@@ -8,8 +8,7 @@ export default {
     {
       id: 'c90dee64-663d-4d8b-b34d-12acba22cd40',
       userId: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
-      articleId: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
-      commentId: '3797fca1-95fc-49fe-af38-787e880ca1d3',
+      commentId: '18e1bbf9-e707-4925-a992-c59f1fc748aa',
       status: '',
       createdAt,
       updatedAt
@@ -17,8 +16,7 @@ export default {
     {
       id: 'c90dee64-663d-4d8b-b34d-12acba22cd41',
       userId: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
-      articleId: 'c90dee64-663d-4d8b-b34d-12acba22cd31',
-      commentId: '3797fca1-95fc-49fe-af38-787e880ca1d3',
+      commentId: '18e1bbf9-e707-4925-a992-c59f1fc748aa',
       status: 'liked',
       createdAt,
       updatedAt
