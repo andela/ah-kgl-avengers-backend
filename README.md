@@ -9,7 +9,7 @@
 > Our vision is to create a community of like minded authors to foster inspiration and innovation by leveraging the modern web.
 
 ## Documentation
-Comprehensive documentation for the API is hosted [here]().
+Comprehensive documentation for the API is hosted [here](https://ah-kg-avengers-backend-staging.herokuapp.com/swagger).
 
 ## Features
 - Users can create accounts to store their data.
