@@ -1,6 +1,8 @@
 import models from '../models';
 
-const { Comments, User, article } = models;
+const {
+  Comments, User, article, likeComments
+} = models;
 
 export default {
   /**
@@ -92,19 +94,22 @@ export default {
             where: { id: comment.author },
             attributes: ['username', 'image']
           });
+          const getLikes = await likeComments.findAndCountAll({ where: { commentId: comment.id } });
           return {
             id: comment.id,
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,
             body: comment.body,
-            author
+            author,
+            likes: getLikes.count
           };
         })
       );
+      // console.log(structuredComments);
       return res.status(200).json({
         status: res.statusCode,
         comments: structuredComments,
-        commentsCount: structuredComments.length
+        commentsCount: structuredComments.length,
       });
     } catch (e) {
       if (e.message) {
