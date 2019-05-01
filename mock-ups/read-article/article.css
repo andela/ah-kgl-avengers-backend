@@ -1,0 +1,215 @@
+.article-heading {
+  display: flex;
+  flex-direction: row;
+  margin: 16px 0;
+}
+/* article content */
+.content {
+  margin: 0 auto;
+}
+.btn-group {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  justify-content: center;
+}
+.article-meta .btn-group .btn {
+  margin: auto 0.5rem;
+  padding: 0;
+  min-width: 36px;
+  width: 36px;
+  border-radius: 50%;
+  background-color: #5e5e5f3d;
+}
+.article-meta .btn-group .btn:hover {
+  background-color: #5e5e5f3d;
+}
+.article-meta .btn-group .btn .material-icons {
+  color: #383838;
+  font-size: 18px;
+  margin: 0;
+  transition: font-size 0.1s ease-in-out, color 0.1s ease-in-out;
+}
+.article-meta .btn-group .btn:hover .material-icons {
+  font-size: 28px;
+  color: #2ea8f7;
+}
+
+.article-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.article-meta-profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.article-meta-profile .author-name {
+  padding: 16px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.article-meta .article-author-img {
+  height: 125px;
+  width: 125px;
+}
+.article-meta .article-author-img img {
+  height: 100%;
+  border-radius: 50%;
+}
+.article-meta-onarticle {
+  margin: 16px 0;
+}
+.article-meta-onarticle div:first-of-type {
+  text-align: center;
+}
+.article-meta-onarticle .rating {
+  text-align: center;
+}
+.content .article-title {
+  display: block;
+  padding: 8px 16px;
+  font-size: 2rem;
+  color: rgb(51, 71, 91);
+  font-weight: 700;
+}
+.content p {
+  font-style: normal;
+  display: block;
+  margin: 16px auto;
+  padding: 0;
+  font-size: 1.2rem;
+  color: rgb(51, 71, 91);
+  width: 80%;
+}
+.content blockquote {
+  width: 70%;
+  margin: 0 auto;
+  padding: 8px 16px;
+  display: block;
+  border-left: 8px #38c4b0 solid;
+  font-style: italic;
+  font-size: 1.4rem;
+  color: #00000090;
+}
+/* article comment section */
+.container-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  margin: 8px auto;
+}
+.container-header > div {
+  font-size: 1.4rem;
+  vertical-align: middle;
+}
+.btn.btn-add-comment {
+  border: 1px #2ea8f7 solid;
+  border-radius: 4px;
+  color: #2ea8f7;
+}
+.btn.btn-add-comment:hover {
+  color: #ffffff;
+  background-color: #2ea8f7;
+}
+.article-comment {
+  padding: 8px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.comment-author {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+.comment-author-img {
+  width: 72px;
+  height: 72px;
+}
+.comment-author-img img {
+  height: 100%;
+  border-radius: 50%;
+}
+.comment-author-username {
+  display: block;
+  padding: 8px 16px;
+  color: rgb(51, 71, 91);
+}
+.btn-follow-cauthor {
+  height: 28px;
+  line-height: 28px;
+  border: 1px solid #2ea8f7;
+  border-radius: 4px;
+  margin-left: 8px;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 0.8rem;
+  color: #2ea8f7;
+}
+.btn-follow-cauthor:hover {
+  color: #ffffff;
+  background-color: #2ea8f7;
+}
+.comment-body {
+  color: rgb(51, 71, 91);
+  padding: 8px 0;
+}
+.comment-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+.comment-footer .btn {
+  height: 28px;
+  border-radius: 4px;
+  line-height: 28px;
+}
+
+.comment-footer .btn .material-icons {
+  vertical-align: middle;
+}
+
+.comment-footer .btn-like-comment {
+  border: 1px solid #38c4b0;
+  color: #38c4b0;
+}
+.comment-footer .btn-like-comment:hover {
+  color: #ffffff;
+  background-color: #38c4b0;
+}
+.comment-footer .btn-dislike-comment {
+  color: #da2120;
+  min-width: fit-content;
+  margin-left: 8px;
+}
+.comment-footer .btn-dislike-comment:hover {
+  color: #ffffff;
+  background-color: #da2120;
+}
+span.badge {
+  display: inline-block;
+  height: 36px;
+  width: 36px;
+  border-radius: 50%;
+}
+
+/* next articles section */
+.next-articles-heading {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: rgb(51, 71, 91);
+  width: 85%;
+  margin: 0 auto;
+}
+.next-articles {
+  display: flex;
+  flex-direction: row;
+  width: 85%;
+  margin: 16px auto;
+}

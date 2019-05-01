@@ -31,26 +31,40 @@ a {
   margin: 0 auto;
   min-height: 100%;
   position: relative;
-  padding-top: 72px;
+  padding-top: 128px;
 }
 .content-container {
   width: 80%;
   margin: 16px auto 0;
 }
 .nav {
-  height: 72px;
+  height: auto;
   display: flex;
   flex-wrap: nowrap;
-  flex-direction: row;
-  padding: 16px 10%;
+  flex-direction: column;
   position: absolute;
   z-index: 3000;
   top: 0;
   right: 0;
   left: 0;
-  background-color: #38c4b0;
-  box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12),
-    0 3px 1px -1px rgba(0, 0, 0, 0.2);
+} 
+.nav .nav-top{
+height: 72px;
+padding: 16px 10%;
+background-color: #38c4b0;
+box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.14), 0 1px 7px 0 rgba(0, 0, 0, 0.12),
+0 3px 1px -1px rgba(0, 0, 0, 0.2);
+}
+.nav .nav-float{
+  padding: 16px 11%;
+  height: 56px;
+  position: sticky;
+  top:0;
+}
+.nav .nav-top,
+.nav .nav-float{
+  display: flex;
+  flex-direction: row;
 }
 
 .nav .nav-spacer {
@@ -60,16 +74,20 @@ a {
 .nav .nav-logo {
   display: flex;
   align-items: center;
-  height: 100%;
+  height: 36px;
   font-size: 1.8rem;
-  vertical-align: middle;
+  width: fit-content;
+  /* vertical-align: middle; */
 }
 .nav .nav-logo img {
   height: 100%;
   display: inline-block;
 }
+.nav .nav-logo img:first-of-type {
+  margin-bottom: 2px;
+}
 .nav .nav-logo img:last-of-type {
-  margin-top: 8px;
+  height: 32px;
 }
 
 .nav ul.nav-menu {
@@ -83,7 +101,7 @@ a {
 }
 .nav ul.nav-menu a {
   font-weight: 400;
-  color: #ffffff;
+  color: #000000;
   display: inline-block;
   vertical-align: middle;
 }
@@ -96,9 +114,25 @@ a {
 }
 .btn-group .btn {
   border-radius: 4px;
+  color: #ffffff;
 }
+/* sign in button */
 .btn-group .btn:first-of-type {
   margin-right: 8px;
+  color: #000000;
+}
+.btn-group .btn:last-of-type {
+  width: 150px;
+}
+
+.btn-group .btn:first-of-type:hover {
+  background-color: #2EA8F7;
+  color: #ffffff;
+}
+/* sign up button */
+.btn-group .btn:last-of-type:hover {
+  background-color: #2EA8F7;
+  border: none;
 }
 .btn-group .btn.btn-outline {
   border-color: #ffffff;

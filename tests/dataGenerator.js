@@ -85,7 +85,7 @@ export default {
     createdAt,
     updatedAt
   },
-  
+
   // post2 published
   post2: {
     id: 'c90dee64-663d-4d8b-b34d-12acba22cd31',

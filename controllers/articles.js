@@ -345,6 +345,12 @@ const articles = {
           errorMessage: 'Article not found'
         });
       }
+      // Drafts are not rated
+      if (result.status === 'draft') {
+        return res
+          .status(400)
+          .json({ status: res.statusCode, message: 'draft articles are not rated' });
+      }
       let ratings;
 
       // check if the user submitting the rating is not the article's author
@@ -410,6 +416,12 @@ const articles = {
     const result = await article.findOne({ where: { slug }, attributes: ['ratings'] });
     if (!result) {
       return res.status(400).json({ status: res.statusCode, error: 'Article not found' });
+    }
+    // Drafts are not rated
+    if (result.status === 'draft') {
+      return res
+        .status(400)
+        .json({ status: res.statusCode, message: 'draft articles are not rated' });
     }
     // check if the article is has no rating
     if (!result.ratings) {
