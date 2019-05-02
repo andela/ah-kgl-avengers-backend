@@ -60,6 +60,13 @@ const articleValidation = {
     validation(req.body, res, schema, next);
   },
 
+  message: (req, res, next) => {
+    const schema = {
+      message: Joi.string().max(512).required(),
+    };
+    validation(req.body, res, schema, next);
+  },
+
 };
 
 export default articleValidation;
