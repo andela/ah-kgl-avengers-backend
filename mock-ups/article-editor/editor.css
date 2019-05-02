@@ -29,6 +29,10 @@
 .editor-content {
   padding: 16px 32px;
 }
+.editor-title:focus-within,
+.editor-content:focus-within {
+  outline: none;
+}
 .editor-title,
 .editor-content {
   color: #909090;

@@ -11,7 +11,7 @@ chai.use(chaiHttp);
 
 let tokenValue;
 
-describe('Author should handle article ', () => {
+describe('Article ', () => {
   before((done) => {
     utils
       .getUserToken()
@@ -61,7 +61,7 @@ describe('Author should handle article ', () => {
       });
   });
 
-  it('Author should be able to view an article', (done) => {
+  it('should return an article', (done) => {
     chai
       .request(app)
       .get(`/api/v1/article/${dataGenerator.post2.slug}`)
@@ -87,19 +87,34 @@ describe('Author should handle article ', () => {
         done();
       });
   });
+  context('Rate article', () => {
+    it('Authenticated user should be able to rate an article', (done) => {
+      chai
+        .request(app)
+        .post(`/api/v1/articles/${dataGenerator.post4.slug}/ratings`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({ rating: 4 })
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(200);
+          res.should.be.an('Object');
+          done();
+        });
+    });
 
-  it('Authenticated user should be able to rate an article', (done) => {
-    chai
-      .request(app)
-      .post(`/api/v1/articles/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${tokenValue}`)
-      .send({ rating: 4 })
-      .end((err, res) => {
-        if (err) done(err);
-        res.should.have.status(200);
-        res.should.be.an('Object');
-        done();
-      });
+    it('Should return the articles ratings', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/articles/${dataGenerator.post4.slug}/ratings`)
+        .end((err, res) => {
+          if (err) {
+            done(err);
+          }
+          res.should.have.status(200);
+          res.body.ratings.should.be.an('array');
+          done();
+        });
+    });
   });
 
   it('Author should be able get his/her published articles', (done) => {
@@ -166,41 +181,43 @@ describe('Author should handle article ', () => {
       });
   });
 
-  it('User should be able to post a bookmark an article', (done) => {
-    chai
-      .request(app)
-      .get('/api/v1/bookmarks')
-      .set('Authorization', `Bearer ${tokenValue}`)
-      .end((err, res) => {
-        if (err) done(err);
-        res.body.status.should.eql(200);
-        res.should.be.an('Object');
-        done();
-      });
-  });
+  context('Bookmark article', () => {
+    it('User should be able to post a bookmark an article', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/bookmarks')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.body.status.should.eql(200);
+          res.should.be.an('Object');
+          done();
+        });
+    });
 
-  it('User should be able to view bookmarked article', (done) => {
-    chai
-      .request(app)
-      .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${tokenValue}`)
-      .end((err, res) => {
-        if (err) done(err);
-        res.should.be.an('Object');
-        done();
-      });
-  });
+    it('User should be able to view bookmarked article', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          done();
+        });
+    });
 
-  it('User should be able to delete a bookmarked article', (done) => {
-    chai
-      .request(app)
-      .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-      .set('Authorization', `Bearer ${tokenValue}`)
-      .end((err, res) => {
-        if (err) done(err);
-        res.should.be.an('Object');
-        done();
-      });
+    it('User should be able to delete a bookmarked article', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          done();
+        });
+    });
   });
 
   it('Author should be able to delete an article', (done) => {
@@ -232,7 +249,7 @@ describe('Author should handle article ', () => {
   it('should return 2 published articles ', (done) => {
     chai
       .request(app)
-      .get('/api/v1/articles?limit=3&offset=2')
+      .get('/api/v1/articles?limit=3&offset=1')
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);

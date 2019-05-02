@@ -20,22 +20,26 @@
 }
 .article-container .article-description {
   display: block;
+  padding-bottom: 16px;
   color: #5e5f5f;
 }
-.article-container .author-name,
+.article-container .author-name {
+  color: #4e4e4e;
+}
+
 .article-container .rating {
-  color: #5e5f5f;
+  color: #999999;
+  font-size: 0.8rem;
 }
 .article-container .author-name {
   text-transform: capitalize;
 }
 .article-container .publication-date,
 .article-container .read-time {
-  color: #c1c1c1;
+  color: #999999;
+  font-size: 0.8rem;
 }
-.article-container .read-time {
-  font-size: 14px;
-}
+
 /* aside articles */
 .aside-title {
   font-size: 1.4rem;
@@ -65,6 +69,38 @@
   display: block;
   padding: 2px 0;
 }
+.trending-article-container .rating .icon {
+  color: #5e5e5f;
+}
 .trending-article-container .author-name {
   text-transform: capitalize;
+}
+
+.btn.btn-bookmark {
+  margin: auto 1rem;
+  padding: 0;
+  min-width: 36px;
+  width: 36px;
+  border-radius: 50%;
+}
+
+.trending-article .btn.btn-bookmark {
+  margin-bottom: 0;
+}
+.btn.btn-bookmark .material-icons {
+  color: #383838;
+  font-size: 18px;
+  margin: 0;
+  transition: font-size 0.1s ease-in-out, color 0.1s ease-in-out;
+}
+
+.btn.btn-bookmark:hover .material-icons {
+  font-size: 28px;
+  color: #2ea8f7;
+}
+
+.article-meta {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
