@@ -628,7 +628,7 @@ const articles = {
     const link = `${process.env.SERVER_ADDRESS}/articles/${slug}`;
     res.status(200).send({
       status: res.statusCode,
-      message: 'facebook share',
+      message: 'post shared',
       url: link
     });
     open(`https:www.facebook.com/sharer/sharer.php?u=https://${link}`);
@@ -638,7 +638,7 @@ const articles = {
     const { body } = req.article;
     res.status(200).send({
       status: res.statusCode,
-      message: 'twitter share'
+      message: 'tweet posted'
     });
     open(`https://twitter.com/intent/tweet?text=${body}`);
   },
@@ -647,11 +647,11 @@ const articles = {
     const { title, body } = req.article;
     res.status(200).send({
       status: res.statusCode,
-      message: 'email share',
+      message: 'email sent',
       title
     });
     open(`mailto:?subject=${title}&body=${body}`);
-}
+  }
 };
 
 export default articles;
