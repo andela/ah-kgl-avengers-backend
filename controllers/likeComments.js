@@ -7,6 +7,8 @@ const { Comments, likeComments } = models;
  */
 class LikeComments {
   /**
+   * Like the comment after it was created.
+   *
    * @param {Object} req .
    * @param {Object} res The User Object.
    * @returns {Object}  Response object having message and status for liking the comment.
@@ -16,14 +18,19 @@ class LikeComments {
       const { commentId } = req.params;
       const { user } = req;
 
-      const findComment = await Comments.findOne({ where: { id: commentId }, attributes: ['id'] });
+      const findComment = await Comments.findOne({
+        where: { id: commentId },
+        attributes: ['id']
+      });
       if (!findComment) {
         return res.status(404).send({
           status: 404,
           errorMessage: 'The Comment is not found'
         });
       }
-      const isLiked = await likeComments.findOne({ where: { userId: user.id, commentId } });
+      const isLiked = await likeComments.findOne({
+        where: { userId: user.id, commentId }
+      });
       if (isLiked && isLiked.status === 'liked') {
         await isLiked.update({ status: '' });
         return res.status(200).send({
@@ -45,10 +52,14 @@ class LikeComments {
         commentId,
         status: 'liked'
       });
+      return res.status(201).send({
+        status: 201,
+        message: 'You have successfully liked this comment'
+      });
     } catch (err) {
-      return res.status(400).send({
+      return res.status(500).send({
         status: 500,
-        errorMessage: 'Some Error Occured'
+        errorMessage: 'Something went wrong'
       });
     }
   }

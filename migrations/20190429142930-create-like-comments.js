@@ -37,5 +37,5 @@ export default {
       type: Sequelize.DATE
     }
   })),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('likeComments')
+  down: queryInterface => queryInterface.dropTable('likeComments')
 };
