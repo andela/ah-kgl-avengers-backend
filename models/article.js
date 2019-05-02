@@ -49,6 +49,10 @@ export default (sequelize, DataTypes) => {
       ratings: {
         type: DataTypes.JSON,
         allowNull: true
+      },
+      readTime: {
+        type: DataTypes.STRING,
+        allowNull: true,
       }
     },
     {}

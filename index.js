@@ -1,11 +1,13 @@
 import express from 'express';
 import session from 'express-session';
+import swaggerUi from 'swagger-ui-express';
 import cors from 'cors';
 import errorhandler from 'errorhandler';
 import ENV from 'dotenv';
 import morgan from 'morgan';
 import passport from 'passport';
 import routes from './routes';
+import documentation from './swagger.json';
 import './config/passport';
 
 ENV.config();
@@ -29,6 +31,8 @@ app.use(
     saveUninitialized: false
   })
 );
+
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(documentation));
 
 if (!isProduction) {
   app.use(errorhandler());

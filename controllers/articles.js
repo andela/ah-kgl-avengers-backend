@@ -1,10 +1,11 @@
 import crypto from 'crypto';
 import models from '../models/index';
+import readTime from '../helpers/readingTime';
 
 const {
   article, User, bookmark, likes
 } = models;
-const attributes = ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'ratings', 'categories', 'tagList'];
+const attributes = ['title', 'body', 'description', 'slug', 'createdAt', 'updatedAt', 'ratings', 'categories', 'readTime', 'tagList'];
 
 /**
  * This function handle the rating  array and return the average rating of
@@ -36,6 +37,7 @@ const articles = {
       const { id: author } = req.user;
       const flag = status === undefined ? 'draft' : status.toLowerCase();
       const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
+      const totalArticleReadTime = readTime(body);
 
       const slug = `${title
         .toLowerCase()
@@ -51,7 +53,8 @@ const articles = {
         slug,
         description,
         status: flag,
-        tagList: tags
+        tagList: tags,
+        readTime: totalArticleReadTime,
       });
       return res.status(201).send({
         status: res.statusCode,
@@ -60,7 +63,8 @@ const articles = {
           description: queryArticle.description,
           body: queryArticle.body,
           slug: queryArticle.slug,
-          tags: [queryArticle.tagList]
+          tags: [queryArticle.tagList],
+          totalArticleReadTime,
         }
       });
     } catch (err) {
@@ -88,6 +92,7 @@ const articles = {
         .join('-')
         .substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
+      const totalArticleReadTime = readTime(body);
 
       await article.update(
         {
@@ -95,7 +100,8 @@ const articles = {
           body,
           slug,
           description,
-          tagList
+          tagList,
+          readTime: totalArticleReadTime,
         },
         {
           where: { slug: oldSlug }
@@ -288,8 +294,9 @@ const articles = {
           slug: oneArticle.slug,
           tagList: oneArticle.tagList,
           ratings: oneArticle.ratings,
+          readTime: oneArticle.readTime,
           author: articlesAuthor,
-          likes: findLikes.length
+          likes: findLikes.length,
         }
       });
     } catch (error) {
@@ -433,7 +440,7 @@ const articles = {
       if (error.message) {
         res.status(500).send({
           status: res.statusCode,
-          errorMessage: 'Something wnent wrong',
+          errorMessage: 'Something went wrong',
         });
       }
     }
@@ -479,7 +486,7 @@ const articles = {
   },
 
   /*
-  * delete an artile when a user is done
+  * delete an article when a user is done
   * a reading it.
   */
   deleteBookmark: async (req, res) => {
@@ -493,7 +500,7 @@ const articles = {
       if (checkBookmark === 0) {
         res.status(401).send({
           status: res.statusCode,
-          message: 'No bookmarrk to delete',
+          message: 'No bookmark to delete',
         });
       }
       if (checkBookmark) {
