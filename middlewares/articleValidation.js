@@ -1,4 +1,7 @@
 import Joi from 'joi';
+import models from '../models';
+
+const { article } = models;
 /**
  *
  * @param {*} data request data object.
@@ -67,6 +70,20 @@ const articleValidation = {
     validation(req.body, res, schema, next);
   },
 
+  validArticle: async (req, res, next) => {
+    const { slug } = req.params;
+    const link = `${process.env.SERVER_ADDRESS}/articles/${slug}`;
+    const oneArticle = await article.findOne({ where: { slug } });
+    if (!oneArticle) {
+      return res.status(404).send({
+        status: res.statusCode,
+        errorMessage: 'No article found, please create an article first'
+      });
+    }
+    oneArticle.link = link;
+    req.article = oneArticle;
+    next();
+  }
 };
 
 export default articleValidation;
