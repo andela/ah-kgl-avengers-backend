@@ -622,33 +622,32 @@ const articles = {
   },
 
   fbShare: async (req, res) => {
-    const { slug } = req.params;
-    const link = `${process.env.SERVER_ADDRESS}/articles/${slug}`;
+    const { link } = req.article;
     res.status(200).send({
       status: res.statusCode,
       message: 'post shared',
       url: link
     });
-    open(`https:www.facebook.com/sharer/sharer.php?u=https://${link}`);
+    open(`https:www.facebook.com/sharer/sharer.php?u=${link}`);
   },
 
   twitterShare: async (req, res) => {
-    const { body } = req.article;
+    const { link } = req.article;
     res.status(200).send({
       status: res.statusCode,
       message: 'tweet sent'
     });
-    open(`https://twitter.com/intent/tweet?text=${body}`);
+    open(`https://twitter.com/intent/tweet?url=${link}`);
   },
 
   emailShare: async (req, res) => {
-    const { title, body } = req.article;
+    const { title, link } = req.article;
     res.status(200).send({
       status: res.statusCode,
       message: 'email sent',
       title
     });
-    open(`mailto:?subject=${title}&body=${body}`);
+    open(`mailto:?subject=${title}&body=${link}`);
   }
 };
 
