@@ -5,7 +5,7 @@ const { User, Report, article } = models;
 const Reports = {
   /**
    * Authenticated user should be able to report
-   * an article that violate terms of aggrement.
+   * an article that violate terms of argument.
    *
    * @param {*} req request object.
    * @param {*} res response object.
@@ -96,7 +96,7 @@ const Reports = {
 
   /**
    * Authenticated user should be able to report
-   * an article that doesn't obey rules and regurations.
+   * an article that doesn't obey rules and regulations.
    *
    * @param {*} req request object.
    * @param {*} res response object.
