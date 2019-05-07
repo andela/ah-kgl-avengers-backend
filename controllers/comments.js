@@ -1,7 +1,7 @@
 import models from '../models';
 
 const {
-  Comments, User, article, likeComments
+  Comments, User, article, likeComments, subscribers
 } = models;
 
 export default {
@@ -41,6 +41,23 @@ export default {
         author: authorID,
         post: post.id
       });
+
+      // register user as a subscriber to the commented article
+      const getSubscriber = await subscribers.findOne({
+        where: { articleId: post.id },
+        attributes: { subscribers }
+      });
+
+      if (!getSubscriber.subscribers.includes(req.user.id)) {
+        const newSubscribers = getSubscriber.subscribers.concat([req.user.id]);
+        await subscribers.update({
+          subscribers: newSubscribers
+        }, {
+          where: {
+            articleId: post.id
+          }
+        });
+      }
 
       return res.status(201).json({
         status: res.statusCode,

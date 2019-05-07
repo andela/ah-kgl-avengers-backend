@@ -72,13 +72,24 @@ router.get(
 router.delete('/bookmarks/:slug', checkToken, validation.slug, articlesController.deleteBookmark);
 
 // Share an article
-router.get('/articles/:slug/facebook-share', validation.validArticle, articlesController.fbShare);
+router.get(
+  '/articles/:slug/facebook-share',
+  checkToken(),
+  validation.validArticle,
+  articlesController.fbShare
+);
 
 router.get(
   '/articles/:slug/twitter-share',
+  checkToken(),
   validation.validArticle,
   articlesController.twitterShare
 );
 
-router.get('/articles/:slug/email-share', validation.validArticle, articlesController.emailShare);
+router.get(
+  '/articles/:slug/email-share',
+  checkToken(),
+  validation.validArticle,
+  articlesController.emailShare
+);
 export default router;

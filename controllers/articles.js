@@ -4,7 +4,7 @@ import models from '../models/index';
 import readTime from '../helpers/readingTime';
 
 const {
-  article, User, bookmark, likes, ratings
+  article, User, bookmark, likes, subscribers, ratings
 } = models;
 const attributes = {
   exclude: ['id', 'deleted', 'status']
@@ -65,6 +65,14 @@ const articles = {
         tagList,
         readTime: totalArticleReadTime
       });
+
+      // register author as a subscriber to his article
+
+      await subscribers.create({
+        articleId: queryArticle.id,
+        subscribers: [author]
+      });
+
       return res.status(201).send({
         status: res.statusCode,
         article: {
@@ -717,7 +725,7 @@ const articles = {
     res.status(200).send({
       status: res.statusCode,
       message: 'post shared',
-      url: link
+      link
     });
     open(`https:www.facebook.com/sharer/sharer.php?u=${link}`);
   },
@@ -726,7 +734,8 @@ const articles = {
     const { link } = req.article;
     res.status(200).send({
       status: res.statusCode,
-      message: 'tweet sent'
+      message: 'tweet sent',
+      link
     });
     open(`https://twitter.com/intent/tweet?url=${link}`);
   },
@@ -736,7 +745,7 @@ const articles = {
     res.status(200).send({
       status: res.statusCode,
       message: 'email sent',
-      title
+      link
     });
     open(`mailto:?subject=${title}&body=${link}`);
   }
