@@ -18,7 +18,8 @@ export default {
     .then(() => queryInterface.bulkInsert('Comments', [
       dataGenerator.comment1,
       dataGenerator.comment2,
-      dataGenerator.comment3
+      dataGenerator.comment3,
+      dataGenerator.comment4
     ])),
 
   down: (queryInterface, Sequelize) => queryInterface

@@ -18,7 +18,10 @@ export default {
 
     try {
       // check if the article exists
-      const post = await article.findOne({ where: { slug }, attributes: ['id'] });
+      const post = await article.findOne({
+        where: { slug },
+        attributes: ['id']
+      });
       if (!post) {
         return res.status(404).json({
           status: res.statusCode,
@@ -33,7 +36,11 @@ export default {
       });
 
       // save the comment
-      const comment = await Comments.create({ body, author: authorID, post: post.id });
+      const comment = await Comments.create({
+        body,
+        author: authorID,
+        post: post.id
+      });
 
       return res.status(201).json({
         status: res.statusCode,
@@ -72,7 +79,10 @@ export default {
 
     try {
       // check if the article exists
-      const post = await article.findOne({ where: { slug }, attributes: ['id'] });
+      const post = await article.findOne({
+        where: { slug },
+        attributes: ['id']
+      });
       if (!post) {
         return res.status(404).json({
           status: res.statusCode,
@@ -94,12 +104,15 @@ export default {
             where: { id: comment.author },
             attributes: ['username', 'image']
           });
-          const getLikes = await likeComments.findAndCountAll({ where: { commentId: comment.id, status: 'liked' } });
+          const getLikes = await likeComments.findAndCountAll({
+            where: { commentId: comment.id, status: 'liked' }
+          });
           return {
             id: comment.id,
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,
             body: comment.body,
+            highlitedText: comment.highlitedText,
             author,
             likes: getLikes.count
           };
@@ -109,7 +122,7 @@ export default {
       return res.status(200).json({
         status: res.statusCode,
         comments: structuredComments,
-        commentsCount: structuredComments.length,
+        commentsCount: structuredComments.length
       });
     } catch (e) {
       if (e.message) {
@@ -139,7 +152,10 @@ export default {
     try {
       // check if the post exists
       // get the id and check if the comment belongs to this post
-      const post = await article.findOne({ where: { slug }, attributes: ['id', 'author'] });
+      const post = await article.findOne({
+        where: { slug },
+        attributes: ['id', 'author']
+      });
       if (!post) {
         return res.status(404).json({
           status: res.statusCode,
