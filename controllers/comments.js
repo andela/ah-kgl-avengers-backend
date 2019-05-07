@@ -1,3 +1,4 @@
+import Sequelize from 'sequelize';
 import models from '../models';
 import subscribe from '../helpers/subscribe';
 import mailer from '../config/verificationMail';
@@ -72,6 +73,25 @@ export default {
       }
       subscribe(req.user.id, post.id);
 
+      // register user as a subscriber to the commented article
+      const getSubscriber = await subscribers.findOne({
+        where: { articleId: post.id },
+        attributes: { subscribers }
+      });
+
+      if (!getSubscriber.subscribers.includes(req.user.id)) {
+        const newSubscribers = getSubscriber.subscribers.concat([req.user.id]);
+        await subscribers.update({
+          subscribers: newSubscribers
+        }, {
+          where: {
+            articleId: post.id
+          }
+        });
+
+        console.log(newSubscribers);
+      }
+
       return res.status(201).json({
         status: res.statusCode,
         comment: {
@@ -84,6 +104,7 @@ export default {
       });
     } catch (e) {
       if (e.message) {
+        console.log(e);
         return res.status(500).json({
           status: res.statusCode,
           message: 'Something happened on the server',
