@@ -29,7 +29,9 @@ const attributes = [
  */
 const getAverageRating = (data) => {
   const { ratings } = data;
-  const average = ratings === null ? 0 : ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+  const average = ratings === null ? 0 : ratings.reduce(
+    (sum, rating) => sum + rating.rating, 0
+  ) / ratings.length;
   return Number(average.toFixed(2));
 };
 

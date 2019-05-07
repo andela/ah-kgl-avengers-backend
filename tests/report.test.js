@@ -22,7 +22,7 @@ describe('Reporting an article', () => {
       });
   });
 
-  it('User shoul be able to report article', (done) => {
+  it('User should be able to report article', (done) => {
     chai.request(app)
       .post(`/api/v1/report/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
