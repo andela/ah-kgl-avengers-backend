@@ -1,5 +1,6 @@
 import models from '../models';
 import subscribe from '../helpers/subscribe';
+import mailer from '../config/verificationMail';
 
 const {
   Comments, User, article, likeComments, subscribers
@@ -42,6 +43,15 @@ export default {
         author: authorID,
         post: post.id
       });
+
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: post.id,
+        slug: post.slug,
+        action: 'has left a comment on an article on Authors Heaven'
+      });
+
 
       // register user as a subscriber to the commented article
       const getSubscriber = await subscribers.findOne({

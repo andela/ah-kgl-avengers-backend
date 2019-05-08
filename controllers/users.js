@@ -93,7 +93,7 @@ class Users {
       });
     }
     const {
-      salt, hash, id, role
+      salt, hash, id, role, username
     } = user;
     const hashInputPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 
@@ -105,15 +105,9 @@ class Users {
     }
 
     if (hash === hashInputPassword) {
-      const token = jwt.sign(
-        {
-          id,
-          role,
-          email,
-          exp: Date.now() / 1000 + 60 * 60
-        },
-        process.env.SECRET
-      );
+      const token = jwt.sign({
+        id, role, email, username, exp: Date.now() / 1000 + 60 * 60
+      }, process.env.SECRET);
       return res.status(200).json({
         status: 200,
         user: {
@@ -230,27 +224,15 @@ class Users {
       });
     }
 
-    // create a JWT token
-    const token = await jwt.sign({ email }, process.env.SECRET, { expiresIn: '2h' });
-    // send email using SendGrid
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    const msg = {
-      to: email,
-      from: 'info@authorhaven.com',
-      subject: 'Sending with SendGrid is Fun',
-      html: `
-      <p>
-       You are receiving this email because you requested a password reset for your AuthorHaven account,<br>
-       Click on the reset link bellow to reset or ignore this message, if you didn't make password reset request<br>
-       <a href='http://localhost:3000/api/v1/update_password/${token}' target='_blank'>Reset Password</a>
-      </p>
-     `
-    };
+    await mailer.sentResetMail({
+      username: result.username,
+      email
+    });
 
-    sgMail.send(msg).then(() => res.status(200).send({
+    res.status(200).send({
       status: res.statusCode,
       message: 'Reset email sent! check your email'
-    }));
+    });
   }
 
   /**

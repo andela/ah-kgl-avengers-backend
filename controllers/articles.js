@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import open from 'open';
 import models from '../models/index';
 import readTime from '../helpers/readingTime';
+import mailer from '../config/verificationMail';
 
 const {
   article, User, bookmark, likes, subscribers, ratings
@@ -66,8 +67,16 @@ const articles = {
         readTime: totalArticleReadTime
       });
 
-      // register author as a subscriber to his article
+      // send email notification
 
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: req.user.id,
+        slug: queryArticle.slug,
+        action: 'has posted an article on Authors Heaven'
+      });
+
+      // register author as a subscriber to his article
       await subscribers.create({
         articleId: queryArticle.id,
         subscribers: [author]
