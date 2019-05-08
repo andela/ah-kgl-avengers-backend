@@ -1,4 +1,5 @@
 import models from '../models';
+import subscribe from '../helpers/subscribe';
 
 const {
   Comments, User, article, likeComments, subscribers
@@ -58,6 +59,7 @@ export default {
           }
         });
       }
+      await subscribe(req.user.id, post.id);
 
       return res.status(201).json({
         status: res.statusCode,

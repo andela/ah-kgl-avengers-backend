@@ -4,10 +4,11 @@ import dotenv from 'dotenv';
 import sgMail from '@sendgrid/mail';
 import models from '../models';
 import mailer from '../config/verificationMail';
+import subscribe from '../helpers/subscribe';
 
 dotenv.config();
 
-const { User, BlacklistTokens } = models;
+const { User, BlacklistTokens, subscribers } = models;
 
 /**
  * @description User Controller class
@@ -63,8 +64,15 @@ class Users {
    */
   static async activateUserAccount(req, res) {
     const { token } = req.params;
-    const { email } = jwt.verify(token, process.env.SECRET);
+    const { id, email } = jwt.verify(token, process.env.SECRET);
     await User.update({ activated: 1 }, { where: { email } });
+
+    // create subscribers row
+    await subscribers.create({
+      authorId: id,
+      subscribers: []
+    });
+
     return res.status(201).send({
       status: res.statusCode,
       message: 'Your account updated successfully'
@@ -443,6 +451,8 @@ class Users {
         }
       );
 
+      await subscribe(id, userExists.id);
+
       return res.status(201).json({
         status: res.statusCode,
         profile: {
@@ -456,7 +466,7 @@ class Users {
       return res.status(500).json({
         error: e,
         status: res.statusCode,
-        message: 'Something went wrong on the server'
+        message: e.message
       });
     }
   }

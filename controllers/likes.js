@@ -1,4 +1,5 @@
 import models from '../models/index';
+import subscribe from '../helpers/subscribe';
 
 const { article, likes } = models;
 
@@ -148,6 +149,9 @@ class Likes {
         articleId: checkArticle.id,
         favorited: true
       });
+
+      await subscribe(user.id, checkArticle.id);
+
       return res.status(201).send({
         status: 200,
         message: 'You have successfully favorited this article'
