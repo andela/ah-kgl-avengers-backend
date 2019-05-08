@@ -433,7 +433,7 @@ class Users {
         }
       );
 
-      await subscribe(id, userExists.id);
+      subscribe(id, userExists.id);
 
       return res.status(201).json({
         status: res.statusCode,
