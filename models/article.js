@@ -46,13 +46,9 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: true
       },
-      ratings: {
-        type: DataTypes.JSON,
-        allowNull: true
-      },
       readTime: {
         type: DataTypes.STRING,
-        allowNull: true,
+        allowNull: true
       }
     },
     {}
@@ -64,6 +60,9 @@ export default (sequelize, DataTypes) => {
       targetKey: 'id'
     });
     article.hasMany(models.Comments, {
+      foreignKey: 'post'
+    });
+    article.hasMany(models.ratings, {
       foreignKey: 'post'
     });
   };

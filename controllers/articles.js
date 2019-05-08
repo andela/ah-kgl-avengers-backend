@@ -4,7 +4,7 @@ import models from '../models/index';
 import readTime from '../helpers/readingTime';
 
 const {
-  article, User, bookmark, likes
+  article, User, bookmark, likes, ratings
 } = models;
 const attributes = {
   exclude: ['id', 'deleted', 'status']
@@ -19,9 +19,10 @@ const attributes = {
  *
  */
 const getAverageRating = (data) => {
-  const { ratings } = data;
-  const average = ratings === null ? 0
-    : ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+  // const { ratings } = data;
+  const average = data === null || data.length === 0
+    ? 0
+    : data.reduce((sum, rating) => sum + rating.rating, 0) / data.length;
   return Number(average.toFixed(2));
 };
 
@@ -54,7 +55,7 @@ const articles = {
         .substring(0, 40)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
 
-      const queryArticle = await article.create({
+      const createdArticle = await article.create({
         title,
         body,
         author,
@@ -67,19 +68,18 @@ const articles = {
       return res.status(201).send({
         status: res.statusCode,
         article: {
-          title: queryArticle.title,
-          description: queryArticle.description,
-          body: queryArticle.body,
-          slug: queryArticle.slug,
-          tags: queryArticle.tagList,
+          title: createdArticle.title,
+          description: createdArticle.description,
+          body: createdArticle.body,
+          slug: createdArticle.slug,
+          tags: [createdArticle.tagList],
           totalArticleReadTime
         }
       });
     } catch (err) {
       if (err.message) {
         res.status(500).send({
-          status: res.statusCode,
-          error: 'Something happened on the server'
+          error: 'Server failed to handle your request'
         });
       }
     }
@@ -93,7 +93,7 @@ const articles = {
    */
   updateArticle: async (req, res) => {
     try {
-      const oldSlug = req.params.slug;
+      const { slug: oldSlug } = req.params;
       const { title, body, tagList } = req.body;
       const slug = `${title
         .toLowerCase()
@@ -103,7 +103,7 @@ const articles = {
       const description = body.substring(0, 100);
       const totalArticleReadTime = readTime(body);
 
-      await article.update(
+      let updatedArticle = await article.update(
         {
           title,
           body,
@@ -113,34 +113,44 @@ const articles = {
           readTime: totalArticleReadTime
         },
         {
-          where: { slug: oldSlug }
+          where: { slug: oldSlug },
+          returning: true
         }
       );
-      const updateThisArticle = await article.findOne({ where: { slug } });
-      if (!updateThisArticle) {
+
+      // When no article to update found
+      if (updatedArticle[0] === 0) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'Article not found, please create a new article instead'
+          errorMessage: 'Article not found'
         });
       }
-      updateThisArticle.ratings = getAverageRating(updateThisArticle);
+
+      // destructuring the updated article to remain with an object only
+      [updatedArticle] = [updatedArticle[1][0]];
+
+      // Get updated article ratings
+      const allRatings = await ratings.findAll({
+        where: { post: updatedArticle.id },
+        attributes: ['rating']
+      });
+
+      updatedArticle.ratings = getAverageRating(allRatings);
       return res.status(200).send({
         status: res.statusCode,
         article: {
-          title: updateThisArticle.title,
-          body: updateThisArticle.body,
-          slug: updateThisArticle.slug,
-          ratings: updateThisArticle.ratings,
-          tagList: updateThisArticle.tagList
+          title: updatedArticle.title,
+          body: updatedArticle.body,
+          slug: updatedArticle.slug,
+          ratings: updatedArticle.ratings,
+          tagList: updatedArticle.tagList
         }
       });
     } catch (err) {
-      if (err.message) {
-        res.status(500).send({
-          status: res.statusCode,
-          errorMessage: 'No article to update, please create an article first'
-        });
-      }
+      res.status(500).send({
+        status: res.statusCode,
+        errorMessage: 'Server failed to handle your request'
+      });
     }
   },
 
@@ -168,6 +178,7 @@ const articles = {
   /*
    * Retrieving all the published articles based to the author
    * and the status of the article (Published).
+   * The author here is the user logged in
    */
   getAllPublishedArticles: async (req, res) => {
     const { limit, offset } = req.query;
@@ -177,7 +188,8 @@ const articles = {
         where: { id },
         attributes: ['username', 'bio', 'image', 'following']
       });
-      const response = await article.findAll({
+      attributes.exclude = attributes.exclude.filter(attribute => attribute !== 'id');
+      const allPublishedArticles = await article.findAll({
         where: {
           author: id,
           status: 'published',
@@ -188,14 +200,40 @@ const articles = {
         offset
       });
 
-      response.forEach((element) => {
-        element.ratings = getAverageRating(element);
-        element.author = authorInfo;
-      });
+      const formatedArticles = await Promise.all(
+        allPublishedArticles.map(async (publishedArticle) => {
+          // Get average ratings for each article
+          const ArticleRatings = await ratings.findAll({
+            where: { post: publishedArticle.id },
+            attributes: ['rating']
+          });
+
+          const articleLikes = await likes.findAndCountAll({
+            where: { articleId: publishedArticle.id, status: 'liked' }
+          });
+          const articleRatings = getAverageRating(ArticleRatings);
+          publishedArticle.likes = articleLikes.count;
+          publishedArticle.ratings = articleRatings;
+
+          return {
+            title: publishedArticle.title,
+            body: publishedArticle.body,
+            description: publishedArticle.description,
+            slug: publishedArticle.slug,
+            tagList: publishedArticle.tagList,
+            ratings: publishedArticle.ratings,
+            readTime: publishedArticle.readTime,
+            likes: publishedArticle.likes
+          };
+        })
+      );
+
+      // return publishedArticle;
       return res.status(200).send({
         status: res.statusCode,
-        articles: response,
-        articlesCount: response.length
+        author: authorInfo,
+        articles: formatedArticles,
+        articlesCount: formatedArticles.length
       });
     } catch (error) {
       throw error;
@@ -203,8 +241,8 @@ const articles = {
   },
 
   /*
-   * Retrieving all the published articles based to the author
-   * and the status of the article (Draft).
+   * Retrieving all the drafted articles based to the author
+   * and the status of the article=draft.
    */
   getAllDraftArticles: async (req, res) => {
     const { limit, offset } = req.query;
@@ -224,9 +262,7 @@ const articles = {
         limit,
         offset
       });
-
       response.forEach((element) => {
-        element.ratings = getAverageRating(element);
         element.author = authorInfo;
       });
       return res.status(200).send({
@@ -246,21 +282,42 @@ const articles = {
   getFeeds: async (req, res) => {
     const { limit, offset } = req.query;
     try {
-      const allArticles = await article.findAll({
+      let allArticles = await article.findAll({
         where: { status: 'published', deleted: 0 },
-        attributes,
-        include: [{
-          model: User,
-          attributes: ['username', 'email', 'bio', 'image']
-        }],
+        include: [
+          {
+            model: User,
+            attributes: ['username', 'email', 'bio', 'image']
+          }
+        ],
         limit,
         offset
       });
+      allArticles = await Promise.all(
+        allArticles.map(async (feedArticle) => {
+          const author = feedArticle.User;
 
-      allArticles.forEach((element) => {
-        delete element.get().author;
-        element.ratings = getAverageRating(element);
-      });
+          // Get the article ratings and generate average ratings
+          const articleRatings = await ratings.findAll({
+            where: { post: feedArticle.id },
+            attributes: ['rating']
+          });
+          const averageRating = getAverageRating(articleRatings);
+
+          return {
+            createdAt: feedArticle.createdAt,
+            updatedAt: feedArticle.updatedAt,
+            title: feedArticle.title,
+            body: feedArticle.body,
+            description: feedArticle.description,
+            slug: feedArticle.slug,
+            tagList: feedArticle.tagList,
+            readTime: feedArticle.readTime,
+            averageRating,
+            author
+          };
+        })
+      );
 
       return res.status(200).send({
         status: res.statusCode,
@@ -285,18 +342,26 @@ const articles = {
       if (!oneArticle) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'No article found, please create an article first'
+          errorMessage: 'Article not found'
         });
       }
       const findLikes = await likes.findAll({
         where: { articleId: oneArticle.id, status: 'liked' }
       });
+
+      // Get the article author
       const articlesAuthor = await User.findOne({
         where: { id: oneArticle.author },
         attributes: ['username', 'image']
       });
       oneArticle.author = articlesAuthor;
-      oneArticle.ratings = getAverageRating(oneArticle);
+
+      // Get article ratings
+      const articleRatings = await ratings.findAll({
+        where: { post: oneArticle.id },
+        attributes: ['rating']
+      });
+      oneArticle.ratings = getAverageRating(articleRatings);
       return res.status(200).send({
         status: res.statusCode,
         article: {
@@ -335,6 +400,7 @@ const articles = {
     const { id: user } = req.user;
 
     try {
+      // Check if the article exists
       const result = await article.findOne({ where: { slug } });
       if (!result) {
         return res.status(404).send({
@@ -348,7 +414,6 @@ const articles = {
           .status(400)
           .json({ status: res.statusCode, message: 'draft articles are not rated' });
       }
-      let ratings;
 
       // check if the user submitting the rating is not the article's author
       if (user === result.author) {
@@ -358,38 +423,33 @@ const articles = {
         });
       }
 
-      // If there is no review yet, the user is the first to review the article
-      if (result.ratings == null) {
-        ratings = [{ user, rating: Number(rating) }];
-      } else {
-        // check if the user has already reviewed the article
-        const userHasRated = result.ratings.find(rate => rate.user === user);
-        if (userHasRated) {
-          return res.status(400).json({
-            status: res.statusCode,
-            error: 'You are allowed to review an article only once'
-          });
-        }
-        // Add the user rating
-        ratings = result.ratings.concat([{ user, rating: Number(rating) }]);
+      // Check if the user has no review yet on that article
+      // Add user rating
+      // And all ratings made on the article to get an average
+      // Calculate the average rating
+      const articleRatings = await ratings.findOne({ where: { post: result.id, user } });
+      if (articleRatings == null) {
+        const updated = await ratings.create({ user, post: result.id, rating });
+        const allRatings = await ratings.findAll({
+          where: { post: result.id },
+          attributes: ['rating']
+        });
+
+        const averageRating = getAverageRating(allRatings);
+        return res.status(201).json({
+          status: res.statusCode,
+          data: {
+            user: updated.user,
+            article: updated.user,
+            rating: updated.rating
+          },
+          averageRating
+        });
       }
-
-      const updated = await article.update(
-        { ratings },
-        {
-          where: { slug },
-          returning: true
-        }
-      );
-
-      const data = updated[1][0].get();
-      data.ratings = getAverageRating(data);
-
-      delete data.id;
-      delete data.deleted;
-      return res.status(200).send({
+      // The user is not allowed to review for the second time
+      return res.status(400).json({
         status: res.statusCode,
-        data
+        error: 'You are allowed to review an article only once'
       });
     } catch (error) {
       return res.status(500).send({
@@ -409,42 +469,68 @@ const articles = {
    */
   getArticleRatings: async (req, res) => {
     const { slug } = req.params;
+    const { limit = 10, offset = 0 } = req.query;
 
-    const result = await article.findOne({ where: { slug }, attributes: ['ratings'] });
-    if (!result) {
-      return res.status(400).json({ status: res.statusCode, error: 'Article not found' });
-    }
-    // Drafts are not rated
-    if (result.status === 'draft') {
-      return res
-        .status(400)
-        .json({ status: res.statusCode, message: 'draft articles are not rated' });
-    }
-    // check if the article is has no rating
-    if (!result.ratings) {
-      return res.status(400).json({ status: res.statusCode, error: 'Article has no rating' });
-    }
-    // Format and return the article's rating
-    const averageRating = getAverageRating(result);
-    const formatedRatings = await Promise.all(
-      result.ratings.map(async (rating) => {
-        const ratingUser = await User.findOne({
-          where: { id: rating.user },
-          attributes: ['username', 'image']
-        });
-        return {
-          rating: rating.rating,
-          profile: { id: rating.user, username: ratingUser.username, image: ratingUser.image }
-        };
-      })
-    );
+    try {
+      const result = await article.findOne({
+        where: { slug },
+        attributes: ['id']
+      });
+      if (!result) {
+        return res.status(400).json({ status: res.statusCode, error: 'Article not found' });
+      }
+      // Drafts are not rated
+      if (result.status === 'draft') {
+        return res
+          .status(400)
+          .json({ status: res.statusCode, message: 'Drafts articles are not rated' });
+      }
 
-    return res.status(200).json({
-      status: res.statusCode,
-      totalRatings: formatedRatings.length,
-      averageRating,
-      ratings: formatedRatings
-    });
+      // The first query response is used to calculate th average rating
+      // The second query is limited and accepts offset, to get ratings to return
+      const allRatings = await ratings.findAll({
+        where: { post: result.id },
+        attributes: ['rating', 'user']
+      });
+      const limitedRatings = await ratings.findAll({
+        where: { post: result.id },
+        attributes: ['rating', 'user'],
+        limit,
+        offset
+      });
+
+      // If the article has no rating
+      if (allRatings.length === 0) {
+        return res.status(400).json({ status: res.statusCode, error: 'Article has no rating' });
+      }
+
+      // Format and return the article's rating
+      const averageRating = getAverageRating(allRatings);
+      const formatedRatings = await Promise.all(
+        limitedRatings.map(async (rating) => {
+          const ratingUser = await User.findOne({
+            where: { id: rating.user },
+            attributes: ['username', 'image']
+          });
+          return {
+            rating: rating.rating,
+            profile: { id: rating.user, username: ratingUser.username, image: ratingUser.image }
+          };
+        })
+      );
+
+      return res.status(200).json({
+        status: res.statusCode,
+        totalRatings: formatedRatings.length,
+        averageRating,
+        ratings: formatedRatings
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: res.statusCode,
+        errorMessage: 'The server failed to handle your request'
+      });
+    }
   },
 
   /* Bookmarking and article so that one can come back
@@ -455,6 +541,7 @@ const articles = {
     try {
       const { slug } = req.params;
       const { id: userId } = req.user;
+
       if (!userId) {
         res.status(401).send({
           status: res.statusCode,
@@ -462,7 +549,13 @@ const articles = {
         });
       }
       const findArticle = await article.findOne({ where: { slug } });
-      const findUser = await User.findOne({ where: { id: findArticle.author } });
+      if (!findArticle) {
+        return res.status(404).send({
+          status: res.statusCode,
+          errorMessage: 'The article your trying to bookmark does not exit'
+        });
+      }
+
       const checkExist = await bookmark.findOne({ where: { articleId: findArticle.id, userId } });
       if (checkExist) {
         return res.status(400).send({
@@ -478,7 +571,7 @@ const articles = {
       if (createBookmark.articleId) {
         return res.status(200).send({
           status: res.statusCode,
-          message: `Article from ${findUser.username} has been bookmarked`,
+          message: 'Article has been bookmarked',
           data: {
             title: findArticle.title,
             body: findArticle.body,
@@ -486,17 +579,11 @@ const articles = {
           }
         });
       }
-      return res.status(404).send({
-        status: res.statusCode,
-        errorMessage: 'The article your trying to bookmark does not exit'
-      });
     } catch (error) {
-      if (error.message) {
-        return res.status(500).send({
-          status: res.statusCode,
-          errorMessage: 'Something went wrong'
-        });
-      }
+      return res.status(500).send({
+        status: res.statusCode,
+        errorMessage: 'The server failed to handle your request'
+      });
     }
   },
 
@@ -508,32 +595,40 @@ const articles = {
   getAllBookmarks: async (req, res) => {
     const { id: userId } = req.user;
     try {
-      const bookmarkedArticles = [];
+      let bookmarkedArticles = [];
       const findBookmarks = await bookmark.findAll({ where: { userId } });
 
-      // eslint-disable-next-line no-restricted-syntax
-      for (const item of findBookmarks) {
-        // eslint-disable-next-line no-await-in-loop
-        const findBookmarkedArticle = await article.findOne({
-          where: { id: item.articleId },
-          attributes: ['title', 'slug', 'author']
+      // If the user have no bookmarked article
+      if (findBookmarks.length === 0) {
+        return res.status(400).send({
+          status: res.statusCode,
+          errorMessage: "You don't have any bookmarked article"
         });
-        // eslint-disable-next-line no-await-in-loop
-        const author = await User.findOne({
-          where: { id: findBookmarkedArticle.author },
-          attributes: ['username', 'image']
-        });
-        findBookmarkedArticle.author = author;
-        bookmarkedArticles.push(findBookmarkedArticle);
       }
 
-      if (findBookmarks) {
-        return res.status(200).send({
-          status: res.statusCode,
-          data: bookmarkedArticles
-        });
-      }
+      // If the user has bookmarked article, format them
+      bookmarkedArticles = await Promise.all(
+        findBookmarks.map(async (item) => {
+          const findBookmarkedArticle = await article.findOne({
+            where: { id: item.articleId },
+            attributes: ['title', 'slug', 'author']
+          });
+          const author = await User.findOne({
+            where: { id: findBookmarkedArticle.author },
+            attributes: ['username', 'image']
+          });
+          findBookmarkedArticle.author = author;
+          return findBookmarkedArticle;
+        })
+      );
+
+      // Return formated articles
+      return res.status(200).send({
+        status: res.statusCode,
+        data: bookmarkedArticles
+      });
     } catch (error) {
+      // Return server side error
       if (error.message) {
         res.status(500).send({
           status: res.statusCode,
@@ -552,6 +647,12 @@ const articles = {
     const { slug } = req.params;
     try {
       const findBookmarks = await bookmark.findOne({ where: { userId } });
+      if (findBookmarks === null) {
+        res.status(400).send({
+          status: res.statusCode,
+          errorMessage: "Bookmark doesn't exist"
+        });
+      }
       const findBookmarkedArticle = await article.findOne({
         where: { slug, id: findBookmarks.articleId },
         attributes: ['title', 'slug', 'author']
@@ -569,23 +670,20 @@ const articles = {
       }
       res.status(200).send({
         status: res.statusCode,
-        data: {
-          findBookmarkedArticle
-        }
+        data: findBookmarkedArticle
       });
     } catch (error) {
       if (error.message) {
         res.status(500).send({
           status: res.statusCode,
-          errorMessage: 'Something went wrong on the server'
+          errorMessage: 'Server failed to handle the request'
         });
       }
     }
   },
 
   /*
-   * delete an article when a user is done
-   * a reading it.
+   * delete bookmark
    */
   deleteBookmark: async (req, res) => {
     const { slug } = req.params;
@@ -596,24 +694,21 @@ const articles = {
         where: { articleId: checkArticle.id, userId }
       });
       if (checkBookmark === 0) {
-        res.status(401).send({
+        res.status(400).send({
           status: res.statusCode,
-          message: 'No bookmark to delete'
+          message: 'Bookmark not found'
         });
       }
-      if (checkBookmark) {
-        res.status(200).send({
-          status: res.statusCode,
-          message: 'Bookmark cleared successfully'
-        });
-      }
+
+      return res.status(200).send({
+        status: res.statusCode,
+        message: 'Bookmark cleared successfully'
+      });
     } catch (error) {
-      if (error.message) {
-        res.status(500).send({
-          status: res.statusCode,
-          message: 'Server Error'
-        });
-      }
+      res.status(500).send({
+        status: res.statusCode,
+        message: 'Server failed to handle the request'
+      });
     }
   },
 

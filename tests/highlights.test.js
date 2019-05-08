@@ -11,7 +11,7 @@ let tokenValue;
 describe('Like Comments', () => {
   before((done) => {
     utils
-      .getUserToken()
+      .getUser1Token()
       .then((res) => {
         tokenValue = res.body.user.token;
         done();
@@ -25,13 +25,10 @@ describe('Like Comments', () => {
     it('should comment on highlighted text and return 201', (done) => {
       chai
         .request(app)
-        .post(
-          '/api/v1/articles/this-is-my-first-try-of-article69f9fccd65/text-comment'
-        )
+        .post('/api/v1/articles/this-is-my-first-try-of-article69f9fccd65/text-comment')
         .set('Authorization', `Bearer ${tokenValue}`)
         .send({
-          text:
-            'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+          text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
           startIndex: 23,
           endIndex: 80,
           body: 'testing this'
@@ -53,7 +50,9 @@ describe('Like Comments', () => {
         .send()
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.have.property('errorMessage').equal('The Article You are trying to find is not created');
+          res.body.should.have
+            .property('errorMessage')
+            .equal('The Article You are trying to find is not created');
           done();
         });
     });

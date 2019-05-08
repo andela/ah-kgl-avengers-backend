@@ -145,7 +145,6 @@ const handler = {
       const articles = await article.findAll({
         where: {
           [Sequelize.Op.or]: [
-            { body: { [Sequelize.Op.iLike]: `%${query.trim()}%` } },
             { title: { [Sequelize.Op.iLike]: `%${query.trim()}%` } },
             { tagList: { [Sequelize.Op.contains]: query.trim().toLowerCase() } },
           ],

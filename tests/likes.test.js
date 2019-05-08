@@ -11,7 +11,7 @@ let tokenValue;
 describe('Like, Dislike and Favorite', () => {
   before((done) => {
     utils
-      .getUserToken()
+      .getUser1Token()
       .then((res) => {
         tokenValue = res.body.user.token;
         done();

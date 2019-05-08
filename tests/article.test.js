@@ -14,7 +14,7 @@ let tokenValue;
 describe('Article ', () => {
   before((done) => {
     utils
-      .getUserToken()
+      .getUser1Token()
       .then((res) => {
         tokenValue = res.body.user.token;
         done();
@@ -77,7 +77,7 @@ describe('Article ', () => {
     chai
       .request(app)
       .get('/api/v1/articles/feeds')
-      .set('Authorization', `Bearer ${tokenValue}`)
+      // .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(res);
         res.should.have.status(200);
@@ -96,7 +96,7 @@ describe('Article ', () => {
         .send({ rating: 4 })
         .end((err, res) => {
           if (err) done(err);
-          res.should.have.status(200);
+          res.should.have.status(201);
           res.should.be.an('Object');
           done();
         });
@@ -105,7 +105,7 @@ describe('Article ', () => {
     it('Should return the articles ratings', (done) => {
       chai
         .request(app)
-        .get(`/api/v1/articles/${dataGenerator.post4.slug}/ratings`)
+        .get(`/api/v1/articles/${dataGenerator.post4.slug}/ratings?limit=5&offset=0`)
         .end((err, res) => {
           if (err) {
             done(err);
@@ -176,16 +176,16 @@ describe('Article ', () => {
         if (err) done(err);
         res.should.have.status(404);
         res.body.should.be.an('Object');
-        res.body.errorMessage.should.eql('Article not found, please create a new article instead');
+        res.body.errorMessage.should.eql('Article not found');
         done();
       });
   });
 
   context('Bookmark article', () => {
-    it('User should be able to post a bookmark an article', (done) => {
+    it('Bookmark an article', (done) => {
       chai
         .request(app)
-        .get('/api/v1/bookmarks')
+        .post(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
         .set('Authorization', `Bearer ${tokenValue}`)
         .end((err, res) => {
           if (err) done(err);
