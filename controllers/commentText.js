@@ -127,7 +127,7 @@ class CommentOnText {
 
       // if text proveded in body and one gotten using indexes are not matching
       if (findHighlightedText !== text) {
-        res.status(404).send({
+        return res.status(404).send({
           status: 404,
           errorMessage: 'The text you highlighted is not found'
         });
