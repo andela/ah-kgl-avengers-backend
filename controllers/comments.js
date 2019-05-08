@@ -82,7 +82,7 @@ export default {
 
 
       // register user as a subscriber to the commented article
-      await subscribe(req.user.id, post.id);
+      subscribe(req.user.id, post.id);
 
       return res.status(201).json({
         status: res.statusCode,
