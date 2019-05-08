@@ -37,7 +37,7 @@ describe('Like Comments', () => {
           body: 'testing this'
         })
         .end((err, res) => {
-          res.should.have.status(201);
+          res.should.have.status(200);
           res.body.commentOnText.should.have.property('body');
           res.body.commentOnText.should.have.property('author');
           res.body.commentOnText.should.have.property('post');
@@ -45,7 +45,7 @@ describe('Like Comments', () => {
         });
     });
 
-    it('should not create the comment as the article is not found and returns 404', (done) => {
+    it('should not comment on highlighted inf article is not found', (done) => {
       chai
         .request(app)
         .post('/api/v1/articles/this-is-my-first-try-of-article69f9fccd66/text-comment')
@@ -58,7 +58,7 @@ describe('Like Comments', () => {
         });
     });
 
-    it('should not create the comment as the article is not found and returns 404', (done) => {
+    it('should not update the comment as you are not the author', (done) => {
       chai
         .request(app)
         .put('/api/v1/articles/text-comment/2f0bab3d-54f0-41bb-b20e-b3456b28343f')
@@ -70,30 +70,12 @@ describe('Like Comments', () => {
           body: 'new updated comment'
         })
         .end((err, res) => {
-          res.should.have.status(200);
-          res.body.comment.should.have.property('body');
+          res.should.have.status(401);
           done();
         });
     });
 
-    it('should not create the comment as the article is not found and returns 404', (done) => {
-      chai
-        .request(app)
-        .put('/api/v1/articles/text-comment/2f0bab3d-54f0-41bb-b20e-b3456b28347f')
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .send({
-          text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
-          startIndex: 23,
-          endIndex: 80,
-          body: 'new updated comment'
-        })
-        .end((err, res) => {
-          res.should.have.status(404);
-          done();
-        });
-    });
-
-    it('should not like the comment and return 404 as the comment is not found', (done) => {
+    it('should get all the highlighted texts on the article', (done) => {
       chai
         .request(app)
         .get('/api/v1/articles/this-is-my-first-try-of-article69f9fccd65/text-comment')
@@ -105,7 +87,7 @@ describe('Like Comments', () => {
         });
     });
 
-    it('should remove like on the commnent and return 200', (done) => {
+    it('should not get the highlighted texts as the article is not found', (done) => {
       chai
         .request(app)
         .get('/api/v1/articles/this-is-my-first-try-of-article69f9fccd88/text-comment')

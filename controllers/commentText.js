@@ -1,6 +1,10 @@
 import models from '../models';
 
-const { Comments, User, article } = models;
+const {
+  Comments, User, article, Sequelize
+} = models;
+
+const { Op } = Sequelize;
 
 /**
  * @description User Controller class
@@ -53,15 +57,18 @@ class CommentOnText {
           },
           defaults: { body },
           attributes: [
+            'id',
             'author',
             'highlitedText',
             'startIndex',
             'endIndex',
-            'body'
+            'body',
+            'createdAt',
+            'updatedAt'
           ]
         });
-        return res.status(201).send({
-          status: 201,
+        return res.status(200).send({
+          status: 200,
           commentOnText: commentOnText[0],
           article: findArticle.slug,
           author
@@ -70,7 +77,7 @@ class CommentOnText {
     } catch (error) {
       return res.status(500).send({
         status: 500,
-        errorMessage: 'The Server could not process your request'
+        errorMessage: error.message
       });
     }
   }
@@ -94,6 +101,8 @@ class CommentOnText {
         where: { id: commentId },
         attributes: ['id', 'post']
       });
+
+
       if (!findComment) {
         return res.status(404).send({
           status: 404,
@@ -124,6 +133,13 @@ class CommentOnText {
         });
       }
 
+      if (req.user.id !== findComment.author) {
+        return res.status(401).send({
+          status: 401,
+          errorMessage: 'You are not authorized to update this comment'
+        });
+      }
+
       // if everything is valid then update the comment
       const updatedComment = await Comments.update(
         {
@@ -151,7 +167,7 @@ class CommentOnText {
     } catch (error) {
       return res.status(500).send({
         status: 500,
-        errorMessage: 'The Server could not process your request'
+        errorMessage: error.message
       });
     }
   }
@@ -178,7 +194,7 @@ class CommentOnText {
 
     // now get all the highlighted texts associated to that article
     const highlighted = await Comments.findAll({
-      where: { post: findArticle.id },
+      where: { post: findArticle.id, highlitedText: { [Op.ne]: null } },
       attributes: ['highlitedText'],
       include: [{ model: User, attributes: ['username', 'image'] }]
     });
@@ -188,12 +204,10 @@ class CommentOnText {
         errorMessage: 'There are no comments for this article'
       });
     }
-    if (highlighted && highlighted.highlitedText !== null) {
-      return res.status(200).send({
-        status: 200,
-        highlighted
-      });
-    }
+    return res.status(200).send({
+      status: 200,
+      highlighted
+    });
   }
 }
 
