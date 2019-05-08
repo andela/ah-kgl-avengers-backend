@@ -71,14 +71,14 @@ const articles = {
       await mailer.sentNotificationMail({
         username: req.user.username,
         subscribeTo: req.user.id,
-        slug: queryArticle.slug,
-        title: queryArticle.title,
+        slug: createdArticle.slug,
+        title: createdArticle.title,
         action: 'has posted an article'
       });
 
       // register author as a subscriber to his article
       await subscribers.create({
-        articleId: queryArticle.id,
+        articleId: createdArticle.id,
         subscribers: [author]
       });
 

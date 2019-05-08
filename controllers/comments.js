@@ -72,6 +72,15 @@ export default {
       }
       subscribe(req.user.id, post.id);
 
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: post.id,
+        slug: post.slug,
+        action: 'has left a comment on an article on Authors Heaven'
+      });
+
+
       // register user as a subscriber to the commented article
       await subscribe(req.user.id, post.id);
 
