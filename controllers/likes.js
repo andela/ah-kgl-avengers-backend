@@ -170,7 +170,7 @@ class Likes {
         articleId: checkArticle.id,
         favorited: true
       });
-
+      
       return res.status(201).send({
         status: 200,
         message: 'You have successfully favorited this article'

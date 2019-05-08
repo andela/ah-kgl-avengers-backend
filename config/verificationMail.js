@@ -31,8 +31,8 @@ const config = {
 
     const source = fs.readFileSync(path.join(__dirname, '../template/activation.hjs'), 'utf8');
     const template = Handlebars.compile(source);
-    const { name, email } = params;
-    const tokenToSend = await jwt.sign({ email }, process.env.SECRET);
+    const { id, name, email } = params;
+    const tokenToSend = await jwt.sign({ id, email }, process.env.SECRET);
     const url = `${process.env.SERVER_ADDRESS}/api/v1/activation/${tokenToSend}`;
     const envelope = {
       from: process.env.SENDER,

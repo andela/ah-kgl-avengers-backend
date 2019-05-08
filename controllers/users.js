@@ -64,8 +64,7 @@ class Users {
   static async activateUserAccount(req, res) {
     const { token } = req.params;
     const { email } = jwt.verify(token, process.env.SECRET);
-    const author = await User.update({ activated: 1 }, { where: { email }, returning: true });
-
+    await User.update({ activated: 1 }, { where: { email }, returning: true });
     return res.status(201).send({
       status: res.statusCode,
       message: 'Your account updated successfully'
