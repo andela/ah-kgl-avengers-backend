@@ -77,6 +77,18 @@ describe('User', () => {
         });
     });
 
+    it('should not create a new user', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .send()
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
+    });
+
     it('should fail and returns status:400 as registering with the user who is already in db', (done) => {
       chai
         .request(app)
@@ -115,6 +127,18 @@ describe('User', () => {
           done();
         });
     });
+  });
+
+  it('should not login a user', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/login')
+      .send()
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        done();
+      });
   });
 
   context('Follow another user', () => {

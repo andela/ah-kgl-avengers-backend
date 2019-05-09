@@ -191,5 +191,31 @@ export default {
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
     createdAt,
     updatedAt
+  },
+
+  // comment4 with highlight text
+  comment4: {
+    id: '2f0bab3d-54f0-41bb-b20e-b3456b28343f',
+    body: 'It can take another post, I will work on it',
+    highlitedText: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+    startIndex: 23,
+    endIndex: 80,
+    author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
+    post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    createdAt,
+    updatedAt
+  },
+
+  // comment5 with highlight text
+  comment5: {
+    id: '2f0bab3d-54f0-41bb-b20e-b3456b28345f',
+    body: 'It can take another post, I will work on it',
+    highlitedText: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+    startIndex: 23,
+    endIndex: 80,
+    author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa74',
+    post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    createdAt,
+    updatedAt
   }
 };

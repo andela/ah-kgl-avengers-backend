@@ -18,10 +18,12 @@ export default {
     .then(() => queryInterface.bulkInsert('Comments', [
       dataGenerator.comment1,
       dataGenerator.comment2,
-      dataGenerator.comment3
+      dataGenerator.comment3,
+      dataGenerator.comment4,
+      dataGenerator.comment5
     ])),
 
-  down: (queryInterface, Sequelize) => queryInterface
+  down: queryInterface => queryInterface
     .bulkDelete('articles', null, {})
     .then(() => queryInterface.bulkDelete('Comments', null, {}))
 };

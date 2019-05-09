@@ -27,6 +27,15 @@ export default (sequelize, DataTypes) => {
           model: 'articles',
           key: 'id'
         }
+      },
+      highlitedText: {
+        type: DataTypes.STRING,
+      },
+      startIndex: {
+        type: DataTypes.INTEGER,
+      },
+      endIndex: {
+        type: DataTypes.INTEGER,
       }
     },
     {}
