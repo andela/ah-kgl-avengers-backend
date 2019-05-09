@@ -58,10 +58,27 @@ describe('Like Comments', () => {
         });
     });
 
-    it('should not update the comment as you are not the author', (done) => {
+    it('should update the comment as you are the author', (done) => {
       chai
         .request(app)
         .put('/api/v1/articles/text-comment/2f0bab3d-54f0-41bb-b20e-b3456b28343f')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+          startIndex: 23,
+          endIndex: 80,
+          body: 'new updated comment'
+        })
+        .end((err, res) => {
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('should not update the comment as you are not the author', (done) => {
+      chai
+        .request(app)
+        .put('/api/v1/articles/text-comment/2f0bab3d-54f0-41bb-b20e-b3456b28345f')
         .set('Authorization', `Bearer ${tokenValue}`)
         .send({
           text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',

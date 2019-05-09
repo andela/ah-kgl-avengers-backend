@@ -99,7 +99,7 @@ class CommentOnText {
       // check if the comment to be updated is saved
       const findComment = await Comments.findOne({
         where: { id: commentId },
-        attributes: ['id', 'post']
+        attributes: ['id', 'post', 'author']
       });
 
 
