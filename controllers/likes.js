@@ -141,6 +141,16 @@ class Likes {
       if (arleadyFavorited
       && (arleadyFavorited.favorited === false || arleadyFavorited.favorited === null)) {
         await arleadyFavorited.update({ favorited: true });
+
+        // send email notification
+        await mailer.sentNotificationMail({
+          username: req.user.username,
+          subscribeTo: checkArticle.id,
+          slug: checkArticle.slug,
+          title: 'new favorite',
+          action: 'has favorited an article'
+        });
+
         return res.status(200).send({
           status: 200,
           message: 'You have favorited this article'
@@ -159,15 +169,6 @@ class Likes {
         userId: user.id,
         articleId: checkArticle.id,
         favorited: true
-      });
-
-      // send email notification
-      await mailer.sentNotificationMail({
-        username: req.user.username,
-        subscribeTo: checkArticle.id,
-        slug: checkArticle.slug,
-        title: 'new favorite',
-        action: 'has favorited an article'
       });
 
       return res.status(201).send({
