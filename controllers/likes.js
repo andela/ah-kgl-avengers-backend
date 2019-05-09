@@ -170,7 +170,16 @@ class Likes {
         articleId: checkArticle.id,
         favorited: true
       });
-      
+
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: checkArticle.id,
+        slug: checkArticle.slug,
+        title: 'new favorite',
+        action: 'has favorited an article'
+      });
+
       return res.status(201).send({
         status: 200,
         message: 'You have successfully favorited this article'

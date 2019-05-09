@@ -77,7 +77,8 @@ export default {
         username: req.user.username,
         subscribeTo: post.id,
         slug: post.slug,
-        action: 'has left a comment on an article on Authors Heaven'
+        title: 'new comment',
+        action: 'has left a comment on an article'
       });
 
 
