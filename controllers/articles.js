@@ -68,12 +68,12 @@ const articles = {
       });
 
       // send email notification
-
       await mailer.sentNotificationMail({
         username: req.user.username,
         subscribeTo: req.user.id,
         slug: queryArticle.slug,
-        action: 'has posted an article on Authors Heaven'
+        title: queryArticle.title,
+        action: 'has posted an article'
       });
 
       // register author as a subscriber to his article

@@ -31,8 +31,8 @@ const config = {
 
     const source = fs.readFileSync(path.join(__dirname, '../template/activation.hjs'), 'utf8');
     const template = Handlebars.compile(source);
-    const { id, name, email } = params;
-    const tokenToSend = await jwt.sign({ id, email }, process.env.SECRET);
+    const { name, email } = params;
+    const tokenToSend = await jwt.sign({ email }, process.env.SECRET);
     const url = `${process.env.SERVER_ADDRESS}/api/v1/activation/${tokenToSend}`;
     const envelope = {
       from: process.env.SENDER,
@@ -89,43 +89,67 @@ const config = {
       }
     });
 
-    const source = fs.readFileSync(path.join(__dirname, '../template/notification.hjs'), 'utf8');
-    const template = Handlebars.compile(source);
     const {
-      subscribeTo, username, slug, action
+      subscribeTo, username, slug, action, title, followedAuthor, followedUsername
     } = params;
-    const url = `${process.env.SERVER_ADDRESS}/api/v1/activation/${slug}`;
 
-    const getSubscriber = await subscribers.findOne({
-      where: {
-        [Op.or]: [{ articleId: subscribeTo }, { authorId: subscribeTo }]
-      },
-      attributes: { subscribers }
-    });
-
-    try {
-      getSubscriber.subscribers.forEach(async (subId) => {
-        const subs = await User.findOne({
-          where: { id: subId }
-        });
-
-        const receiver = subs.username;
-
+    if (followedAuthor) {
+      const source = fs.readFileSync(path.join(__dirname, '../template/follow.hjs'), 'utf8');
+      const template = Handlebars.compile(source);
+      const url = `${process.env.SERVER_ADDRESS}/api/v1/profiles/${username}`;
+      try {
         const envelope = {
           from: process.env.SENDER,
-          to: subs.email,
-          subject: 'new article',
+          to: followedAuthor,
+          subject: 'new follower',
           html: template({
-            username, receiver, url, action
+            username,
+            url,
+            followedUsername
           })
         };
         client.sendMail(envelope);
+      } catch (error) {
+        return {
+          status: 500,
+          message: 'Failed to send the email'
+        };
+      }
+    } else {
+      const source = fs.readFileSync(path.join(__dirname, '../template/notification.hjs'), 'utf8');
+      const template = Handlebars.compile(source);
+      const url = `${process.env.SERVER_ADDRESS}/api/v1/articles/${slug}`;
+      const getSubscriber = await subscribers.findOne({
+        where: {
+          [Op.or]: [{ articleId: subscribeTo }, { authorId: subscribeTo }]
+        },
+        attributes: { subscribers }
       });
-    } catch (error) {
-      return {
-        status: 500,
-        message: 'Failed to send the email'
-      };
+
+      try {
+        getSubscriber.subscribers.forEach(async (subId) => {
+          const subs = await User.findOne({
+            where: { id: subId }
+          });
+
+          const receiver = subs.username;
+
+          const envelope = {
+            from: process.env.SENDER,
+            to: subs.email,
+            subject: title,
+            html: template({
+              username, receiver, url, action, title
+            })
+          };
+          client.sendMail(envelope);
+        });
+      } catch (error) {
+        return {
+          status: 500,
+          message: 'Failed to send the email'
+        };
+      }
     }
   }
 };

@@ -1,5 +1,5 @@
 import models from '../models/index';
-import subscribe from '../helpers/subscribe';
+import mailer from '../config/verificationMail';
 
 const { article, likes } = models;
 
@@ -31,6 +31,16 @@ class Likes {
       });
       if (arleadyLiked && (arleadyLiked.status === 'disliked' || arleadyLiked.status === null)) {
         await arleadyLiked.update({ status: 'liked' });
+
+        // send email notification
+        await mailer.sentNotificationMail({
+          username: req.user.username,
+          subscribeTo: checkArticle.id,
+          slug: checkArticle.slug,
+          title: 'new like',
+          action: 'has liked an article'
+        });
+
         return res.status(200).send({
           status: 200,
           message: ' You have liked this article'
@@ -50,6 +60,7 @@ class Likes {
         articleId: checkArticle.id,
         status: 'liked'
       });
+
       return res.status(200).send({
         status: 200,
         message: 'You have successfully liked this article'
@@ -150,7 +161,14 @@ class Likes {
         favorited: true
       });
 
-      await subscribe(user.id, checkArticle.id);
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: checkArticle.id,
+        slug: checkArticle.slug,
+        title: 'new favorite',
+        action: 'has favorited an article'
+      });
 
       return res.status(201).send({
         status: 200,

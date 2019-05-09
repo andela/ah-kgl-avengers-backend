@@ -1,7 +1,6 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import sgMail from '@sendgrid/mail';
 import models from '../models';
 import mailer from '../config/verificationMail';
 import subscribe from '../helpers/subscribe';
@@ -38,7 +37,7 @@ class Users {
         });
       }
 
-      mailer.sentActivationMail({ name: username, id: user.id, email });
+      mailer.sentActivationMail({ name: username, email });
 
       return res.status(201).json({
         status: 201,
@@ -64,14 +63,8 @@ class Users {
    */
   static async activateUserAccount(req, res) {
     const { token } = req.params;
-    const { id, email } = jwt.verify(token, process.env.SECRET);
-    await User.update({ activated: 1 }, { where: { email } });
-
-    // create subscribers row
-    await subscribers.create({
-      authorId: id,
-      subscribers: []
-    });
+    const { email } = jwt.verify(token, process.env.SECRET);
+    const author = await User.update({ activated: 1 }, { where: { email }, returning: true });
 
     return res.status(201).send({
       status: res.statusCode,
@@ -106,8 +99,8 @@ class Users {
 
     if (hash === hashInputPassword) {
       const token = jwt.sign({
-        id, role, email, username, exp: Date.now() / 1000 + 60 * 60
-      }, process.env.SECRET);
+        id, role, email, username
+      }, process.env.SECRET, { expiresIn: 3600 });
       return res.status(200).json({
         status: 200,
         user: {
@@ -135,10 +128,10 @@ class Users {
           {
             id: existingUser.id,
             role: existingUser.role,
-            emails,
-            exp: Date.now() / 1000 + 60 * 60
+            emails
           },
-          process.env.SECRET
+          process.env.SECRET,
+          { expiration: 3600 }
         );
         return res.status(200).send({
           status: res.statusCode,
@@ -170,10 +163,10 @@ class Users {
         {
           id: newUser.id,
           role: newUser.role,
-          emails,
-          exp: Date.now() / 1000 + 60 * 60
+          emails
         },
-        process.env.SECRET
+        process.env.SECRET,
+        { expiresIn: 3600 }
       );
       res.status(201).send({
         status: res.statusCode,
@@ -389,7 +382,7 @@ class Users {
         where: {
           username
         },
-        attributes: ['id', 'bio', 'image', 'followers']
+        attributes: ['id', 'bio', 'image', 'followers', 'email', 'username']
       });
 
       if (!userExists) {
@@ -432,6 +425,22 @@ class Users {
           where: { username }
         }
       );
+
+      // send follow notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        followedAuthor: userExists.email,
+        followedUsername: userExists.username
+      });
+
+      // create subscribers row
+      const author = await subscribers.findOne({ where: { authorId: userExists.id } });
+      if (!author) {
+        await subscribers.create({
+          authorId: userExists.id,
+          subscribers: []
+        });
+      }
 
       subscribe(id, userExists.id);
 
@@ -502,6 +511,8 @@ class Users {
       );
 
       await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
+
+      subscribe(id, userExists.id);
 
       return res.status(200).json({
         status: res.statusCode,

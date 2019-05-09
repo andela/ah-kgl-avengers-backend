@@ -45,7 +45,7 @@
 <body>
   <div class="container">
     <div class="box-container">
-      <h1>New Article</h1>
+      <h1>{{{title}}}</h1>
       <h4 class="mt-5">Hello {{{receiver}}}.</h4>
       <div>{{{username}}} {{{action}}}.<br>
       click the button below to read the article.</div>
