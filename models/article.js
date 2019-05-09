@@ -60,7 +60,8 @@ export default (sequelize, DataTypes) => {
   article.associate = (models) => {
     // define associations
     article.belongsTo(models.User, {
-      foreignKey: 'author'
+      foreignKey: 'author',
+      targetKey: 'id'
     });
     article.hasMany(models.Comments, {
       foreignKey: 'post'

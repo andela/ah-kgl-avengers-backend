@@ -217,5 +217,35 @@ export default {
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
     createdAt,
     updatedAt
-  }
+  },
+
+  // Search by author
+  searchByAuthor: {
+    username: 'tester1',
+    createdAt,
+    updatedAt
+  },
+
+  // Search by title
+  searchByTitle: {
+    title: 'this is my second favorite article',
+    createdAt,
+    updatedAt
+  },
+
+  // Search by title
+  searchByAuthorAndTitle: {
+    title: 'this is my second favorite article',
+    username: 'tester1',
+    createdAt,
+    updatedAt
+  },
+
+  // Search by title
+  searchByWrongAuthor: {
+    username: 'aaron',
+    createdAt,
+    updatedAt
+  },
+
 };

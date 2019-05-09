@@ -72,6 +72,9 @@ export default (sequelize, DataTypes) => {
 
   User.associate = (models) => {
     User.hasMany(models.Comments, {});
+    User.hasMany(models.article, {
+      foreignKey: 'author',
+    });
   };
 
   return User;

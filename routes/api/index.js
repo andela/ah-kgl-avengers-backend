@@ -3,6 +3,7 @@ import userRouter from './users';
 import articleRouter from './articles';
 import likesRoutes from './like';
 import reportRoutes from './reports';
+import searchRoute from './search';
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ router.use('/', userRouter);
 router.use('/', articleRouter);
 router.use('/', likesRoutes);
 router.use('/', reportRoutes);
+router.use('/', searchRoute);
 
 router.use((err, req, res, next) => {
   if (err.name === 'ValidationError') {

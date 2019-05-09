@@ -6,18 +6,9 @@ import readTime from '../helpers/readingTime';
 const {
   article, User, bookmark, likes
 } = models;
-const attributes = [
-  'title',
-  'body',
-  'description',
-  'slug',
-  'createdAt',
-  'updatedAt',
-  'ratings',
-  'categories',
-  'readTime',
-  'tagList'
-];
+const attributes = {
+  exclude: ['id', 'deleted', 'status']
+};
 
 /**
  * This function handle the rating  array and return the average rating of
@@ -29,7 +20,8 @@ const attributes = [
  */
 const getAverageRating = (data) => {
   const { ratings } = data;
-  const average = ratings === null ? 0 : ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
+  const average = ratings === null ? 0
+    : ratings.reduce((sum, rating) => sum + rating.rating, 0) / ratings.length;
   return Number(average.toFixed(2));
 };
 
@@ -42,13 +34,18 @@ const articles = {
    */
   createArticle: async (req, res) => {
     try {
-      const {
-        title, body, status, tagList
-      } = req.body;
+      const { title, body, status } = req.body;
       const { id: author } = req.user;
       const flag = status === undefined ? 'draft' : status.toLowerCase();
-      const tags = req.is('application/json') ? tagList : JSON.parse(tagList);
       const totalArticleReadTime = readTime(body);
+      let { tagList } = req.body;
+      if (!req.is('application/json')) {
+        tagList = !tagList ? '[]' : tagList;
+        tagList = JSON.parse(tagList);
+      } else {
+        tagList = !tagList ? [] : tagList;
+      }
+      tagList = tagList.map(tag => tag.toLowerCase());
 
       const slug = `${title
         .toLowerCase()
@@ -64,7 +61,7 @@ const articles = {
         slug,
         description,
         status: flag,
-        tagList: tags,
+        tagList,
         readTime: totalArticleReadTime
       });
       return res.status(201).send({
@@ -74,13 +71,14 @@ const articles = {
           description: queryArticle.description,
           body: queryArticle.body,
           slug: queryArticle.slug,
-          tags: [queryArticle.tagList],
+          tags: queryArticle.tagList,
           totalArticleReadTime
         }
       });
     } catch (err) {
       if (err.message) {
         res.status(500).send({
+          status: res.statusCode,
           error: 'Something happened on the server'
         });
       }
@@ -248,23 +246,21 @@ const articles = {
   getFeeds: async (req, res) => {
     const { limit, offset } = req.query;
     try {
-      attributes.push('author');
       const allArticles = await article.findAll({
         where: { status: 'published', deleted: 0 },
         attributes,
+        include: [{
+          model: User,
+          attributes: ['username', 'email', 'bio', 'image']
+        }],
         limit,
         offset
       });
 
-      // eslint-disable-next-line no-restricted-syntax
-      for (const iterator of allArticles) {
-        const auth = User.findOne({
-          where: { id: iterator.author },
-          attributes: ['username', 'bio', 'image', 'following']
-        });
-        iterator.author = auth;
-        iterator.ratings = getAverageRating(iterator);
-      }
+      allArticles.forEach((element) => {
+        delete element.get().author;
+        element.ratings = getAverageRating(element);
+      });
 
       return res.status(200).send({
         status: res.statusCode,
