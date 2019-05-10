@@ -74,21 +74,21 @@ router.delete('/bookmarks/:slug', checkToken, validation.slug, articlesControlle
 // Share an article
 router.get(
   '/articles/:slug/facebook-share',
-  checkToken(),
+  checkToken,
   validation.validArticle,
   articlesController.fbShare
 );
 
 router.get(
   '/articles/:slug/twitter-share',
-  checkToken(),
+  checkToken,
   validation.validArticle,
   articlesController.twitterShare
 );
 
 router.get(
   '/articles/:slug/email-share',
-  checkToken(),
+  checkToken,
   validation.validArticle,
   articlesController.emailShare
 );
