@@ -55,34 +55,6 @@ export default {
 
 
       // register user as a subscriber to the commented article
-      const getSubscriber = await subscribers.findOne({
-        where: { articleId: post.id },
-        attributes: { subscribers }
-      });
-
-      if (!getSubscriber.subscribers.includes(req.user.id)) {
-        const newSubscribers = getSubscriber.subscribers.concat([req.user.id]);
-        await subscribers.update({
-          subscribers: newSubscribers
-        }, {
-          where: {
-            articleId: post.id
-          }
-        });
-      }
-      subscribe(req.user.id, post.id);
-
-      // send email notification
-      await mailer.sentNotificationMail({
-        username: req.user.username,
-        subscribeTo: post.id,
-        slug: post.slug,
-        title: 'new comment',
-        action: 'has left a comment on an article'
-      });
-
-
-      // register user as a subscriber to the commented article
       subscribe(req.user.id, post.id);
 
       return res.status(201).json({
