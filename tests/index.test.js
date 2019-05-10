@@ -1,10 +1,10 @@
 import chai from 'chai';
-import chaitHttp from 'chai-http';
+import chaiHttp from 'chai-http';
 import app from '../index';
 
 chai.should();
 
-chai.use(chaitHttp);
+chai.use(chaiHttp);
 
 // testing the root rout
 describe('Root test', () => {

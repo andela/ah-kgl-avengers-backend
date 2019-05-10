@@ -8,14 +8,23 @@ chai.use(chaiHttp);
 chai.should();
 
 let tokenValue = '';
+const tokens = {};
 
 describe('Comments', () => {
   // get the token
   before((done) => {
     utils
-      .getUserToken()
+      .getUser1Token()
       .then((res) => {
         tokenValue = res.body.user.token;
+      })
+      .catch(() => {
+        done();
+      });
+    utils
+      .getUser2Token()
+      .then((res) => {
+        tokens.user2 = res.body.user.token;
         done();
       })
       .catch(() => {
@@ -41,7 +50,7 @@ describe('Comments', () => {
   });
 
   // Create a comment without logging in
-  it('Should add a comment and return 201', (done) => {
+  it('Should fail to add a comment because there user is not authenticated', (done) => {
     const comment = {
       body: 'This article is very educational, waiting for the next one.'
     };
@@ -79,7 +88,18 @@ describe('Comments', () => {
       .end((err, res) => {
         res.should.have.status(200);
         res.body.message.should.be.a('string');
+        done();
+      });
+  });
 
+  it('fails to delete the comment since he is not the author of the comment', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/articles/${dataGenerator.post1.slug}/comments/${dataGenerator.comment2.id}`)
+      .set('Authorization', `Bearer ${tokens.user2}`)
+      .send()
+      .end((err, res) => {
+        res.should.have.status(403);
         done();
       });
   });

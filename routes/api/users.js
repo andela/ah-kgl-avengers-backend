@@ -3,16 +3,18 @@ import passport from 'passport';
 import userControllers from '../../controllers/users';
 import userValidations from '../../middlewares/userValidation';
 import multerConfig from '../../config/multerConfig';
-import checkToken from '../../middlewares/passportCustom';
+import tokenChecker from '../../middlewares/passportCustom';
 
 const router = express.Router({});
+const { checkToken } = tokenChecker;
+
 
 router.post('/auth/signup', userValidations.signup, userControllers.createUserLocal);
 router.post('/auth/login', userValidations.login, userControllers.signinLocal);
 router.get('/activation/:token', userControllers.activateUserAccount);
 
 // for testing the passport authentication of the JWT token
-router.get('/test', checkToken(), (req, res) => {
+router.get('/test', checkToken, (req, res) => {
   res.send({ message: 'hello' });
 });
 
@@ -35,26 +37,26 @@ router.post('/auth/reset', userControllers.resetPassword);
 router.put('/auth/reset/:token', userControllers.updatePassword);
 
 // User logout
-router.post('/auth/logout', checkToken(), userControllers.logout);
+router.post('/auth/logout', checkToken, userControllers.logout);
 
 // User functionality
-router.get('/users/authors', checkToken(), userControllers.getAllAuthors);
+router.get('/users/authors', checkToken, userControllers.getAllAuthors);
 router.get(
   '/profiles/:username',
-  checkToken(),
+  checkToken,
   userValidations.validUser,
   userControllers.getOneAuthor
 );
 
 // Follow
-router.post('/profiles/:username/follow', checkToken(), userControllers.follow);
+router.post('/profiles/:username/follow', checkToken, userControllers.follow);
 
 // Un-follow
-router.delete('/profiles/:username/follow', checkToken(), userControllers.unFollow);
+router.delete('/profiles/:username/follow', checkToken, userControllers.unFollow);
 // The Routes for the user Updating the account
 router.put(
   '/users/profile/:username/update',
-  checkToken(),
+  checkToken,
   multerConfig,
   userControllers.updateProfile
 );

@@ -67,7 +67,7 @@ class Users {
     await User.update({ activated: 1 }, { where: { email } });
     return res.status(201).send({
       status: res.statusCode,
-      message: 'Your account updated successfuly'
+      message: 'Your account updated successfully'
     });
   }
 
@@ -87,19 +87,25 @@ class Users {
     const {
       salt, hash, id, role
     } = user;
-    const hashInputpwd = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    const hashInputPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 
-    if (hash !== hashInputpwd) {
+    if (hash !== hashInputPassword) {
       return res.status(400).send({
         status: 400,
         errorMessage: 'The password is not correct'
       });
     }
 
-    if (hash === hashInputpwd) {
-      const token = jwt.sign({
-        id, role, email, exp: Date.now() / 1000 + 60 * 60
-      }, process.env.SECRET);
+    if (hash === hashInputPassword) {
+      const token = jwt.sign(
+        {
+          id,
+          role,
+          email,
+          exp: Date.now() / 1000 + 60 * 60
+        },
+        process.env.SECRET
+      );
       return res.status(200).json({
         status: 200,
         user: {
@@ -196,8 +202,14 @@ class Users {
    * @returns {object} res
    */
   static async resetPassword(req, res) {
-    // check if email exists in the database
+    // check if email have been sent and exists in the database
     const { email } = req.body;
+    if (!email) {
+      return res.status(404).send({
+        status: res.statusCode,
+        message: 'email not found'
+      });
+    }
     const result = await User.findOne({
       where: {
         email
@@ -206,13 +218,13 @@ class Users {
     if (!result) {
       return res.status(404).send({
         status: res.statusCode,
-        message: 'email not found'
+        message: `User with email ${email} does not exist`
       });
     }
 
     // create a JWT token
     const token = await jwt.sign({ email }, process.env.SECRET, { expiresIn: '2h' });
-    // send email using sendgrid
+    // send email using SendGrid
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       to: email,
@@ -220,7 +232,7 @@ class Users {
       subject: 'Sending with SendGrid is Fun',
       html: `
       <p>
-       You are receiving this email because you requested a password reset for your authorhaven account,<br>
+       You are receiving this email because you requested a password reset for your AuthorHaven account,<br>
        Click on the reset link bellow to reset or ignore this message, if you didn't make password reset request<br>
        <a href='http://localhost:3000/api/v1/update_password/${token}' target='_blank'>Reset Password</a>
       </p>
@@ -294,7 +306,7 @@ class Users {
     BlacklistTokens.create({ token, expires: new Date(exp * 1000) })
       .then(() => res.status(200).json({
         status: res.statusCode,
-        message: 'user logged out'
+        message: 'User logged out'
       }))
       .catch(err => next(err));
   }
@@ -355,7 +367,7 @@ class Users {
     if (checkUser.id !== req.user.id) {
       return res.status(401).send({
         status: 401,
-        errorMessage: "You are not Authorized to update someone else's profile"
+        errorMessage: 'You are not allowed to update this profile'
       });
     }
     const updated = await User.update(
@@ -521,7 +533,7 @@ class Users {
    *
    * @param {object} req
    * @param {object} res
-   * @returns {object} res with the updated user informations
+   * @returns {object} res with the updated user information
    */
   static async getProfile(req, res) {
     const { username } = req.params;

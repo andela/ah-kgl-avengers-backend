@@ -116,7 +116,7 @@ const Reports = {
       if (!findArticle) {
         return res.status(404).send({
           status: res.statusCode,
-          error: 'This article is not found',
+          error: 'The article was not found',
         });
       }
       const destroy = await article.destroy({ where: { slug } });
@@ -128,7 +128,7 @@ const Reports = {
       }
       return res.status(200).send({
         status: res.statusCode,
-        message: 'Article delete successfuly'
+        message: 'Article delete successfully'
       });
     } catch (error) {
       return res.status(500).send({

@@ -1,9 +1,10 @@
 import express from 'express';
 import validation from '../../middlewares/articleValidation';
-import checkToken from '../../middlewares/passportCustom';
+import tokenChecker from '../../middlewares/passportCustom';
 import reportController from '../../controllers/reports';
 
 const router = express.Router();
+const { checkToken } = tokenChecker;
 
 /**
  * URL      : /api/v1/report/articles
@@ -14,7 +15,7 @@ const router = express.Router();
  */
 router.get(
   '/report/articles',
-  checkToken(),
+  checkToken,
   reportController.getAllReportedArticle
 );
 
@@ -29,7 +30,7 @@ router.get(
  */
 router.post(
   '/report/articles/:slug',
-  checkToken(),
+  checkToken,
   validation.message,
   reportController.reportArticle
 );
@@ -43,7 +44,7 @@ router.post(
  */
 router.delete(
   '/report/articles/:slug',
-  checkToken(),
+  checkToken,
   validation.slug,
   reportController.deleteReportedArticle
 );
