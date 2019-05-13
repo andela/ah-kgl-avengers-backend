@@ -20,7 +20,6 @@ const attributes = {
  *
  */
 const getAverageRating = (data) => {
-  // const { ratings } = data;
   const average = data === null || data.length === 0
     ? 0
     : data.reduce((sum, rating) => sum + rating.rating, 0) / data.length;
