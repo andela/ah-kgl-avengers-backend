@@ -14,15 +14,23 @@ const unsubscribe = {
     const subscribedarticle = await article.findOne({
       where: { slug: slugOrUsername }
     });
+    if (!user && !subscribedarticle) {
+      return res.status(404).send({
+        status: res.statusCode,
+        message: 'ressource not found'
+      });
+    }
     try {
       const id = (subscribedarticle) ? subscribedarticle.id : user.id;
+
       const subscriber = await subscribers.findOne({
         where: {
           [Op.or]: [{ authorId: id }, { articleId: id }]
         },
         attribute: { subscribers }
       });
-      if (!subscriber.subscribers.includes(userId)) {
+
+      if (!subscriber || !subscriber.subscribers.includes(userId)) {
         return res.status(400).send({
           status: res.statusCode,
           message: 'you are not a subscriber'
@@ -34,9 +42,9 @@ const unsubscribe = {
         message: 'successfully unsubscribed'
       });
     } catch (er) {
-      return res.status(400).send({
+      return res.status(500).send({
         status: res.statusCode,
-        message: 'ressource not found'
+        message: er.message
       });
     }
   }
