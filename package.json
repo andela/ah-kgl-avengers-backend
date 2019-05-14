@@ -19,7 +19,7 @@
     "seed": "NODE_ENV=test node_modules/.bin/sequelize db:seed:all",
     "migrate:refresh": "npm run migrate:reset && npm run migrate",
     "migrate:reset": "node_modules/.bin/sequelize db:migrate:undo:all",
-    "test:all":"NODE_ENV=test npm run migrate:refresh && npm run seed && npm test"
+    "test:all": "NODE_ENV=test npm run migrate:refresh && npm run seed && npm test"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",

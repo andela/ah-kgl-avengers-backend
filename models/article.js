@@ -62,6 +62,9 @@ export default (sequelize, DataTypes) => {
     article.hasMany(models.Comments, {
       foreignKey: 'post'
     });
+    article.hasMany(models.statistic, {
+      foreignKey: 'articleId'
+    });
     article.hasMany(models.ratings, {
       foreignKey: 'post'
     });

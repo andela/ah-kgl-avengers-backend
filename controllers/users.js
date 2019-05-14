@@ -137,7 +137,7 @@ class Users {
             emails
           },
           process.env.SECRET,
-          { expiration: 3600 }
+          { expiresIn: 3600 }
         );
         return res.status(200).send({
           status: res.statusCode,

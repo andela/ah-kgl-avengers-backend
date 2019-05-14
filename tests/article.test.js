@@ -389,7 +389,7 @@ describe('Article ', () => {
         if (err) done(err);
         res.should.have.status(404);
         res.body.should.be.an('Object');
-        res.body.errorMessage.should.eql('Article not found');
+        res.body.error.should.eql('Article not found');
         done();
       });
   });

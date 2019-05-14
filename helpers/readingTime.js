@@ -1,5 +1,4 @@
 // constants for calculating reading time of an article.
-
 const wordsPerMinute = 230;
 
 /**
@@ -25,4 +24,11 @@ const totalReadTime = (body, wordsPerMin = wordsPerMinute) => {
   return `${Math.round(wordTime)} min read`;
 };
 
-export default totalReadTime;
+const nonReadTime = (time) => {
+  if (time <= 0.3333) {
+    return time;
+  }
+  return `${Math.round(time)}`;
+};
+
+export default { totalReadTime, nonReadTime };

@@ -78,6 +78,9 @@ export default (sequelize, DataTypes) => {
     User.hasMany(models.Comments, {
       foreignKey: 'author'
     });
+    User.hasMany(models.statistic, {
+      foreignKey: 'userId'
+    });
     User.hasMany(models.article, {
       foreignKey: 'author'
     });
