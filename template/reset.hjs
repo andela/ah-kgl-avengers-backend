@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <style>
+    .container {
+      margin: 0;
+      padding: 5%;
+      font-family: 'Nanum Gothic', sans-serif;
+      background: linear-gradient(#38c4b0, white);
+    }
+
+    .box-container {
+      background: white;
+      padding: 5vh;
+      width: 80%;
+      max-width: 400px;
+      margin: 0 auto;
+      box-shadow: 1px 2px 2px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    .btn {
+      display: block;
+      height: 25px;
+      padding: 15px;
+      text-align: center;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: #38c4b0;
+    }
+    .btn-primary:hover {
+      background: #2a9c8b;
+      color: white;
+    }
+
+    .mt-5 {
+      margin-top: 5vh;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="box-container">
+      <h1>Password reset</h1>
+      <h4 class="mt-5">Hello {{{username}}}.</h4>
+      <div><p>
+       You are receiving this email because you requested a password reset for your authorhaven account,<br>
+       Click on the reset link bellow to reset or ignore this message, if you didn't make password reset request<br>
+      </p></div>
+      <a style="color: white" class="btn btn-primary mt-5" href={{{url}}} target="_brank">Reset Password</a>
+    </div>
+  </div>
+</body>
+
+</html>

@@ -1,4 +1,6 @@
 import models from '../models';
+import subscribe from '../helpers/subscribe';
+import mailer from '../config/verificationMail';
 
 const {
   Comments, User, article, likeComments
@@ -41,6 +43,19 @@ export default {
         author: authorID,
         post: post.id
       });
+
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: post.id,
+        slug: post.slug,
+        title: 'new comment',
+        action: 'has left a comment on an article'
+      });
+
+
+      // register user as a subscriber to the commented article
+      subscribe(req.user.id, post.id);
 
       return res.status(201).json({
         status: res.statusCode,

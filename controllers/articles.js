@@ -2,9 +2,10 @@ import crypto from 'crypto';
 import open from 'open';
 import models from '../models/index';
 import readTime from '../helpers/readingTime';
+import mailer from '../config/verificationMail';
 
 const {
-  article, User, bookmark, likes, ratings
+  article, User, bookmark, likes, subscribers, ratings
 } = models;
 const attributes = {
   exclude: ['id', 'deleted', 'status']
@@ -19,7 +20,6 @@ const attributes = {
  *
  */
 const getAverageRating = (data) => {
-  // const { ratings } = data;
   const average = data === null || data.length === 0
     ? 0
     : data.reduce((sum, rating) => sum + rating.rating, 0) / data.length;
@@ -65,6 +65,22 @@ const articles = {
         tagList,
         readTime: totalArticleReadTime
       });
+
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: req.user.id,
+        slug: createdArticle.slug,
+        title: createdArticle.title,
+        action: 'has posted an article'
+      });
+
+      // register author as a subscriber to his article
+      await subscribers.create({
+        articleId: createdArticle.id,
+        subscribers: [author]
+      });
+
       return res.status(201).send({
         status: res.statusCode,
         article: {
@@ -717,7 +733,7 @@ const articles = {
     res.status(200).send({
       status: res.statusCode,
       message: 'post shared',
-      url: link
+      link
     });
     open(`https:www.facebook.com/sharer/sharer.php?u=${link}`);
   },
@@ -726,7 +742,8 @@ const articles = {
     const { link } = req.article;
     res.status(200).send({
       status: res.statusCode,
-      message: 'tweet sent'
+      message: 'tweet sent',
+      link
     });
     open(`https://twitter.com/intent/tweet?url=${link}`);
   },
@@ -736,7 +753,7 @@ const articles = {
     res.status(200).send({
       status: res.statusCode,
       message: 'email sent',
-      title
+      link
     });
     open(`mailto:?subject=${title}&body=${link}`);
   }

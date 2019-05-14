@@ -1,13 +1,13 @@
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import sgMail from '@sendgrid/mail';
 import models from '../models';
 import mailer from '../config/verificationMail';
+import subscribe from '../helpers/subscribe';
 
 dotenv.config();
 
-const { User, BlacklistTokens } = models;
+const { User, BlacklistTokens, subscribers } = models;
 
 /**
  * @description User Controller class
@@ -37,7 +37,7 @@ class Users {
         });
       }
 
-      mailer.sentActivationMail({ name: username, id: user.id, email });
+      mailer.sentActivationMail({ name: username, email });
 
       return res.status(201).json({
         status: 201,
@@ -64,7 +64,7 @@ class Users {
   static async activateUserAccount(req, res) {
     const { token } = req.params;
     const { email } = jwt.verify(token, process.env.SECRET);
-    await User.update({ activated: 1 }, { where: { email } });
+    await User.update({ activated: 1 }, { where: { email }, returning: true });
     return res.status(201).send({
       status: res.statusCode,
       message: 'Your account updated successfully'
@@ -85,7 +85,7 @@ class Users {
       });
     }
     const {
-      salt, hash, id, role
+      salt, hash, id, role, username
     } = user;
     const hashInputPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 
@@ -97,15 +97,9 @@ class Users {
     }
 
     if (hash === hashInputPassword) {
-      const token = jwt.sign(
-        {
-          id,
-          role,
-          email,
-          exp: Date.now() / 1000 + 60 * 60
-        },
-        process.env.SECRET
-      );
+      const token = jwt.sign({
+        id, role, email, username
+      }, process.env.SECRET, { expiresIn: 3600 });
       return res.status(200).json({
         status: 200,
         user: {
@@ -133,10 +127,10 @@ class Users {
           {
             id: existingUser.id,
             role: existingUser.role,
-            emails,
-            exp: Date.now() / 1000 + 60 * 60
+            emails
           },
-          process.env.SECRET
+          process.env.SECRET,
+          { expiration: 3600 }
         );
         return res.status(200).send({
           status: res.statusCode,
@@ -168,10 +162,10 @@ class Users {
         {
           id: newUser.id,
           role: newUser.role,
-          emails,
-          exp: Date.now() / 1000 + 60 * 60
+          emails
         },
-        process.env.SECRET
+        process.env.SECRET,
+        { expiresIn: 3600 }
       );
       res.status(201).send({
         status: res.statusCode,
@@ -222,27 +216,15 @@ class Users {
       });
     }
 
-    // create a JWT token
-    const token = await jwt.sign({ email }, process.env.SECRET, { expiresIn: '2h' });
-    // send email using SendGrid
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-    const msg = {
-      to: email,
-      from: 'info@authorhaven.com',
-      subject: 'Sending with SendGrid is Fun',
-      html: `
-      <p>
-       You are receiving this email because you requested a password reset for your AuthorHaven account,<br>
-       Click on the reset link bellow to reset or ignore this message, if you didn't make password reset request<br>
-       <a href='http://localhost:3000/api/v1/update_password/${token}' target='_blank'>Reset Password</a>
-      </p>
-     `
-    };
+    await mailer.sentResetMail({
+      username: result.username,
+      email
+    });
 
-    sgMail.send(msg).then(() => res.status(200).send({
+    res.status(200).send({
       status: res.statusCode,
       message: 'Reset email sent! check your email'
-    }));
+    });
   }
 
   /**
@@ -399,7 +381,7 @@ class Users {
         where: {
           username
         },
-        attributes: ['id', 'bio', 'image', 'followers']
+        attributes: ['id', 'bio', 'image', 'followers', 'email', 'username']
       });
 
       if (!userExists) {
@@ -443,6 +425,24 @@ class Users {
         }
       );
 
+      // send follow notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        followedAuthor: userExists.email,
+        followedUsername: userExists.username
+      });
+
+      // create subscribers row
+      const author = await subscribers.findOne({ where: { authorId: userExists.id } });
+      if (!author) {
+        await subscribers.create({
+          authorId: userExists.id,
+          subscribers: []
+        });
+      }
+
+      subscribe(id, userExists.id);
+
       return res.status(201).json({
         status: res.statusCode,
         profile: {
@@ -456,7 +456,7 @@ class Users {
       return res.status(500).json({
         error: e,
         status: res.statusCode,
-        message: 'Something went wrong on the server'
+        message: e.message
       });
     }
   }
@@ -510,6 +510,8 @@ class Users {
       );
 
       await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
+
+      subscribe(id, userExists.id);
 
       return res.status(200).json({
         status: res.statusCode,

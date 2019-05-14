@@ -1,4 +1,5 @@
 import models from '../models/index';
+import mailer from '../config/verificationMail';
 
 const { article, likes } = models;
 
@@ -30,6 +31,16 @@ class Likes {
       });
       if (arleadyLiked && (arleadyLiked.status === 'disliked' || arleadyLiked.status === null)) {
         await arleadyLiked.update({ status: 'liked' });
+
+        // send email notification
+        await mailer.sentNotificationMail({
+          username: req.user.username,
+          subscribeTo: checkArticle.id,
+          slug: checkArticle.slug,
+          title: 'new like',
+          action: 'has liked an article'
+        });
+
         return res.status(200).send({
           status: 200,
           message: ' You have liked this article'
@@ -49,6 +60,7 @@ class Likes {
         articleId: checkArticle.id,
         status: 'liked'
       });
+
       return res.status(200).send({
         status: 200,
         message: 'You have successfully liked this article'
@@ -129,6 +141,16 @@ class Likes {
       if (arleadyFavorited
       && (arleadyFavorited.favorited === false || arleadyFavorited.favorited === null)) {
         await arleadyFavorited.update({ favorited: true });
+
+        // send email notification
+        await mailer.sentNotificationMail({
+          username: req.user.username,
+          subscribeTo: checkArticle.id,
+          slug: checkArticle.slug,
+          title: 'new favorite',
+          action: 'has favorited an article'
+        });
+
         return res.status(200).send({
           status: 200,
           message: 'You have favorited this article'
@@ -148,6 +170,16 @@ class Likes {
         articleId: checkArticle.id,
         favorited: true
       });
+
+      // send email notification
+      await mailer.sentNotificationMail({
+        username: req.user.username,
+        subscribeTo: checkArticle.id,
+        slug: checkArticle.slug,
+        title: 'new favorite',
+        action: 'has favorited an article'
+      });
+
       return res.status(201).send({
         status: 200,
         message: 'You have successfully favorited this article'
