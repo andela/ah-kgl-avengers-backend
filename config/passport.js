@@ -1,6 +1,5 @@
 import passport from 'passport';
 import dotenv from 'dotenv';
-import strategies from 'passport-local';
 import { Strategy as JWTStrategy, ExtractJwt } from 'passport-jwt';
 import FacebookToken from 'passport-facebook-token';
 import GooglePlusToken from 'passport-google-plus-token';
@@ -8,32 +7,7 @@ import models from '../models';
 
 dotenv.config();
 
-const LocalStrategy = strategies.Strategy;
 const { User, BlacklistTokens } = models;
-
-passport.use(
-  'signup',
-  new LocalStrategy(
-    {
-      usernameField: User.email,
-      passwordField: User.password
-    },
-    async (email, password, done) => {
-      try {
-        if (!email || !password) {
-          return done(null, false, { message: 'The email or password can not to be empty' });
-        }
-        const user = await User.findOne({ where: { email } });
-        if (user) {
-          return done(null, false, { message: 'The account with that email already exists' });
-        }
-        return done(null, email);
-      } catch (err) {
-        return done(err);
-      }
-    }
-  )
-);
 
 /*
  * The passport strategy to authorize and authenticate the user using JWT token
@@ -55,12 +29,9 @@ passport.use(
           attributes: { exclude: ['password'] }
         });
         if (user.activated === 0) {
-          return done(
-            null, false,
-            {
-              errorMessage: 'Please first activate your account',
-            }
-          );
+          return done(null, false, {
+            errorMessage: 'Please first activate your account'
+          });
         }
         if (!user) {
           return done(null, false, { message: 'user does not exist' });

@@ -40,7 +40,7 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
-        res.body.should.have.property('message').eql('You have successfully remove your like');
+        res.body.should.have.property('message').eql('You have successfully removed your like');
         done();
       });
   });
@@ -54,7 +54,7 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
-        res.body.should.have.property('message').eql(' You have liked this article');
+        res.body.should.have.property('message').eql('You have liked this article');
         done();
       });
   });
@@ -185,7 +185,6 @@ describe('Like, Dislike and Favorite', () => {
       });
   });
 
-
   it('should favorite new  article and return 200', (done) => {
     chai
       .request(app)
@@ -195,7 +194,9 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(201);
-        res.body.should.have.property('message').eql('You have successfully favorited this article');
+        res.body.should.have
+          .property('message')
+          .eql('You have successfully favorited this article');
         done();
       });
   });

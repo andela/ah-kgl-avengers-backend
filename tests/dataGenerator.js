@@ -113,7 +113,7 @@ export default {
 
   // user5
   invalidUsername: {
-    username: 'test',
+    username: 'test'
   },
 
   // post1 published
@@ -123,7 +123,8 @@ export default {
     title: 'this is my first try of article',
     slug: 'this-is-my-first-try-of-article69f9fccd65',
     description: 'new article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -138,7 +139,8 @@ export default {
     title: 'this is my second try of article',
     slug: 'this-is-my-second-try-of-article69f9fccd65',
     description: 'second article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -152,7 +154,8 @@ export default {
     title: 'this is my first disliked article',
     slug: 'this-is-my-first-disliked-article69f9fccd65',
     description: 'first disliked article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'draft',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -166,7 +169,8 @@ export default {
     title: 'this is my second disliked article',
     slug: 'this-is-my-second-disliked-article69f9fccd65',
     description: 'second disliked article',
-    body: 'Lorem ipsum dolor sit amet,consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet,consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -180,7 +184,8 @@ export default {
     title: 'this is my first favorite article',
     slug: 'this-is-my-first-favorite-article69f9fccd65',
     description: 'second disliked article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -194,7 +199,8 @@ export default {
     title: 'this is my second favorite article',
     slug: 'this-is-my-second-favorite-article69f9fccd65',
     description: 'second disliked article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -208,7 +214,8 @@ export default {
     title: 'this is my second favorite article',
     slug: 'this-is-my-second-favorite-article69f9fccd66',
     description: 'second disliked article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -222,7 +229,8 @@ export default {
     title: 'this is my second favorite article',
     slug: 'this-is-my-second-favorite-article69f9fccd67',
     description: 'second disliked article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -236,7 +244,8 @@ export default {
     title: 'this is my second favorite article',
     slug: 'this-is-my-second-favorite-article69f9fccd68',
     description: 'second disliked article',
-    body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
@@ -250,7 +259,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'`,
-    status: 'published',
+    status: 'published'
   },
   // More than 1 Min read article
   post8: {
@@ -266,17 +275,18 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'`,
-    status: 'published',
+    status: 'published'
   },
   testPostWithStatus: {
     title: 'Myfavorite article',
-    body: 'Lorem m ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    body:
+      'Lorem m ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'draft',
     tagList: JSON.stringify(['lorem'])
   },
 
   invalidSlug: {
-    slug: 'this-is-my-second-favorite-article69f9fcxhdkd',
+    slug: 'this-is-my-second-favorite-article69f9fcxhdkd'
   },
   // comment1 to published story
   comment1: {
@@ -311,7 +321,7 @@ export default {
   comment4: {
     id: '2f0bab3d-54f0-41bb-b20e-b3456b28343f',
     body: 'It can take another post, I will work on it',
-    highlitedText: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+    highlightedText: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
     startIndex: 23,
     endIndex: 80,
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
@@ -324,7 +334,7 @@ export default {
   comment5: {
     id: '2f0bab3d-54f0-41bb-b20e-b3456b28345f',
     body: 'It can take another post, I will work on it',
-    highlitedText: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+    highlightedText: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
     startIndex: 23,
     endIndex: 80,
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa74',

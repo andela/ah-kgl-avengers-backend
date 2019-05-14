@@ -35,7 +35,7 @@ class LikeComments {
         await isLiked.update({ status: '' });
         return res.status(200).send({
           status: 200,
-          message: 'You have succeffully removed your like on this comment'
+          message: 'You have successfully removed your like on this comment'
         });
       }
 
@@ -43,7 +43,7 @@ class LikeComments {
         await isLiked.update({ status: 'liked' });
         return res.status(200).send({
           status: 200,
-          message: 'You have successfull liked this comment'
+          message: 'You have successfully liked this comment'
         });
       }
 

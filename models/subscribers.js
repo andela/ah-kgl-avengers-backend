@@ -29,7 +29,7 @@ export default (sequelize, DataTypes) => {
       subscribers: {
         type: DataTypes.JSONB,
         allowNull: false
-      },
+      }
     },
     {}
   );

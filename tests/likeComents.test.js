@@ -30,7 +30,7 @@ describe('Like Comments', () => {
         .send()
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.have.property('message').eql('You have successfull liked this comment');
+          res.body.should.have.property('message').eql('You have successfully liked this comment');
           done();
         });
     });
@@ -58,7 +58,7 @@ describe('Like Comments', () => {
         });
     });
 
-    it('should remove like on the commnent and return 200', (done) => {
+    it('Removes a like on the comment', (done) => {
       chai
         .request(app)
         .post('/api/v1/articles/comments/18e1bbf9-e707-4925-a992-c59f1fc748aa/like')
@@ -66,12 +66,14 @@ describe('Like Comments', () => {
         .send()
         .end((err, res) => {
           res.should.have.status(200);
-          res.body.should.have.property('message').eql('You have succeffully removed your like on this comment');
+          res.body.should.have
+            .property('message')
+            .eql('You have successfully removed your like on this comment');
           done();
         });
     });
 
-    it('should fail to remove like on the commnent and return 401 as user is not authenticated', (done) => {
+    it('Fails to remove like on the comment as user is not authenticated', (done) => {
       chai
         .request(app)
         .post('/api/v1/articles/comments/c90dee64-663d-4d8b-b34d-12acba22cd41/like')

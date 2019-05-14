@@ -1,5 +1,5 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.addColumn('Comments', 'highlitedText', Sequelize.STRING),
+  up: (queryInterface, Sequelize) => queryInterface.addColumn('Comments', 'highlightedText', Sequelize.STRING),
 
-  down: (queryInterface, Sequelize) => queryInterface.removeColumn('Comments', 'highlitedText')
+  down: queryInterface => queryInterface.removeColumn('Comments', 'highlightedText')
 };

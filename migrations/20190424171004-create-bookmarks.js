@@ -1,4 +1,3 @@
-
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('bookmarks', {
     id: {
@@ -11,20 +10,20 @@ export default {
       allowNull: true,
       references: {
         model: 'Users',
-        key: 'id',
+        key: 'id'
       },
       onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     articleId: {
       type: Sequelize.UUID,
       allowNull: true,
       references: {
         model: 'articles',
-        key: 'id',
+        key: 'id'
       },
       onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     createdAt: {
       allowNull: false,
@@ -35,5 +34,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('bookmarks')
+  down: queryInterface => queryInterface.dropTable('bookmarks')
 };

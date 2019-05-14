@@ -21,8 +21,8 @@ describe('Like Comments', () => {
       });
   });
 
-  describe('/Create a comment on a highlighted text in article', () => {
-    it('should comment on highlighted text and return 201', (done) => {
+  describe('Create a comment on a highlighted text in article', () => {
+    it('add comment on highlighted text', (done) => {
       chai
         .request(app)
         .post('/api/v1/articles/this-is-my-first-try-of-article69f9fccd65/text-comment')

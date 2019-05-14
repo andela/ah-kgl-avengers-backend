@@ -3,7 +3,7 @@ import subscribe from '../helpers/subscribe';
 import mailer from '../config/verificationMail';
 
 const {
-  Comments, User, article, likeComments
+  Comments, User, article, likeComments, CommentEdits
 } = models;
 
 export default {
@@ -53,7 +53,6 @@ export default {
         action: 'has left a comment on an article'
       });
 
-
       // register user as a subscriber to the commented article
       subscribe(req.user.id, post.id);
 
@@ -68,15 +67,9 @@ export default {
         }
       });
     } catch (e) {
-      if (e.message) {
-        return res.status(500).json({
-          status: res.statusCode,
-          message: 'Something happened on the server',
-          error: e.message
-        });
-      }
       return res.status(500).json({
         status: res.statusCode,
+        error: e.message || '',
         message: 'Something happened on the server'
       });
     }
@@ -90,7 +83,7 @@ export default {
    * */
   get: async (req, res) => {
     const { slug } = req.params;
-    let structuredComments = [];
+    let formatedComments = [];
 
     try {
       // check if the article exists
@@ -110,46 +103,135 @@ export default {
         where: { post: post.id },
         attributes: { exclude: ['post', 'UserId'] },
         limit: 15,
-        order: [['createdAt', 'ASC']]
+        order: [['createdAt', 'ASC']],
+        include: [
+          {
+            model: User,
+            attributes: ['username', 'image']
+          },
+          {
+            model: likeComments,
+            where: {
+              status: 'liked'
+            },
+            attributes: ['id'],
+            required: false
+          }
+        ]
       });
       // format the comments into the required format
-      structuredComments = await Promise.all(
+      formatedComments = await Promise.all(
         comments.map(async (comment) => {
-          const author = await User.findOne({
-            where: { id: comment.author },
-            attributes: ['username', 'image']
-          });
-          const getLikes = await likeComments.findAndCountAll({
-            where: { commentId: comment.id, status: 'liked' }
+          const editHistory = await CommentEdits.findAll({
+            where: { commentId: comment.id },
+            attributes: ['body', 'createdAt'],
+            order: [['createdAt', 'ASC']]
           });
           return {
             id: comment.id,
             createdAt: comment.createdAt,
             updatedAt: comment.updatedAt,
             body: comment.body,
-            highlitedText: comment.highlitedText,
-            author,
-            likes: getLikes.count
+            highlightedText: comment.hightedText,
+            author: comment.User,
+            likes: comment.likeComments.length,
+            editHistory
           };
         })
       );
-      // console.log(structuredComments);
+
       return res.status(200).json({
         status: res.statusCode,
-        comments: structuredComments,
-        commentsCount: structuredComments.length
+        comments: formatedComments,
+        commentsCount: formatedComments.length
       });
     } catch (e) {
-      if (e.message) {
-        return res.status(500).json({
-          status: res.statusCode,
-          message: 'Something happened on the server',
-          error: e.message
-        });
-      }
       return res.status(500).json({
         status: res.statusCode,
+        error: e.message || '',
         message: 'Something happened on the server'
+      });
+    }
+  },
+
+  /**
+   * An author of a comment is allowed to update a comment
+   * When a comment is updated we keep the  old comment edits
+   * so that a user can be able to see edit history
+   * @param {object} req
+   * @param {object} res
+   * @return {object} res
+   *
+   */
+  update: async (req, res) => {
+    const { body } = req.body;
+    const { slug, commentId } = req.params;
+    const { id } = req.user;
+
+    if (!body || body.trim() === '') {
+      return res.status(400).json({
+        status: res.statusCode,
+        error: 'Comment body is required'
+      });
+    }
+
+    try {
+      const CommentedArticle = await article.findOne({
+        where: { slug },
+        attributes: ['id'],
+        include: {
+          model: User,
+          attributes: ['username', 'id']
+        }
+      });
+
+      if (!CommentedArticle) {
+        return res.status(400).json({
+          status: res.statusCode,
+          error: 'Article not found'
+        });
+      }
+
+      const updatedComment = await Comments.update(
+        { body },
+        {
+          where: {
+            id: commentId,
+            post: CommentedArticle.id,
+            author: id
+          },
+          returning: true
+        }
+      );
+
+      if (updatedComment[0] === 0) {
+        return res.status(400).json({
+          status: res.statusCode,
+          error: 'Comment to update not found'
+        });
+      }
+
+      const editHistory = await CommentEdits.findAll({
+        where: { commentId },
+        attributes: ['body', 'createdAt']
+      });
+      const comment = updatedComment[1][0];
+
+      return res.status(200).json({
+        status: res.statusCode,
+        comment: {
+          body: comment.body,
+          updatedAt: comment.updatedAt,
+          highlightedText: comment.highlightedText,
+          startIndex: comment.startIndex,
+          endIndex: comment.endIndex
+        },
+        editHistory
+      });
+    } catch (error) {
+      return res.status(500).json({
+        status: res.statusCode,
+        error: error.message
       });
     }
   },
@@ -197,16 +279,10 @@ export default {
         message: 'Comment deleted'
       });
     } catch (e) {
-      if (e.message) {
-        return res.status(500).json({
-          status: res.statusCode,
-          message: 'Something happened on the server',
-          error: e.message
-        });
-      }
       return res.status(500).json({
         status: res.statusCode,
-        message: 'Something happened on the server'
+        message: 'Something happened on the server',
+        error: e.message
       });
     }
   }

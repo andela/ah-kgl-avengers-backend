@@ -1,4 +1,3 @@
-
 export default {
   up: (queryInterface, Sequelize) => queryInterface.sequelize.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";').then(() => queryInterface.createTable('likes', {
     id: {
@@ -11,19 +10,19 @@ export default {
       type: Sequelize.UUID,
       references: {
         model: 'Users',
-        key: 'id',
+        key: 'id'
       },
       onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     articleId: {
       type: Sequelize.UUID,
       references: {
         model: 'articles',
-        key: 'id',
+        key: 'id'
       },
       onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
+      onUpdate: 'CASCADE'
     },
     status: {
       type: Sequelize.STRING
@@ -40,5 +39,5 @@ export default {
       type: Sequelize.DATE
     }
   })),
-  down: (queryInterface, Sequelize) => queryInterface.dropTable('likes')
+  down: queryInterface => queryInterface.dropTable('likes')
 };
