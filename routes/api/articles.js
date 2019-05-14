@@ -12,6 +12,10 @@ router.get('/articles/feeds', verifyToken, articlesController.getFeeds);
 
 router.get('/user/:username/articles', verifyToken, articlesController.authorArticles);
 
+router.get(
+  '/articles/tags',
+  articlesController.getTags
+);
 // selects all articles
 // TODO: no authentication required
 router.get('/articles', checkToken, articlesController.getAllPublishedArticles);
@@ -97,4 +101,5 @@ router.get(
   validation.validArticle,
   articlesController.emailShare
 );
+
 export default router;

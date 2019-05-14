@@ -5,7 +5,7 @@ import readTime from '../helpers/readingTime';
 import mailer from '../config/verificationMail';
 
 const {
-  article, User, bookmark, likes, subscribers, ratings
+  article, User, bookmark, likes, subscribers, ratings, tags
 } = models;
 const attributes = {
   exclude: ['id', 'deleted', 'status']
@@ -64,6 +64,15 @@ const articles = {
         status: flag,
         tagList,
         readTime: totalArticleReadTime
+      });
+
+      // tag registration
+      tagList.forEach(async (tag) => {
+        const findTag = await tags.findOne({
+          where: { tag }
+        });
+        if (!findTag) tags.create({ tag });
+        if (findTag) tags.update({ count: findTag.count + 1 }, { where: { tag }, returning: true });
       });
 
       // send email notification
@@ -784,6 +793,14 @@ const articles = {
       link
     });
     open(`mailto:?subject=${title}&body=${link}`);
+  },
+
+  getTags: async (req, res) => {
+    const tagslist = await tags.findAll({ attributes: ['tag', 'count'] });
+    return res.status(200).send({
+      status: res.statusCode,
+      data: tagslist
+    });
   }
 };
 
