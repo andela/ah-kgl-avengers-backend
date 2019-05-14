@@ -16,7 +16,7 @@ export default {
     salt,
     hash,
     email: 'tester1@test.com',
-    role: -1,
+    role: 'user',
     activated: 1,
     following: JSON.stringify({
       ids: []
@@ -33,7 +33,7 @@ export default {
     salt,
     hash,
     email: 'tester2@test.com',
-    role: 0,
+    role: 'user',
     activated: 1,
     following: JSON.stringify({
       ids: []
@@ -50,7 +50,7 @@ export default {
     salt,
     hash,
     email: 'tester3@test.com',
-    role: 1,
+    role: 'super-admin',
     activated: 1,
     following: JSON.stringify({
       ids: []
@@ -67,7 +67,7 @@ export default {
     salt,
     hash,
     email: 'tester4@test.com',
-    role: 0,
+    role: 'admin',
     activated: 1,
     following: JSON.stringify({
       ids: []
@@ -85,33 +85,34 @@ export default {
     hash,
     email: 'tester5@test.com',
     activated: 1,
-    role: 0,
-    following: JSON.stringify({
-      ids: []
-    }),
-    followers: JSON.stringify({
-      ids: []
-    })
+    role: 'admin',
+    following: JSON.stringify({ ids: [] }),
+    followers: JSON.stringify({ ids: [] })
   },
 
-  // Non activated user
+  // user6
   user6: {
-    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa78',
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa88',
     username: 'tester6',
     salt,
     hash,
     email: 'tester6@test.com',
     activated: 0,
-    role: 0,
-    following: JSON.stringify({
-      ids: []
-    }),
-    followers: JSON.stringify({
-      ids: []
-    })
+    role: 'user',
+    following: JSON.stringify({ ids: [] }),
+    followers: JSON.stringify({ ids: [] })
   },
-
-  // user5
+  user7: {
+    id: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa89',
+    username: 'tester7',
+    salt,
+    hash,
+    email: 'tester6@test.com',
+    activated: 1,
+    role: 'user',
+    following: JSON.stringify({ ids: [] }),
+    followers: JSON.stringify({ ids: [] })
+  },
   invalidUsername: {
     username: 'test'
   },

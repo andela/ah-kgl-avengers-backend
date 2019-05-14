@@ -21,30 +21,36 @@ class Users {
    */
   static async createUserLocal(req, res) {
     const { email, username, password: hash } = req.body;
+    const { user } = req;
+    // check if there is user who is authenticated and if he is a super-admin and activate a user
+    const isAdmin = !!(user && user.role === 'super-admin');
 
     try {
-      const user = await User.create({
+      const userCreate = await User.create({
         email: email.trim(),
         username: username.trim(),
         hash,
         following: JSON.stringify({ ids: [] }),
-        followers: JSON.stringify({ ids: [] })
+        followers: JSON.stringify({ ids: [] }),
+        activated: isAdmin ? 1 : 0
       });
-      if (!user) {
-        return res.status(500).json({
-          status: 500,
-          errorMessage: 'Some Error occurred'
+      /* check if there is user who is authenticated and if he is a super-admin
+      *and send a *reset password email and if not then send activation email
+      */
+      if (isAdmin) {
+        mailer.sentResetMail({
+          username: userCreate.username,
+          email: userCreate.email
         });
+      } else {
+        mailer.sentActivationMail({ name: username, email });
       }
-
-      mailer.sentActivationMail({ name: username, email });
-
       return res.status(201).json({
         status: 201,
         message: 'user created',
         user: {
-          email: user.email,
-          username: user.username
+          email: userCreate.email,
+          username: userCreate.username
         }
       });
     } catch (e) {
@@ -84,10 +90,17 @@ class Users {
         errorMessage: `The account with email ${email} is not activated`
       });
     }
+    if (user.activated !== 1) {
+      return res.status(400).send({
+        errorMessage: 'You account is not valid'
+      });
+    }
     const {
       salt, hash, id, role, username
     } = user;
-    const hashInputPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    const hashInputPassword = crypto
+      .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
+      .toString('hex');
 
     if (hash !== hashInputPassword) {
       return res.status(400).send({
@@ -128,7 +141,9 @@ class Users {
   static async createUserSocial(req, res) {
     const { displayName, emails, provider } = req.user;
     try {
-      const existingUser = await User.findOne({ where: { username: displayName } && { provider } });
+      const existingUser = await User.findOne({
+        where: { username: displayName } && { provider }
+      });
       if (existingUser) {
         const token = jwt.sign(
           {
@@ -184,7 +199,9 @@ class Users {
         }
       });
     } catch (error) {
-      const existingUser = await User.findOne({ where: { username: displayName } });
+      const existingUser = await User.findOne({
+        where: { username: displayName }
+      });
       if (error.errors[0].type) {
         res.status(422).send({
           status: res.statusCode,
@@ -264,7 +281,9 @@ class Users {
 
     // update password
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
+    const hash = crypto
+      .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
+      .toString('hex');
     await User.update(
       {
         salt,
@@ -308,7 +327,9 @@ class Users {
    * @returns {object} res
    */
   static async getAllAuthors(req, res) {
-    const result = await User.findAll({ attributes: ['image', 'username', 'email'] });
+    const result = await User.findAll({
+      attributes: ['image', 'username', 'email']
+    });
     return res.status(200).send({
       status: res.statusCode,
       data: result
@@ -353,15 +374,23 @@ class Users {
       });
     }
 
-    if (checkUser.id !== req.user.id) {
+    if (checkUser.id !== req.user.id && req.user.role === 'user') {
       return res.status(401).send({
         status: 401,
         errorMessage: 'You are not allowed to update this profile'
       });
     }
     const updated = await User.update(
-      { username: body.username, bio: body.bio, image: req.file ? req.file.url : null },
-      { where: { username }, attributes: ['username', 'bio', 'image'], returning: true }
+      {
+        username: body.username,
+        bio: body.bio,
+        image: req.file ? req.file.url : null
+      },
+      {
+        where: { username },
+        attributes: ['username', 'bio', 'image'],
+        returning: true
+      }
     );
     return res.status(200).send({
       status: 200,
@@ -404,11 +433,16 @@ class Users {
         });
       }
 
-      const user = await User.findOne({ where: { id }, attributes: ['following'] });
+      const user = await User.findOne({
+        where: { id },
+        attributes: ['following']
+      });
 
       //  check if the user is already followed
       const followingUsers = JSON.parse(user.dataValues.following).ids;
-      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
+      const existInFollowing = followingUsers.find(
+        followID => followID === userExists.id
+      );
       if (existInFollowing) {
         return res.status(400).json({
           status: 400,
@@ -418,10 +452,14 @@ class Users {
 
       // add a new user to the list of followed users
       followingUsers.push(userExists.dataValues.id);
-      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
+      await User.update(
+        { following: JSON.stringify({ ids: followingUsers }) },
+        { where: { id } }
+      );
 
       // update the followed user's followers list
-      const followedUsersFollowers = JSON.parse(userExists.dataValues.followers).ids;
+      const followedUsersFollowers = JSON.parse(userExists.dataValues.followers)
+        .ids;
       followedUsersFollowers.push(id);
       await User.update(
         {
@@ -440,7 +478,9 @@ class Users {
       });
 
       // create subscribers row
-      const author = await subscribers.findOne({ where: { authorId: userExists.id } });
+      const author = await subscribers.findOne({
+        where: { authorId: userExists.id }
+      });
       if (!author) {
         await subscribers.create({
           authorId: userExists.id,
@@ -490,10 +530,15 @@ class Users {
         });
       }
 
-      const user = await User.findOne({ where: { id }, attributes: ['following'] });
+      const user = await User.findOne({
+        where: { id },
+        attributes: ['following']
+      });
       //  check if the user is already followed
       let followingUsers = JSON.parse(user.dataValues.following).ids;
-      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
+      const existInFollowing = followingUsers.find(
+        followID => followID === userExists.id
+      );
 
       if (!existInFollowing) {
         return res.status(400).json({
@@ -502,11 +547,16 @@ class Users {
         });
       }
 
-      followingUsers = followingUsers.filter(followedUser => followedUser !== userExists.id);
+      followingUsers = followingUsers.filter(
+        followedUser => followedUser !== userExists.id
+      );
 
       // update the un-followed user's followers list
-      let unFollowedUserFollowers = JSON.parse(userExists.dataValues.followers).ids;
-      unFollowedUserFollowers = unFollowedUserFollowers.filter(followerID => followerID !== id);
+      let unFollowedUserFollowers = JSON.parse(userExists.dataValues.followers)
+        .ids;
+      unFollowedUserFollowers = unFollowedUserFollowers.filter(
+        followerID => followerID !== id
+      );
       await User.update(
         {
           followers: JSON.stringify({ ids: unFollowedUserFollowers })
@@ -516,7 +566,10 @@ class Users {
         }
       );
 
-      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
+      await User.update(
+        { following: JSON.stringify({ ids: followingUsers }) },
+        { where: { id } }
+      );
 
       subscribe(id, userExists.id);
 
@@ -546,7 +599,7 @@ class Users {
    */
   static async getProfile(req, res) {
     const { username } = req.params;
-    const findUser = await User.findOne({ where: { username } });
+    const findUser = await User.findOne({ where: { username, activated: 1 } });
     if (!findUser) {
       return res.status(400).send({
         status: 400,
@@ -568,6 +621,163 @@ class Users {
         bio: findUser.bio,
         image: findUser.image
       }
+    });
+  }
+
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} get all users
+   */
+  static async getAllUsers(req, res) {
+    const { limit = 10, offset = 0 } = req.query;
+    const findUsers = await User.findAll({
+      where: { activated: 1 },
+      attributes: [
+        'firstName',
+        'lastName',
+        'role',
+        'email',
+        'username',
+        'image'
+      ],
+      limit,
+      offset
+    });
+
+    return res.status(200).send({
+      status: 200,
+      profile: findUsers
+    });
+  }
+
+  /**
+   * This method implements the functionalities of deleting a user
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} deleted User
+   */
+  static async deleteUser(req, res) {
+    const { username } = req.params;
+
+    const findUser = await User.findOne({ where: { username, activated: 1 } });
+    if (!findUser) {
+      return res.status(400).send({
+        status: 400,
+        errorMessage: 'The user with that username is not found'
+      });
+    }
+
+    if (findUser.activated === -1) {
+      return res.status(400).send({
+        status: 400,
+        errorMessage: 'The User you are trying to delete is already deleted'
+      });
+    }
+
+    const deleteUser = await User.update(
+      { activated: -1 },
+      { where: { username, activated: 1 }, returning: true }
+    );
+    const deletedUser = deleteUser[1][0].get();
+
+    return res.status(200).send({
+      status: 200,
+      profile: {
+        username: deletedUser.username,
+        email: deletedUser.email,
+        image: deletedUser.image,
+        bio: deletedUser.bio,
+        firstName: deletedUser.firstName,
+        lastName: deletedUser.lastName,
+        deletedAt: deletedUser.updatedAt
+      }
+    });
+  }
+
+  /**
+   * This method implements the functionalities of granting access to a user
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} new improved User
+   */
+  static async changeUserAccess(req, res) {
+    try {
+      const { username } = req.params;
+      const { access } = req.body;
+
+      const findUser = await User.findOne({ where: { username, activated: 1 } });
+      if (!findUser) {
+        return res.status(400).send({
+          status: 400,
+          errorMessage: 'The user with that username is not found'
+        });
+      }
+
+      const grantAccess = await User.update(
+        { role: access },
+        { where: { username, activated: 1 }, returning: true }
+      );
+      const grantedAccess = grantAccess[1][0].get();
+
+      return res.status(200).send({
+        status: 200,
+        message: 'The access has been successfully granted',
+        improvedUser: {
+          username: grantedAccess.username,
+          email: grantedAccess.email,
+          image: grantedAccess.image,
+          firstName: grantedAccess.firstName,
+          lastName: grantedAccess.lastName,
+          newRole: grantedAccess.role
+        }
+      });
+    } catch (e) {
+      if (e.name === 'SequelizeValidationError') {
+        return res.status(400).send({
+          status: 400,
+          errorMessage: 'the role has to be between user and admin'
+        });
+      }
+      return res.status(500).json({
+        status: res.statusCode,
+        message: 'Something went wrong on the server'
+      });
+    }
+  }
+
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} get users according to the roles
+   */
+  static async searchWithRoles(req, res) {
+    const { limit = 10, offset = 0 } = req.query;
+    const { role } = req.query;
+
+    if (!role || (role !== 'admin' && role !== 'user')) {
+      return res.status(400).send({
+        status: 400,
+        errorMessage: 'Please Provide role with values admin or user in queries'
+      });
+    }
+
+    const findUsers = await User.findAll({
+      where: {
+        role,
+        activated: 1
+      },
+      attributes: ['username', 'image', 'firstName', 'lastName'],
+      limit,
+      offset
+    });
+    return res.status(200).send({
+      status: 200,
+      profiles: findUsers
     });
   }
 }

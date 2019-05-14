@@ -279,6 +279,17 @@ describe('User', () => {
           done();
         });
     });
+    it('should return a 200 status code and user profile', (done) => {
+      chai
+        .request(app)
+        .delete('/api/v1/profiles/test/follow')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send()
+        .end((err, res) => {
+          res.should.have.status(404);
+          done();
+        });
+    });
   });
 
   context('Reset password', () => {
@@ -325,6 +336,7 @@ describe('User', () => {
           done();
         });
     });
+
     it("should pass as the user is viewing other's profile", (done) => {
       chai
         .request(app)
@@ -401,6 +413,210 @@ describe('User', () => {
             done();
           });
       });
+    });
+  });
+  describe('/Super Admin Roles', () => {
+    // First login the super user that the token can used in tests
+    let tokenValueAdmin;
+    before((done) => {
+      utils
+        .getUser3Token()
+        .then((res) => {
+          tokenValueAdmin = res.body.user.token;
+          done();
+        })
+        .catch(() => {
+          done();
+        });
+    });
+    const signupUser = { username: 'professional2', email: 'prof2@gmail.com', password: '123456789' };
+    it('should pass, create and activated him', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/auth/signup')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .send(signupUser)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(201);
+          done();
+        });
+    });
+
+    // super admin gets all the users
+    it('should pass, get list of users', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('should not pass, and returns authentication error as you are not super-admin', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users')
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should pass, and returns the deleted user', (done) => {
+      chai
+        .request(app)
+        .delete('/api/v1/users/tester7')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('should not pass as the user is already deleted', (done) => {
+      chai
+        .request(app)
+        .delete('/api/v1/users/tester7')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
+    });
+
+    it('should not pass as the user does not exists', (done) => {
+      chai
+        .request(app)
+        .delete('/api/v1/users/test')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
+    });
+
+    it('should not pass, and returns authentication error as you are not super-admin', (done) => {
+      chai
+        .request(app)
+        .delete('/api/v1/users/tester6')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should pass, and give access to the user', (done) => {
+      const access = { access: 'admin' };
+      chai
+        .request(app)
+        .put('/api/v1/users/grant/tester2')
+        .send(access)
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('should not pass as access in not user or admin', (done) => {
+      const access = { access: 'admins' };
+      chai
+        .request(app)
+        .put('/api/v1/users/grant/tester2')
+        .send(access)
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
+    });
+
+    it('should not pass as the username doesn\'t match any user', (done) => {
+      const access = { access: 'admins' };
+      chai
+        .request(app)
+        .put('/api/v1/users/grant/test')
+        .send(access)
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
+    });
+
+    it('should not pass, as you are not sending anything in a body', (done) => {
+      chai
+        .request(app)
+        .put('/api/v1/users/grant/tester2')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(500);
+          done();
+        });
+    });
+
+    it('should not pass, and returns authentication error as you are not super-admin', (done) => {
+      const access = { access: 'admin' };
+      chai
+        .request(app)
+        .put('/api/v1/users/grant/tester2')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send(access)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should pass, and returns users as you are a super-admin', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/search?role=user')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('should not pass, and returns error as you are not a super-admin', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/search?role=user')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          res.body.should.be.an('object');
+          // res.should.have.status(401);
+          done();
+        });
+    });
+
+    it('should not pass as the role is not user or admin', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/search?role=users')
+        .set('Authorization', `Bearer ${tokenValueAdmin}`)
+        .end((err, res) => {
+          res.body.should.be.a('object');
+          res.should.have.status(400);
+          done();
+        });
     });
   });
 });

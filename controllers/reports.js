@@ -65,7 +65,7 @@ const Reports = {
    */
   getAllReportedArticle: async (req, res) => {
     const { role } = req.user;
-    if (role < 0) {
+    if (role !== 'admin') {
       return res.status(401).send({
         status: res.statusCode,
         error: 'Unauthorized to make this request',
@@ -105,7 +105,7 @@ const Reports = {
   deleteReportedArticle: async (req, res) => {
     const { slug } = req.params;
     const { role } = req.user;
-    if (role < 0) {
+    if (role !== 'admin') {
       return res.status(401).send({
         status: res.statusCode,
         error: 'Unauthorized to make this request',

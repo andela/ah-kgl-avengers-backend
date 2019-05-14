@@ -10,6 +10,8 @@ export default (sequelize, DataTypes) => {
         allowNull: false,
         primaryKey: true
       },
+      firstName: { type: DataTypes.STRING },
+      lastName: { type: DataTypes.STRING },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -56,9 +58,12 @@ export default (sequelize, DataTypes) => {
         allowNull: true
       },
       role: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.STRING,
         allowNull: false,
-        defaultValue: -1
+        defaultValue: 'user',
+        validate: {
+          isIn: [['user', 'admin']]
+        }
       }
     },
     {
@@ -67,7 +72,9 @@ export default (sequelize, DataTypes) => {
         beforeCreate(user) {
           if (user.hash) {
             user.salt = crypto.randomBytes(16).toString('hex');
-            user.hash = crypto.pbkdf2Sync(user.hash, user.salt, 1000, 64, 'sha512').toString('hex');
+            user.hash = crypto
+              .pbkdf2Sync(user.hash, user.salt, 1000, 64, 'sha512')
+              .toString('hex');
           }
         }
       }
