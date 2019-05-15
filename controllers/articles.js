@@ -68,9 +68,7 @@ const articles = {
 
       // tag registration
       tagList.forEach(async (tag) => {
-        const findTag = await tags.findOne({
-          where: { tag }
-        });
+        const findTag = await tags.findOne({ where: { tag } });
         if (!findTag) tags.create({ tag });
         if (findTag) tags.update({ count: findTag.count + 1 }, { where: { tag }, returning: true });
       });
