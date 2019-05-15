@@ -10,9 +10,11 @@ const { checkToken, verifyToken } = tokenChecker;
 
 router.get('/articles/feeds', verifyToken, articlesController.getFeeds);
 
+router.get('/user/:username/articles', verifyToken, articlesController.authorArticles);
+
 // selects all articles
 // TODO: no authentication required
-router.get('/articles/', checkToken, articlesController.getAllPublishedArticles);
+router.get('/articles', checkToken, articlesController.getAllPublishedArticles);
 
 router.get('/articles/draft', checkToken, articlesController.getAllDraftArticles);
 
@@ -26,7 +28,7 @@ router.delete('/articles/:slug', checkToken, validation.slug, articlesController
 router.put('/articles/:slug', checkToken, validation.article, articlesController.updateArticle);
 
 // selects an article based on a slug
-router.get('/articles/:slug', checkToken, validation.slug, articlesController.viewArticle);
+router.get('/articles/:slug', validation.slug, verifyToken, articlesController.viewArticle);
 
 // add a comment on article
 router.post('/articles/:slug/comments', checkToken, commentController.create);

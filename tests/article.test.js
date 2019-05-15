@@ -29,15 +29,14 @@ describe('Article ', () => {
       .request(app)
       .post('/api/v1/articles')
       .set('Authorization', `Bearer ${tokenValue}`)
+      .set('content-type', 'application/json')
       .send({
         title: 'One to Many and One to One',
-        body:
-          'One to Many and One to One relationships are pretty straightforward to create on Sequelize.'
+        body: 'One to Many and One to One relationships are pretty straightforward to create on Sequelize.',
+        status: 'published',
+        tagList: ['Lorem']
       })
       .end((err, res) => {
-        if (err) {
-          done(err);
-        }
         if (err) done(err);
         res.should.have.status(201);
         res.body.article.should.be.an('object');
@@ -45,10 +44,69 @@ describe('Article ', () => {
       });
   });
 
-  it('Author should be able to update his/her article', (done) => {
+  it('Should create 1 min read article', (done) => {
     chai
       .request(app)
-      .put(`/api/v1/article/${dataGenerator.post1.slug}`)
+      .post('/api/v1/articles')
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .set('content-type', 'application/json')
+      .send(dataGenerator.post7)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(201);
+        res.body.article.should.be.an('object');
+        done();
+      });
+  });
+
+  it('Should create article of more than 2 min read', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .set('content-type', 'application/json')
+      .send(dataGenerator.post8)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(201);
+        res.body.article.should.be.an('object');
+        done();
+      });
+  });
+
+  it('Should return 400 when try to create article with no parameters', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .set('content-type', 'application/json')
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(400);
+        res.body.should.be.an('object');
+        res.body.should.have.property('errors');
+        done();
+      });
+  });
+
+  it('Should send a request with status [draft|published] and x-www-form-urlencoded content-type ', (done) => {
+    chai.request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .set('content-type', 'application/x-www-form-urlencoded')
+      .send(dataGenerator.testPostWithStatus)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(201);
+        res.body.should.be.an('Object');
+        res.body.should.have.property('article');
+        done();
+      });
+  });
+
+  it('Author should be able to update his/her article', (done) => {
+    chai.request(app)
+      .put(`/api/v1/articles/${dataGenerator.postUpdate.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: 'I am being updated',
@@ -57,6 +115,23 @@ describe('Article ', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.be.an('Object');
+        res.should.have.status(200);
+        done();
+      });
+  });
+
+  it('Should return 404 when article to be updated not found', (done) => {
+    chai.request(app)
+      .put(`/api/v1/articles/${dataGenerator.invalidSlug.slug}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .send({
+        title: 'I am being updated',
+        body: 'See they have update me'
+      })
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(404);
+        res.body.should.has.property('status').eql(404);
         done();
       });
   });
@@ -73,11 +148,36 @@ describe('Article ', () => {
       });
   });
 
+  it('User should be able to get authors all articles', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/user/${dataGenerator.user1.username}/articles`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.have.property('status').eql(200);
+        res.body.should.have.property('data');
+        done();
+      });
+  });
+
+  it('Should return 404 when articles author not found', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/user/${dataGenerator.invalidUsername.username}/articles`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.have.property('status').eql(404);
+        res.body.should.have.property('message');
+        done();
+      });
+  });
+
   it('Author should be able to view the feeds', (done) => {
     chai
       .request(app)
       .get('/api/v1/articles/feeds')
-      // .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(res);
         res.should.have.status(200);
@@ -88,16 +188,85 @@ describe('Article ', () => {
       });
   });
   context('Rate article', () => {
+    it('Should get 404 for rating invalid article', (done) => {
+      chai
+        .request(app)
+        .post(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/ratings`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          rating: 4
+        })
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(404);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
+    it('Should get 400 for rating drafted article', (done) => {
+      chai
+        .request(app)
+        .post(`/api/v1/articles/${dataGenerator.post3.slug}/ratings`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          rating: 4
+        })
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(400);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('message');
+          done();
+        });
+    });
+
+    it('Should get 400 for rate your article', (done) => {
+      chai
+        .request(app)
+        .post(`/api/v1/articles/${dataGenerator.post2.slug}/ratings`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          rating: 4
+        })
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(400);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+
     it('Authenticated user should be able to rate an article', (done) => {
       chai
         .request(app)
         .post(`/api/v1/articles/${dataGenerator.post4.slug}/ratings`)
         .set('Authorization', `Bearer ${tokenValue}`)
-        .send({ rating: 4 })
+        .send({
+          rating: 4
+        })
         .end((err, res) => {
           if (err) done(err);
           res.should.have.status(201);
           res.should.be.an('Object');
+          done();
+        });
+    });
+
+    it('Should return 400 when rate article twice', (done) => {
+      chai.request(app)
+        .post(`/api/v1/articles/${dataGenerator.post4.slug}/ratings`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          rating: 4
+        })
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(400);
+          res.should.has.property('status').eql(400);
+          res.should.has.property('error');
           done();
         });
     });
@@ -112,6 +281,45 @@ describe('Article ', () => {
           }
           res.should.have.status(200);
           res.body.ratings.should.be.an('array');
+          done();
+        });
+    });
+
+    it('Should return 400 when article to get its rating not found', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/ratings?limit=5&offset=0`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(400);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('error');
+          done();
+        });
+    });
+
+    it('Should return 400 when article to get its rating is draft', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/articles/${dataGenerator.post3.slug}/ratings?limit=5&offset=0`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(400);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('message');
+          done();
+        });
+    });
+
+    it('Should return 400 when article has no rating', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/articles/${dataGenerator.post2.slug}/ratings?limit=5&offset=0`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.have.status(400);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -169,8 +377,7 @@ describe('Article ', () => {
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: '5 Things About Sequelize',
-        body:
-          'One to Many and One to One relationships are pretty straightforward to create on Sequelize.'
+        body: 'One to Many and One to One relationships are pretty straightforward to create on Sequelize.'
       })
       .end((err, res) => {
         if (err) done(err);
@@ -182,6 +389,34 @@ describe('Article ', () => {
   });
 
   context('Bookmark article', () => {
+    it('Return 400 when user has no bookmarked articles', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/bookmarks')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          res.body.should.have.property('status').eql(400);
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
+    it('Return 400 when single bookmark missed', (done) => {
+      chai
+        .request(app)
+        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          res.body.should.have.property('status').eql(400);
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
     it('Bookmark an article', (done) => {
       chai
         .request(app)
@@ -191,6 +426,48 @@ describe('Article ', () => {
           if (err) done(err);
           res.body.status.should.eql(200);
           res.should.be.an('Object');
+          done();
+        });
+    });
+
+    it('Should not bookmark article twice', (done) => {
+      chai
+        .request(app)
+        .post(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.body.status.should.eql(400);
+          res.body.should.be.an('Object');
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
+    it('Should return 404 when article to bookmark not found', (done) => {
+      chai
+        .request(app)
+        .post(`/api/v1/bookmarks/${dataGenerator.invalidSlug.slug}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.body.should.be.an('Object');
+          res.body.status.should.eql(404);
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
+    it('User should be able to get all bookmarked article', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/bookmarks')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.should.be.an('Object');
+          res.body.should.have.property('status').eql(200);
+          res.body.should.have.property('data');
           done();
         });
     });
@@ -210,11 +487,25 @@ describe('Article ', () => {
     it('User should be able to delete a bookmarked article', (done) => {
       chai
         .request(app)
-        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
+        .delete(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
         .set('Authorization', `Bearer ${tokenValue}`)
         .end((err, res) => {
           if (err) done(err);
-          res.should.be.an('Object');
+          res.body.should.have.property('status').eql(200);
+          res.body.should.have.property('message');
+          done();
+        });
+    });
+
+    it('Should return 400 when tried to delete non-bookmarked article', (done) => {
+      chai
+        .request(app)
+        .delete(`/api/v1/bookmarks/${dataGenerator.post2.slug}`)
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          if (err) done(err);
+          res.body.should.have.property('status').eql(400);
+          res.body.should.have.property('message');
           done();
         });
     });
@@ -233,6 +524,47 @@ describe('Article ', () => {
         done();
       });
   });
+
+  it('Should get 404 for deleting invalid article', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/articles/${dataGenerator.invalidSlug.slug}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(404);
+        res.body.should.be.an('Object');
+        res.body.should.have.property('message');
+        done();
+      });
+  });
+
+  it('User should be able to view an article', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.post1.slug}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(200);
+        res.body.should.be.an('Object');
+        res.body.should.have.property('article');
+        done();
+      });
+  });
+
+  it('Should get 404 when viewing invalid article', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.invalidSlug.slug}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(404);
+        res.body.should.be.an('Object');
+        res.body.should.have.property('errorMessage');
+        done();
+      });
+  });
+
   it('should return 3 published articles ', (done) => {
     chai
       .request(app)
@@ -256,6 +588,19 @@ describe('Article ', () => {
         res.body.status.should.eql(200);
         res.body.articlesCount.should.eql(3);
         res.body.should.be.an('Object');
+        done();
+      });
+  });
+
+  it('Should return 404 when sharing invalid article  ', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/facebook-share`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(404);
+        res.body.should.have.property('errorMessage');
         done();
       });
   });
@@ -295,6 +640,24 @@ describe('Article ', () => {
         if (err) done(err);
         res.body.status.should.eql(200);
         res.body.should.be.an('Object');
+        done();
+      });
+  });
+
+  it('Should return 401 when provide invalid token', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/articles')
+      .set('Authorization', 'Bearer invalidToken')
+      .set('content-type', 'application/json')
+      .send({
+        title: 'One to Many and One to One',
+        body: 'One to Many and One to One ',
+      })
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(401);
+        res.body.should.have.property('errorMessage');
         done();
       });
   });

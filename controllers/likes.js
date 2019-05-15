@@ -90,7 +90,7 @@ class Likes {
     const arleadyLiked = await likes.findOne({
       where: { userId: user.id, articleId: checkArticle.id }
     });
-    if (arleadyLiked && (arleadyLiked.status === 'liked' || arleadyLiked.status === null)) {
+    if (arleadyLiked && (arleadyLiked.status === 'liked' || !arleadyLiked.status)) {
       await arleadyLiked.update({ status: 'disliked' });
       return res.status(200).send({
         status: 200,
@@ -139,7 +139,7 @@ class Likes {
         where: { userId: user.id, articleId: checkArticle.id }
       });
       if (arleadyFavorited
-      && (arleadyFavorited.favorited === false || arleadyFavorited.favorited === null)) {
+      && (arleadyFavorited.favorited === false || !arleadyFavorited.favorited)) {
         await arleadyFavorited.update({ favorited: true });
 
         // send email notification
@@ -181,7 +181,7 @@ class Likes {
       });
 
       return res.status(201).send({
-        status: 200,
+        status: res.statusCode,
         message: 'You have successfully favorited this article'
       });
     } catch (err) {
