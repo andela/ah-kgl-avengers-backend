@@ -571,7 +571,8 @@ describe('Article ', () => {
       });
   });
 
-  it('should return 3 published articles ', (done) => {
+
+  it('should return 3 published articles', (done) => {
     chai
       .request(app)
       .get('/api/v1/articles?limit=3')
@@ -584,7 +585,7 @@ describe('Article ', () => {
         done();
       });
   });
-  it('should return 2 published articles ', (done) => {
+  it('should return 2 published articles', (done) => {
     chai
       .request(app)
       .get('/api/v1/articles?limit=3&offset=1')
@@ -624,7 +625,7 @@ describe('Article ', () => {
       });
   });
 
-  it('should share articles ', (done) => {
+  it('should share articles', (done) => {
     chai
       .request(app)
       .get(`/api/v1/articles/${dataGenerator.post1.slug}/twitter-share`)
@@ -637,7 +638,7 @@ describe('Article ', () => {
       });
   });
 
-  it('should share articles ', (done) => {
+  it('should share articles', (done) => {
     chai
       .request(app)
       .get(`/api/v1/articles/${dataGenerator.post1.slug}/email-share`)
