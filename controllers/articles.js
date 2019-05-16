@@ -126,7 +126,7 @@ const articles = {
         .substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
       const totalArticleReadTime = readTime.totalReadTime(body);
-
+      const findArticle = await article.findOne({ where: { slug: oldSlug } });
       let updatedArticle = await article.update(
         {
           title,
@@ -141,6 +141,38 @@ const articles = {
           returning: true
         }
       );
+
+      // tag registration
+      const oldTags = findArticle.tagList;
+      const newTags = req.body.tagList;
+
+      if (newTags) {
+        oldTags.forEach(async (tag) => {
+          if (!newTags.includes(tag)) {
+            const findTag = await tags.findOne({ where: { tag } });
+            if (findTag.count === 1) await tags.destroy({ where: { tag } });
+            if (findTag.count > 1) {
+              await tags.update(
+                { count: findTag.count - 1 },
+                { where: { tag }, returning: true }
+              );
+            }
+          }
+        });
+
+        newTags.forEach(async (tag) => {
+          if (!oldTags.includes(tag)) {
+            const findTag = await tags.findOne({ where: { tag } });
+            if (!findTag) await tags.create({ tag });
+            if (findTag) {
+              await tags.update(
+                { count: findTag.count + 1 },
+                { where: { tag }, returning: true }
+              );
+            }
+          }
+        });
+      }
 
       // When no article to update found
       if (updatedArticle[0] === 0) {
@@ -173,7 +205,7 @@ const articles = {
     } catch (err) {
       res.status(500).send({
         status: res.statusCode,
-        errorMessage: 'Server failed to handle your request'
+        errorMessage: err.message
       });
     }
   },
@@ -187,13 +219,29 @@ const articles = {
   deleteArticle: async (req, res) => {
     const { id } = req.user;
     const { slug } = req.params;
-    const row = await article.update({ deleted: 1 }, { where: { slug, deleted: 0, author: id } });
+    const row = await article.update(
+      { deleted: 1 },
+      {
+        where: { slug, deleted: 0, author: id },
+        returning: true
+      }
+    );
     if (row[0] === 0) {
       return res.status(404).send({
         status: res.statusCode,
         message: 'No article found'
       });
     }
+    row[1][0].tagList.forEach(async (tag) => {
+      const findTag = await tags.findOne({ where: { tag } });
+      if (findTag.count === 1) await tags.destroy({ where: { tag } });
+      if (findTag.count > 1) {
+        await tags.update(
+          { count: findTag.count - 1 },
+          { where: { tag }, returning: true }
+        );
+      }
+    });
     return res.status(200).send({
       status: res.statusCode,
       message: 'Article deleted successfully'
