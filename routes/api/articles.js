@@ -14,6 +14,11 @@ router.get('/user/:username/articles', verifyToken, articlesController.authorArt
 
 router.get(
   '/articles/tags',
+  articlesController.getAllTags
+);
+
+router.get(
+  '/articles/tags/:tag',
   articlesController.getTags
 );
 // selects all articles

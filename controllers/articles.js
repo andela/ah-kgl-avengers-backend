@@ -7,6 +7,7 @@ import mailer from '../config/verificationMail';
 const {
   article, User, bookmark, likes, subscribers, ratings, tags
 } = models;
+const { Op } = models.Sequelize;
 const attributes = {
   exclude: ['id', 'deleted', 'status']
 };
@@ -142,6 +143,14 @@ const articles = {
         }
       );
 
+      // When no article to update found
+      if (updatedArticle[0] === 0) {
+        return res.status(404).send({
+          status: res.statusCode,
+          errorMessage: 'Article not found'
+        });
+      }
+
       // tag registration
       const oldTags = findArticle.tagList;
       const newTags = req.body.tagList;
@@ -171,14 +180,6 @@ const articles = {
               );
             }
           }
-        });
-      }
-
-      // When no article to update found
-      if (updatedArticle[0] === 0) {
-        return res.status(404).send({
-          status: res.statusCode,
-          error: 'Article not found'
         });
       }
 
@@ -841,8 +842,20 @@ const articles = {
     open(`mailto:?subject=${title}&body=${link}`);
   },
 
-  getTags: async (req, res) => {
+  getAllTags: async (req, res) => {
     const tagslist = await tags.findAll({ attributes: ['tag', 'count'] });
+    return res.status(200).send({
+      status: res.statusCode,
+      data: tagslist
+    });
+  },
+
+  getTags: async (req, res) => {
+    const { tag } = req.params;
+    const tagslist = await tags.findAll({
+      attributes: ['tag', 'count'],
+      where: { tag: { [Op.regexp]: `(${tag})` } }
+    });
     return res.status(200).send({
       status: res.statusCode,
       data: tagslist

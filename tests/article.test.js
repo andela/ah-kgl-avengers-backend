@@ -680,4 +680,16 @@ describe('Article ', () => {
         done();
       });
   });
+
+  it('should get article tags', (done) => {
+    chai
+      .request(app)
+      .get('/api/v1/articles/tags/test')
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.should.be.an('Object');
+        done();
+      });
+  });
 });
