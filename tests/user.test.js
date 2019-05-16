@@ -128,7 +128,7 @@ describe('User', () => {
           done();
         });
     });
-    it('should fail and returns the error object and status:400 as password does not match', (done) => {
+    it('should fail and returns error object and status:400 as password does not match', (done) => {
       chai
         .request(app)
         .post('/api/v1/auth/login')
