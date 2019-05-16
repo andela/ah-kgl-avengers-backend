@@ -15,8 +15,8 @@ const attributes = {
  * This function handle the rating  array and return the average rating of
  * a certain rated article.
  *
- * @param {*} data The article that.
- * @returns {*} Average rating value.
+ * @param {*} data The article that
+ * @returns {*} Average rating value
  *
  */
 const getAverageRating = (data) => {
@@ -28,10 +28,10 @@ const getAverageRating = (data) => {
 
 const articles = {
   /*
-   * Creating an article.
+   * Creating an article
    *
    * For directly publishing an article, status flag has to be passed
-   * into the request body object otherwise the article will be in drafted.
+   * into the request body object otherwise the article will be in drafted
    */
   createArticle: async (req, res) => {
     try {
@@ -88,7 +88,7 @@ const articles = {
           description: createdArticle.description,
           body: createdArticle.body,
           slug: createdArticle.slug,
-          tags: [createdArticle.tagList],
+          tags: createdArticle.tagList,
           totalArticleReadTime
         }
       });
@@ -108,9 +108,10 @@ const articles = {
    * into the request body object otherwise the article will be in drafted.
    */
   updateArticle: async (req, res) => {
+    const { id } = req.user;
+    const { slug: oldSlug } = req.params;
+    const { title, body, tagList } = req.body;
     try {
-      const { slug: oldSlug } = req.params;
-      const { title, body, tagList } = req.body;
       const slug = `${title
         .toLowerCase()
         .split(' ')
@@ -129,7 +130,7 @@ const articles = {
           readTime: totalArticleReadTime
         },
         {
-          where: { slug: oldSlug },
+          where: { slug: oldSlug, author: id },
           returning: true
         }
       );
@@ -177,12 +178,13 @@ const articles = {
    * we set the flag to the article that it is deleted.
    */
   deleteArticle: async (req, res) => {
+    const { id } = req.user;
     const { slug } = req.params;
-    const row = await article.update({ deleted: 1 }, { where: { slug, deleted: 0 } });
+    const row = await article.update({ deleted: 1 }, { where: { slug, deleted: 0, author: id } });
     if (row[0] === 0) {
       return res.status(404).send({
         status: res.statusCode,
-        message: 'No article found for this slug'
+        message: 'No article found'
       });
     }
     return res.status(200).send({
@@ -264,10 +266,7 @@ const articles = {
     const { limit, offset } = req.query;
     try {
       const { id } = req.user;
-      const authorInfo = await User.findOne({
-        where: { id },
-        attributes: ['username', 'bio', 'image', 'following']
-      });
+      attributes.exclude.push('author');
       const response = await article.findAll({
         where: {
           author: id,
@@ -278,9 +277,7 @@ const articles = {
         limit,
         offset
       });
-      response.forEach((element) => {
-        element.author = authorInfo;
-      });
+
       return res.status(200).send({
         status: res.statusCode,
         articles: response,
@@ -389,42 +386,47 @@ const articles = {
   viewArticle: async (req, res) => {
     const { slug } = req.params;
     try {
-      const oneArticle = await article.findOne({ where: { slug } });
-      if (!oneArticle) {
+      // find the article, article's likes and ratings
+      const articleToView = await article.findOne({
+        where: { slug, deleted: 0, status: 'published' },
+        include: [
+          {
+            model: likes,
+            attributes: ['id', 'status'],
+            where: { status: 'liked' },
+            required: false
+          },
+          {
+            model: User,
+            attributes: ['username', 'image']
+          },
+          {
+            model: ratings,
+            attributes: ['rating'],
+            required: false
+          }
+        ]
+      });
+      if (!articleToView) {
         return res.status(404).send({
           status: res.statusCode,
           errorMessage: 'Article not found'
         });
       }
-      const findLikes = await likes.findAll({
-        where: { articleId: oneArticle.id, status: 'liked' }
-      });
 
-      // Get the article author
-      const articlesAuthor = await User.findOne({
-        where: { id: oneArticle.author },
-        attributes: ['username', 'image']
-      });
-      oneArticle.author = articlesAuthor;
-
-      // Get article ratings
-      const articleRatings = await ratings.findAll({
-        where: { post: oneArticle.id },
-        attributes: ['rating']
-      });
-      oneArticle.ratings = getAverageRating(articleRatings);
+      articleToView.ratings = getAverageRating(articleToView.ratings);
       return res.status(200).send({
         status: res.statusCode,
         article: {
-          title: oneArticle.title,
-          body: oneArticle.body,
-          description: oneArticle.description,
-          slug: oneArticle.slug,
-          tagList: oneArticle.tagList,
-          ratings: oneArticle.ratings,
-          readTime: oneArticle.readTime,
-          author: articlesAuthor,
-          likes: findLikes.length
+          title: articleToView.title,
+          body: articleToView.body,
+          description: articleToView.description,
+          slug: articleToView.slug,
+          tagList: articleToView.tagList,
+          ratings: articleToView.ratings,
+          readTime: articleToView.readTime,
+          author: articleToView.User,
+          likes: articleToView.likes.length
         }
       });
     } catch (error) {
@@ -524,17 +526,14 @@ const articles = {
 
     try {
       const result = await article.findOne({
-        where: { slug },
-        attributes: ['id', 'status']
+        where: { slug, status: 'published' },
+        attributes: ['id']
       });
       if (!result) {
-        return res.status(400).json({ status: res.statusCode, error: 'Article not found' });
-      }
-      // Drafts are not rated
-      if (result.status === 'draft') {
-        return res
-          .status(400)
-          .json({ status: res.statusCode, message: 'Drafts articles are not rated' });
+        return res.status(400).json({
+          status: res.statusCode,
+          error: 'Article not found'
+        });
       }
 
       // The first query response is used to calculate th average rating

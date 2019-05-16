@@ -1,7 +1,7 @@
 import models from '../models';
 
 const {
-  Comments, User, article, Sequelize
+  Comments, User, article, Sequelize, CommentEdits
 } = models;
 
 const { Op } = Sequelize;
@@ -32,10 +32,7 @@ class CommentOnText {
           errorMessage: 'The Article You are trying to find is not created'
         });
       }
-      const findHighlightedText = await findArticle.body.slice(
-        startIndex,
-        endIndex
-      );
+      const findHighlightedText = await findArticle.body.slice(startIndex, endIndex);
       if (findHighlightedText !== text) {
         res.status(404).send({
           status: 404,
@@ -53,13 +50,13 @@ class CommentOnText {
             post: findArticle.id,
             startIndex,
             endIndex,
-            highlitedText: findHighlightedText
+            highlightedText: findHighlightedText
           },
           defaults: { body },
           attributes: [
             'id',
             'author',
-            'highlitedText',
+            'highlightedText',
             'startIndex',
             'endIndex',
             'body',
@@ -102,7 +99,6 @@ class CommentOnText {
         attributes: ['id', 'post', 'author']
       });
 
-
       if (!findComment) {
         return res.status(404).send({
           status: 404,
@@ -120,12 +116,9 @@ class CommentOnText {
       }
 
       // get the new text that is going to be commented on
-      const findHighlightedText = await findArticle.body.slice(
-        startIndex,
-        endIndex
-      );
+      const findHighlightedText = await findArticle.body.slice(startIndex, endIndex);
 
-      // if text proveded in body and one gotten using indexes are not matching
+      // if text provided in body and one gotten using indexes are not matching
       if (findHighlightedText !== text) {
         return res.status(404).send({
           status: 404,
@@ -143,7 +136,7 @@ class CommentOnText {
       // if everything is valid then update the comment
       const updatedComment = await Comments.update(
         {
-          highlitedText: text,
+          highlightedText: text,
           startIndex,
           endIndex,
           body
@@ -153,16 +146,22 @@ class CommentOnText {
           returning: true
         }
       );
-      const returned = updatedComment[1][0].get();
+
+      const editHistory = await CommentEdits.findAll({
+        where: { commentId },
+        attributes: ['body', 'highlightedText', 'createdAt']
+      });
+
+      const comment = updatedComment[1][0].get();
       return res.status(200).send({
         status: 200,
         comment: {
-          body: returned.body,
-          highlitedText: returned.highlitedText,
-          post: findArticle.slug,
-          startIndex: returned.startIndex,
-          endIndex: returned.endIndex
-        }
+          body: comment.body,
+          highlightedText: comment.highlightedText,
+          startIndex: comment.startIndex,
+          endIndex: comment.endIndex
+        },
+        editHistory
       });
     } catch (error) {
       return res.status(500).send({
@@ -174,8 +173,8 @@ class CommentOnText {
 
   /**
    * This method gets all the highlighted texts on the article.
-   * @param {Object} req .
-   * @param {Object} res Object.
+   * @param {Object} req
+   * @param {Object} res
    * @returns {Object} Object of highlighted texts on the article
    */
   static async getHighlighted(req, res) {
@@ -194,8 +193,8 @@ class CommentOnText {
 
     // now get all the highlighted texts associated to that article
     const highlighted = await Comments.findAll({
-      where: { post: findArticle.id, highlitedText: { [Op.ne]: null } },
-      attributes: ['highlitedText'],
+      where: { post: findArticle.id, highlightedText: { [Op.ne]: null } },
+      attributes: ['highlightedText'],
       include: [{ model: User, attributes: ['username', 'image'] }]
     });
     if (!highlighted) {

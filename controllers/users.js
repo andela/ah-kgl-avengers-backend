@@ -97,9 +97,16 @@ class Users {
     }
 
     if (hash === hashInputPassword) {
-      const token = jwt.sign({
-        id, role, email, username
-      }, process.env.SECRET, { expiresIn: 3600 });
+      const token = jwt.sign(
+        {
+          id,
+          role,
+          email,
+          username
+        },
+        process.env.SECRET,
+        { expiresIn: 3600 }
+      );
       return res.status(200).json({
         status: 200,
         user: {

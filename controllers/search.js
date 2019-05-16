@@ -13,15 +13,15 @@ const handler = {
     if (!title && !username) {
       return res.status(400).send({
         status: res.statusCode,
-        error: 'Please search using the article title or authors\' username'
+        error: "Please search using the article title or authors' username"
       });
     }
 
     try {
       /**
-      * Any user is able to search for an article if
-      * they know it's tittle
-      */
+       * Any user is able to search for an article if
+       * they know it's tittle
+       */
 
       if (title) {
         const articles = await article.findAll({
@@ -34,10 +34,10 @@ const handler = {
           },
           include: {
             model: User,
-            attributes: userAttrib,
+            attributes: userAttrib
           },
           limit: 10,
-          attributes: articleAttrib,
+          attributes: articleAttrib
         });
         return res.status(200).send({
           status: res.statusCode,
@@ -46,9 +46,9 @@ const handler = {
       }
 
       /**
-      * Any user is able to search for an article if
-      * they know the authors name
-      */
+       * Any user is able to search for an article if
+       * they know the authors name
+       */
 
       if (username) {
         const users = await User.findAll({
@@ -56,15 +56,17 @@ const handler = {
             username: { [Sequelize.Op.iLike]: `%${username.trim()}%` }
           },
           attributes: userAttrib,
-          include: [{
-            model: article,
-            attributes: articleAttrib,
-            where: {
-              status: 'published',
-              deleted: 0
+          include: [
+            {
+              model: article,
+              attributes: articleAttrib,
+              where: {
+                status: 'published',
+                deleted: 0
+              }
             }
-          }],
-          limit: 10,
+          ],
+          limit: 10
         });
         return res.status(200).send({
           status: res.statusCode,
@@ -75,7 +77,6 @@ const handler = {
       return res.status(500).send({
         status: res.statusCode,
         error: 'Server failed to handle your request'
-
       });
     }
   },
@@ -91,16 +92,16 @@ const handler = {
           status: 'published',
           deleted: 0
         },
-        attributes: articleAttrib,
+        attributes: articleAttrib
       });
       return res.status(200).send({
         status: res.statusCode,
-        articles,
+        articles
       });
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        error: 'Failed to handle your request',
+        error: 'Failed to handle your request'
       });
     }
   },
@@ -113,19 +114,19 @@ const handler = {
           status: 'published',
           deleted: 0,
           tagList: {
-            [Sequelize.Op.contains]: tag.trim().toLowerCase(),
-          },
+            [Sequelize.Op.contains]: tag.trim().toLowerCase()
+          }
         },
-        attributes: articleAttrib,
+        attributes: articleAttrib
       });
       return res.status(200).send({
         status: res.statusCode,
-        articles,
+        articles
       });
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        error: 'Failed to handle your request',
+        error: 'Failed to handle your request'
       });
     }
   },
@@ -140,29 +141,29 @@ const handler = {
           }
         },
         attributes: ['username', 'email', 'bio', 'image'],
-        limit: 10,
+        limit: 10
       });
       const articles = await article.findAll({
         where: {
           [Sequelize.Op.or]: [
             { title: { [Sequelize.Op.iLike]: `%${query.trim()}%` } },
-            { tagList: { [Sequelize.Op.contains]: query.trim().toLowerCase() } },
+            { tagList: { [Sequelize.Op.contains]: query.trim().toLowerCase() } }
           ],
           status: 'published',
           deleted: 0
         },
         attributes: articleAttrib,
-        limit: 10,
+        limit: 10
       });
       return res.status(200).send({
         status: res.statusCode,
         users,
-        articles,
+        articles
       });
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        error: 'Failed to handle your request',
+        error: 'Failed to handle your request'
       });
     }
   }
@@ -173,14 +174,14 @@ export default {
     if (!Object.keys(req.query).length) {
       return res.status(400).send({
         status: res.statusCode,
-        error: 'Please provide your search query',
+        error: 'Please provide your search query'
       });
     }
 
     const { body, tag, all } = req.query;
     if (body) handler.searchByBody(req, res);
     else if (tag) handler.searchByTag(req, res);
-    else if (all)handler.searchAll(req, res);
+    else if (all) handler.searchAll(req, res);
     else handler.searchByAuthor(req, res);
-  },
+  }
 };

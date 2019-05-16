@@ -33,8 +33,11 @@ router.get('/articles/:slug', validation.slug, verifyToken, articlesController.v
 // add a comment on article
 router.post('/articles/:slug/comments', checkToken, commentController.create);
 
-// get articles comments
+// get all article's comments
 router.get('/articles/:slug/comments', commentController.get);
+
+// update a comment
+router.put('/articles/:slug/comments/:commentId', checkToken, commentController.update);
 
 // delete a comment
 router.delete('/articles/:slug/comments/:id', checkToken, commentController.delete);

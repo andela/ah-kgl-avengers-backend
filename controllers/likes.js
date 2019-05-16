@@ -3,20 +3,19 @@ import mailer from '../config/verificationMail';
 
 const { article, likes } = models;
 
-
 /**
  * @description Likes and Favorites Controller class
  */
 class Likes {
   /**
-   * @param {Object} req .
-   * @param {Object} res The User Object.
-   * @returns {Object}  Response object having message and status for liking artincle
+   * @param {Object} req
+   * @param {Object} res The User Object
+   * @returns {Object}  Response object having message and status for liking article
    */
   static async likeArticle(req, res) {
     try {
       const { slug } = req.params;
-      const { user } = req;
+      const { id, username } = req.user;
 
       const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
       if (!checkArticle) {
@@ -26,15 +25,15 @@ class Likes {
         });
       }
 
-      const arleadyLiked = await likes.findOne({
-        where: { userId: user.id, articleId: checkArticle.id }
+      const alreadyLiked = await likes.findOne({
+        where: { userId: id, articleId: checkArticle.id }
       });
-      if (arleadyLiked && (arleadyLiked.status === 'disliked' || arleadyLiked.status === null)) {
-        await arleadyLiked.update({ status: 'liked' });
+      if (alreadyLiked && (alreadyLiked.status === 'disliked' || alreadyLiked.status === null)) {
+        await alreadyLiked.update({ status: 'liked' });
 
         // send email notification
         await mailer.sentNotificationMail({
-          username: req.user.username,
+          username,
           subscribeTo: checkArticle.id,
           slug: checkArticle.slug,
           title: 'new like',
@@ -43,20 +42,20 @@ class Likes {
 
         return res.status(200).send({
           status: 200,
-          message: ' You have liked this article'
+          message: 'You have liked this article'
         });
       }
 
-      if (arleadyLiked && arleadyLiked.status === 'liked') {
-        await arleadyLiked.update({ status: null });
+      if (alreadyLiked && alreadyLiked.status === 'liked') {
+        await alreadyLiked.update({ status: null });
         return res.status(200).send({
           status: 200,
-          message: 'You have successfully remove your like',
+          message: 'You have successfully removed your like'
         });
       }
 
       await likes.create({
-        userId: user.id,
+        userId: id,
         articleId: checkArticle.id,
         status: 'liked'
       });
@@ -87,22 +86,22 @@ class Likes {
       });
     }
 
-    const arleadyLiked = await likes.findOne({
+    const alreadyLiked = await likes.findOne({
       where: { userId: user.id, articleId: checkArticle.id }
     });
-    if (arleadyLiked && (arleadyLiked.status === 'liked' || !arleadyLiked.status)) {
-      await arleadyLiked.update({ status: 'disliked' });
+    if (alreadyLiked && (alreadyLiked.status === 'liked' || !alreadyLiked.status)) {
+      await alreadyLiked.update({ status: 'disliked' });
       return res.status(200).send({
         status: 200,
         message: ' You have disliked this article'
       });
     }
 
-    if (arleadyLiked && arleadyLiked.status === 'disliked') {
-      await arleadyLiked.update({ status: null });
+    if (alreadyLiked && alreadyLiked.status === 'disliked') {
+      await alreadyLiked.update({ status: null });
       return res.status(200).send({
         status: 200,
-        message: 'You have successfully remove your dislike',
+        message: 'You have successfully remove your dislike'
       });
     }
 
@@ -118,14 +117,14 @@ class Likes {
   }
 
   /**
-   * @param {Object} req .
-   * @param {Object} res .
-   * @returns {Object} returns the response after favoriting the article.
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} returns the response after adding the article  in user favorites
    */
   static async addFavorite(req, res) {
     try {
       const { slug } = req.params;
-      const { user } = req;
+      const { id, username } = req.user;
 
       const checkArticle = await article.findOne({ where: { slug, status: 'published' } });
       if (!checkArticle) {
@@ -135,16 +134,15 @@ class Likes {
         });
       }
 
-      const arleadyFavorited = await likes.findOne({
-        where: { userId: user.id, articleId: checkArticle.id }
+      const alreadyLiked = await likes.findOne({
+        where: { userId: id, articleId: checkArticle.id }
       });
-      if (arleadyFavorited
-      && (arleadyFavorited.favorited === false || !arleadyFavorited.favorited)) {
-        await arleadyFavorited.update({ favorited: true });
+      if (alreadyLiked && (alreadyLiked.favorited === false || !alreadyLiked.favorited)) {
+        await alreadyLiked.update({ favorited: true });
 
         // send email notification
         await mailer.sentNotificationMail({
-          username: req.user.username,
+          username,
           subscribeTo: checkArticle.id,
           slug: checkArticle.slug,
           title: 'new favorite',
@@ -157,16 +155,16 @@ class Likes {
         });
       }
 
-      if (arleadyFavorited && arleadyFavorited.favorited === true) {
-        await arleadyFavorited.update({ favorited: null });
+      if (alreadyLiked && alreadyLiked.favorited === true) {
+        await alreadyLiked.update({ favorited: null });
         return res.status(200).send({
           status: 200,
-          message: 'You have successfully removed your favorite',
+          message: 'You have successfully removed your favorite'
         });
       }
 
       await likes.create({
-        userId: user.id,
+        userId: id,
         articleId: checkArticle.id,
         favorited: true
       });
@@ -190,9 +188,9 @@ class Likes {
   }
 
   /**
-   * @param {Object} req .
-   * @param {Object} res .
-   * @returns {Object} returns the response after favoriting the article.
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} res
    */
   static async getFavorites(req, res) {
     try {
@@ -218,7 +216,10 @@ class Likes {
         });
       }
     } catch (err) {
-      return err;
+      return res.status(500).json({
+        status: res.statusCode,
+        error: err.message
+      });
     }
   }
 }

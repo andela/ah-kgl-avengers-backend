@@ -11,17 +11,17 @@ const unsubscribe = {
     const user = await User.findOne({
       where: { username: slugOrUsername }
     });
-    const subscribedarticle = await article.findOne({
+    const subscribedArticle = await article.findOne({
       where: { slug: slugOrUsername }
     });
-    if (!user && !subscribedarticle) {
+    if (!user && !subscribedArticle) {
       return res.status(404).send({
         status: res.statusCode,
-        message: 'ressource not found'
+        message: 'Resource not found'
       });
     }
     try {
-      const id = (subscribedarticle) ? subscribedarticle.id : user.id;
+      const id = subscribedArticle ? subscribedArticle.id : user.id;
 
       const subscriber = await subscribers.findOne({
         where: {
@@ -33,13 +33,13 @@ const unsubscribe = {
       if (!subscriber || !subscriber.subscribers.includes(userId)) {
         return res.status(400).send({
           status: res.statusCode,
-          message: 'you are not a subscriber'
+          message: 'You are not a subscriber'
         });
       }
       subscribe(userId, id);
       return res.status(200).send({
         status: res.statusCode,
-        message: 'successfully unsubscribed'
+        message: 'Successfully unsubscribed'
       });
     } catch (er) {
       return res.status(500).send({

@@ -28,14 +28,14 @@ export default (sequelize, DataTypes) => {
           key: 'id'
         }
       },
-      highlitedText: {
-        type: DataTypes.STRING,
+      highlightedText: {
+        type: DataTypes.STRING
       },
       startIndex: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER
       },
       endIndex: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER
       }
     },
     {}
@@ -43,6 +43,8 @@ export default (sequelize, DataTypes) => {
   Comments.associate = (models) => {
     Comments.belongsTo(models.User, { foreignKey: 'author' });
     Comments.belongsTo(models.article, { foreignKey: 'post' });
+    Comments.hasMany(models.CommentEdits, { foreignKey: 'commentId' });
+    Comments.hasMany(models.likeComments, { foreignKey: 'commentId' });
   };
   return Comments;
 };

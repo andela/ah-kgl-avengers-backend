@@ -32,7 +32,8 @@ describe('Article ', () => {
       .set('content-type', 'application/json')
       .send({
         title: 'One to Many and One to One',
-        body: 'One to Many and One to One relationships are pretty straightforward to create on Sequelize.',
+        body:
+          'One to Many and One to One relationships are pretty straightforward to create on Sequelize.',
         status: 'published',
         tagList: ['Lorem']
       })
@@ -90,7 +91,8 @@ describe('Article ', () => {
   });
 
   it('Should send a request with status [draft|published] and x-www-form-urlencoded content-type ', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post('/api/v1/articles')
       .set('Authorization', `Bearer ${tokenValue}`)
       .set('content-type', 'application/x-www-form-urlencoded')
@@ -105,7 +107,8 @@ describe('Article ', () => {
   });
 
   it('Author should be able to update his/her article', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .put(`/api/v1/articles/${dataGenerator.postUpdate.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
@@ -121,7 +124,8 @@ describe('Article ', () => {
   });
 
   it('Should return 404 when article to be updated not found', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .put(`/api/v1/articles/${dataGenerator.invalidSlug.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
@@ -256,7 +260,8 @@ describe('Article ', () => {
     });
 
     it('Should return 400 when rate article twice', (done) => {
-      chai.request(app)
+      chai
+        .request(app)
         .post(`/api/v1/articles/${dataGenerator.post4.slug}/ratings`)
         .set('Authorization', `Bearer ${tokenValue}`)
         .send({
@@ -306,7 +311,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.should.have.status(400);
           res.body.should.be.an('Object');
-          res.body.should.have.property('message');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -377,7 +382,8 @@ describe('Article ', () => {
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: '5 Things About Sequelize',
-        body: 'One to Many and One to One relationships are pretty straightforward to create on Sequelize.'
+        body:
+          'One to Many and One to One relationships are pretty straightforward to create on Sequelize.'
       })
       .end((err, res) => {
         if (err) done(err);
@@ -542,7 +548,7 @@ describe('Article ', () => {
   it('User should be able to view an article', (done) => {
     chai
       .request(app)
-      .get(`/api/v1/articles/${dataGenerator.post1.slug}`)
+      .get(`/api/v1/articles/${dataGenerator.post4.slug}`)
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(200);
@@ -652,7 +658,7 @@ describe('Article ', () => {
       .set('content-type', 'application/json')
       .send({
         title: 'One to Many and One to One',
-        body: 'One to Many and One to One ',
+        body: 'One to Many and One to One '
       })
       .end((err, res) => {
         if (err) done(err);

@@ -58,14 +58,19 @@ const articleValidation = {
 
   rating: (req, res, next) => {
     const schema = {
-      rating: Joi.number().min(1).max(5).required(),
+      rating: Joi.number()
+        .min(1)
+        .max(5)
+        .required()
     };
     validation(req.body, res, schema, next);
   },
 
   message: (req, res, next) => {
     const schema = {
-      message: Joi.string().max(512).required(),
+      message: Joi.string()
+        .max(512)
+        .required()
     };
     validation(req.body, res, schema, next);
   },
