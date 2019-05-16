@@ -3,6 +3,7 @@ import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import app from '../index';
 import utils from './utils';
+import dataGenerator from './dataGenerator';
 
 dotenv.config();
 
@@ -49,6 +50,18 @@ describe('User', () => {
       .send({ access_token: googleToken })
       .end((err, res) => {
         res.body.should.be.a('object');
+        done();
+      });
+  });
+
+  it('Testing test endpoint if token provided', (done) => {
+    chai
+      .request(app)
+      .get('/api/v1/test')
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        res.body.should.have.property('message');
+        res.body.message.should.eql('hello');
         done();
       });
   });
@@ -141,6 +154,103 @@ describe('User', () => {
       });
   });
 
+  it('Should return 400 when login with empty data', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: ' ', password: ' ' })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it('Should not login with a non-alphanumeric password', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: 'test@test.com', password: '$password' })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it('Should return 400 when signup with empty data', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/signup')
+      .send({ email: ' ', password: ' ', username: ' ' })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        done();
+      });
+  });
+
+  it('Should return 400 when signup with non alphanumeric email', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/signup')
+      .send({ email: 'test%@test.com', password: '%', username: ' ' })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        res.body.should.have.property('errors');
+        done();
+      });
+  });
+
+  it('Should return 400 when login with email that not exist ', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/login')
+      .send({ email: 'test10@test.com', password: 'testUser', })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        res.body.should.have.property('errors');
+        res.body.errors.should.be.an('Array');
+        done();
+      });
+  });
+
+  it('Should return 400 when login with non activated account', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: `${dataGenerator.user6.email}`,
+        password: 'testuser'
+      })
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        res.body.should.have.property('errorMessage');
+        done();
+      });
+  });
+
+  it('Should return 400 when login with non activated account', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/auth/login')
+      .send({
+        email: `${dataGenerator.user6.email}`,
+        password: 'testuser'
+      })
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.be.a('object');
+        res.should.have.status(400);
+        res.body.should.have.property('errorMessage');
+        done();
+      });
+  });
+
   context('Follow another user', () => {
     it('should return a 201 status code and user profile', (done) => {
       chai
@@ -225,6 +335,42 @@ describe('User', () => {
         });
     });
 
+    it('Should get author\'s profile', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/profiles/tester1')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          res.should.have.status(200);
+          res.body.should.have.property('data');
+          done();
+        });
+    });
+
+    it('Should get 400 when viewing profile of user with invalid parameter', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/profiles/%20')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.have.property('errors');
+          done();
+        });
+    });
+
+    it('Should get 400 when passed invalid user', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/profiles/tester10')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .end((err, res) => {
+          res.should.have.status(400);
+          res.body.should.have.property('errors');
+          done();
+        });
+    });
+
     context('User logout', () => {
       it('should blacklist the token to log out the the user', (done) => {
         chai
@@ -234,6 +380,24 @@ describe('User', () => {
           .send()
           .end((err, res) => {
             res.should.have.status(200);
+            done();
+          });
+      });
+
+      it('User should not send a request that require authorization after logout', (done) => {
+        chai
+          .request(app)
+          .post('/api/v1/articles')
+          .set('Authorization', `Bearer ${tokenValue}`)
+          .send({
+            title: 'One to Many and One to One',
+            body: 'One to Many and One to One ',
+          })
+          .end((err, res) => {
+            if (err) done(err);
+            res.should.have.status(401);
+            res.body.should.be.an('Object');
+            res.body.should.have.property('errorMessage');
             done();
           });
       });

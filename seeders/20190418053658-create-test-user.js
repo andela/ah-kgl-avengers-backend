@@ -8,7 +8,8 @@ export default {
       dataGenerator.user2,
       dataGenerator.user3,
       dataGenerator.user4,
-      dataGenerator.user5
+      dataGenerator.user5,
+      dataGenerator.user6
     ],
     {},
     {

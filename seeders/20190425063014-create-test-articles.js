@@ -10,7 +10,10 @@ export default {
         dataGenerator.post3,
         dataGenerator.post4,
         dataGenerator.post5,
-        dataGenerator.post6
+        dataGenerator.post6,
+        dataGenerator.postUpdate,
+        dataGenerator.postDislike,
+        dataGenerator.newFavorite,
       ],
       {},
       {}

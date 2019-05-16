@@ -42,6 +42,24 @@ describe('Like Comments', () => {
         });
     });
 
+    it('Return 404 when comment on invalid highlighted text index', (done) => {
+      chai
+        .request(app)
+        .post('/api/v1/articles/this-is-my-first-try-of-article69f9fccd65/text-comment')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+          startIndex: 23,
+          endIndex: 83,
+          body: 'testing this'
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
     it('should not comment on highlighted inf article is not found', (done) => {
       chai
         .request(app)
@@ -70,6 +88,42 @@ describe('Like Comments', () => {
         })
         .end((err, res) => {
           res.should.have.status(200);
+          done();
+        });
+    });
+
+    it('Should return 404 when comment to update not found', (done) => {
+      chai
+        .request(app)
+        .put('/api/v1/articles/text-comment/2f0bab3d-54f0-41bb-b20e-b3456b28335f')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+          startIndex: 23,
+          endIndex: 80,
+          body: 'new updated comment'
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.have.property('errorMessage');
+          done();
+        });
+    });
+
+    it('Should return 404 when send invalid index', (done) => {
+      chai
+        .request(app)
+        .put('/api/v1/articles/text-comment/2f0bab3d-54f0-41bb-b20e-b3456b28345f')
+        .set('Authorization', `Bearer ${tokenValue}`)
+        .send({
+          text: 'met, consectetur adipiscing elit. Nulla faucibus ipsum no',
+          startIndex: 33,
+          endIndex: 80,
+          body: 'new updated comment'
+        })
+        .end((err, res) => {
+          res.should.have.status(404);
+          res.body.should.have.property('errorMessage');
           done();
         });
     });

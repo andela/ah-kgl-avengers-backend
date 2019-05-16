@@ -49,6 +49,24 @@ describe('Comments', () => {
       });
   });
 
+  it('Should fail to comment when article not found', (done) => {
+    const comment = {
+      body: 'This article is very educational, waiting for the next one.'
+    };
+    chai
+      .request(app)
+      .post(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/comments`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .send(comment)
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(404);
+        res.body.should.have.property('status');
+        res.body.should.have.property('error');
+        done();
+      });
+  });
+
   // Create a comment without logging in
   it('Should fail to add a comment because there user is not authenticated', (done) => {
     const comment = {
@@ -78,6 +96,20 @@ describe('Comments', () => {
       });
   });
 
+  it('Should return 404 when try to get comment of invalid article', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/comments`)
+      .send()
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(404);
+        res.body.should.have.property('status');
+        res.body.should.have.property('error');
+        done();
+      });
+  });
+
   // delete a comment
   it('deletes a comment', (done) => {
     chai
@@ -88,6 +120,21 @@ describe('Comments', () => {
       .end((err, res) => {
         res.should.have.status(200);
         res.body.message.should.be.a('string');
+        done();
+      });
+  });
+
+  it('Fail to delete a comment on invalid article', (done) => {
+    chai
+      .request(app)
+      .delete(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/comments/${dataGenerator.comment1.id}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .send()
+      .end((err, res) => {
+        if (err) done(err);
+        res.should.have.status(404);
+        res.body.should.have.property('status');
+        res.body.should.have.property('error');
         done();
       });
   });

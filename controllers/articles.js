@@ -291,6 +291,41 @@ const articles = {
     }
   },
 
+  authorArticles: async (req, res) => {
+    const { username } = req.params;
+    const { limit, offset } = req.query;
+
+    try {
+      const findUser = await User.findOne({ where: { username } });
+      if (!findUser) {
+        return res.status(404).send({
+          status: res.statusCode,
+          message: 'No user found matches provided username'
+        });
+      }
+      const findAll = await article.findAll({
+        where: { status: 'published', deleted: 0, author: findUser.id },
+        attributes,
+        include: [{
+          model: User,
+          attributes: ['username', 'email', 'bio', 'image']
+        }],
+        limit,
+        offset,
+      });
+
+      return res.status(200).send({
+        status: res.statusCode,
+        data: findAll
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: res.statusCode,
+        error: 'Server failed to handle your request'
+      });
+    }
+  },
+
   /*
    * Construct user's feed
    * and the status of the article (Published).
@@ -321,8 +356,6 @@ const articles = {
           const averageRating = getAverageRating(articleRatings);
 
           return {
-            createdAt: feedArticle.createdAt,
-            updatedAt: feedArticle.updatedAt,
             title: feedArticle.title,
             body: feedArticle.body,
             description: feedArticle.description,
@@ -330,6 +363,8 @@ const articles = {
             tagList: feedArticle.tagList,
             readTime: feedArticle.readTime,
             averageRating,
+            createdAt: feedArticle.createdAt,
+            updatedAt: feedArticle.updatedAt,
             author
           };
         })
@@ -490,7 +525,7 @@ const articles = {
     try {
       const result = await article.findOne({
         where: { slug },
-        attributes: ['id']
+        attributes: ['id', 'status']
       });
       if (!result) {
         return res.status(400).json({ status: res.statusCode, error: 'Article not found' });
@@ -558,12 +593,6 @@ const articles = {
       const { slug } = req.params;
       const { id: userId } = req.user;
 
-      if (!userId) {
-        res.status(401).send({
-          status: res.statusCode,
-          errorMessage: 'Please first login to bookmark this article'
-        });
-      }
       const findArticle = await article.findOne({ where: { slug } });
       if (!findArticle) {
         return res.status(404).send({
@@ -664,7 +693,7 @@ const articles = {
     try {
       const findBookmarks = await bookmark.findOne({ where: { userId } });
       if (findBookmarks === null) {
-        res.status(400).send({
+        return res.status(400).send({
           status: res.statusCode,
           errorMessage: "Bookmark doesn't exist"
         });
@@ -710,7 +739,7 @@ const articles = {
         where: { articleId: checkArticle.id, userId }
       });
       if (checkBookmark === 0) {
-        res.status(400).send({
+        return res.status(400).send({
           status: res.statusCode,
           message: 'Bookmark not found'
         });
