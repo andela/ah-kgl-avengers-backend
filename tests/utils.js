@@ -1,7 +1,11 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import app from '../index';
 import dataGenerator from './dataGenerator';
+
+dotenv.config();
 
 chai.use(chaiHttp);
 
@@ -9,6 +13,7 @@ const { email: email1 } = dataGenerator.user1;
 const { email: email2 } = dataGenerator.user2;
 const { email: email3 } = dataGenerator.user3;
 const { email: email4 } = dataGenerator.user4;
+const { email: email5 } = dataGenerator.user5;
 
 const admin = dataGenerator.user5;
 const password = 'testuser';
@@ -34,5 +39,13 @@ export default {
   getAdminToken: () => chai
     .request(app)
     .post('/api/v1/auth/login')
-    .send({ email: admin.email, password })
+    .send({ email: admin.email, password }),
+
+  getActivationToken() {
+    const tokenValidate = jwt.sign({
+      email: email5
+    }, process.env.SECRET, { expiresIn: 3600 });
+    return tokenValidate;
+  }
+
 };

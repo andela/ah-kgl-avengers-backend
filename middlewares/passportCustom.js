@@ -33,5 +33,43 @@ export default {
       }
       return next();
     })(req, res, next);
+  },
+
+  verifyAdmin: (req, res, next) => {
+    passport.authenticate('jwt', (err, user) => {
+      // accessing the user and check if user is an admin
+      if (!user) {
+        return res.status(401).send({
+          status: 401,
+          errorMessage: 'You are not authorized to make this request provide token'
+        });
+      }
+      if (user.role !== 'super-admin' && user.role !== 'admin') {
+        return res.status(401).send({
+          status: 401,
+          errorMessage: 'You are not authorized to make this request'
+        });
+      }
+      if (err) {
+        return res.status(520).send({ errorMessage: { body: [err.message] } });
+      }
+      return next();
+    })(req, res, next);
+  },
+
+  verifySuperAdmin: (req, res, next) => {
+    passport.authenticate('jwt', (err, user) => {
+      // accessing the user and check if user is an admin
+      if (!user || user.role !== 'super-admin') {
+        return res.status(401).send({
+          status: 401,
+          errorMessage: 'You are not authorized to make this request provide token'
+        });
+      }
+      if (err) {
+        return res.status(520).send({ errorMessage: { body: [err.message] } });
+      }
+      return next();
+    })(req, res, next);
   }
 };

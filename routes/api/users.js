@@ -6,10 +6,12 @@ import multerConfig from '../../config/multerConfig';
 import tokenChecker from '../../middlewares/passportCustom';
 
 const router = express.Router({});
-const { checkToken } = tokenChecker;
+const {
+  checkToken, verifyToken, verifyAdmin, verifySuperAdmin
+} = tokenChecker;
 
 
-router.post('/auth/signup', userValidations.signup, userControllers.createUserLocal);
+router.post('/auth/signup', userValidations.signup, verifyToken, userControllers.createUserLocal);
 router.post('/auth/login', userValidations.login, userControllers.signinLocal);
 router.get('/activation/:token', userControllers.activateUserAccount);
 
@@ -64,4 +66,14 @@ router.put(
 // The Route to get the user profile
 router.get('/users/profile/:username', userControllers.getProfile);
 
+// super-admin and admin get all users
+router.get('/users', verifyAdmin, userControllers.getAllUsers);
+
+// super-admin and admin delete users
+router.delete('/users/:username', verifySuperAdmin, userControllers.deleteUser);
+// super-admin and admin delete users
+router.put('/users/grant/:username', verifySuperAdmin, userControllers.changeUserAccess);
+
+// super-admin can get users regarding of roles
+router.get('/users/search', verifySuperAdmin, userControllers.searchWithRoles);
 export default router;
