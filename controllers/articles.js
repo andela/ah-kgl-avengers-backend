@@ -153,7 +153,16 @@ const articles = {
 
       // tag registration
       const oldTags = findArticle.tagList;
-      const newTags = req.body.tagList;
+      let { newTags } = req.body;
+
+
+      if (!req.is('application/json')) {
+        newTags = !tagList ? '[]' : newTags;
+        newTags = JSON.parse(newTags);
+      } else {
+        newTags = !newTags ? [] : newTags;
+      }
+      newTags = newTags.map(tag => tag.toLowerCase());
 
       if (newTags) {
         oldTags.forEach(async (tag) => {
