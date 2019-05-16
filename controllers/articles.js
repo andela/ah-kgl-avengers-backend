@@ -38,7 +38,7 @@ const articles = {
       const { title, body, status } = req.body;
       const { id: author } = req.user;
       const flag = status === undefined ? 'draft' : status.toLowerCase();
-      const totalArticleReadTime = readTime(body);
+      const totalArticleReadTime = readTime.totalReadTime(body);
       let { tagList } = req.body;
       if (!req.is('application/json')) {
         tagList = !tagList ? '[]' : tagList;
@@ -118,7 +118,7 @@ const articles = {
         .join('-')
         .substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
-      const totalArticleReadTime = readTime(body);
+      const totalArticleReadTime = readTime.totalReadTime(body);
 
       let updatedArticle = await article.update(
         {
@@ -139,7 +139,7 @@ const articles = {
       if (updatedArticle[0] === 0) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'Article not found'
+          error: 'Article not found'
         });
       }
 
