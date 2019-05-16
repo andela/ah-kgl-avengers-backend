@@ -147,7 +147,7 @@ const articles = {
       if (updatedArticle[0] === 0) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'Article not found'
+          error: 'Article not found'
         });
       }
 
