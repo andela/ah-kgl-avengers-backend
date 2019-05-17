@@ -651,7 +651,7 @@ describe('Article ', () => {
       });
   });
 
-  it('Should return 401 when provide invalid token', (done) => {
+  it('Should return 401 status when provide invalid token', (done) => {
     chai
       .request(app)
       .post('/api/v1/articles')
