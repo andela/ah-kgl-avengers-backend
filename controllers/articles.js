@@ -145,7 +145,7 @@ const articles = {
           body,
           slug,
           description,
-          newTags,
+          tagList: newTags,
           readTime: totalArticleReadTime
         },
         {
