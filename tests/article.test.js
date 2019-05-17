@@ -75,7 +75,7 @@ describe('Article ', () => {
       });
   });
 
-  it('Should return 400 when try to create article with no parameters', (done) => {
+  it('Should return 400 status when try to create article with no parameters', (done) => {
     chai
       .request(app)
       .post('/api/v1/articles')
