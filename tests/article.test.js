@@ -625,7 +625,7 @@ describe('Article ', () => {
       });
   });
 
-  it('should share articles', (done) => {
+  it('should share articles and return 200 status', (done) => {
     chai
       .request(app)
       .get(`/api/v1/articles/${dataGenerator.post1.slug}/twitter-share`)
