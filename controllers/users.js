@@ -56,7 +56,7 @@ class Users {
     } catch (e) {
       return res.status(400).send({
         status: 400,
-        errorMessage: e.errors[0].message
+        errorMessage: e
       });
     }
   }
