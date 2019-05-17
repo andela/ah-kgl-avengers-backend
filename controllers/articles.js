@@ -118,7 +118,18 @@ const articles = {
   updateArticle: async (req, res) => {
     const { id } = req.user;
     const { slug: oldSlug } = req.params;
-    const { title, body, tagList } = req.body;
+    const { title, body } = req.body;
+
+    let { tagList: newTags } = req.body;
+
+    if (!req.is('application/json')) {
+      newTags = !newTags ? '[]' : newTags;
+      newTags = JSON.parse(newTags);
+    } else {
+      newTags = !newTags ? [] : newTags;
+    }
+    newTags = newTags.map(tag => tag.toLowerCase());
+
     try {
       const slug = `${title
         .toLowerCase()
@@ -134,7 +145,7 @@ const articles = {
           body,
           slug,
           description,
-          tagList,
+          newTags,
           readTime: totalArticleReadTime
         },
         {
@@ -153,16 +164,6 @@ const articles = {
 
       // tag registration
       const oldTags = findArticle.tagList;
-      let { newTags } = req.body;
-
-
-      if (!req.is('application/json')) {
-        newTags = !tagList ? '[]' : newTags;
-        newTags = JSON.parse(newTags);
-      } else {
-        newTags = !newTags ? [] : newTags;
-      }
-      newTags = newTags.map(tag => tag.toLowerCase());
 
       if (newTags) {
         oldTags.forEach(async (tag) => {
