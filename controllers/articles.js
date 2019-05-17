@@ -5,8 +5,9 @@ import readTime from '../helpers/readingTime';
 import mailer from '../config/verificationMail';
 
 const {
-  article, User, bookmark, likes, subscribers, ratings
+  article, User, bookmark, likes, subscribers, ratings, tags
 } = models;
+const { Op } = models.Sequelize;
 const attributes = {
   exclude: ['id', 'deleted', 'status']
 };
@@ -66,6 +67,13 @@ const articles = {
         readTime: totalArticleReadTime
       });
 
+      // tag registration
+      tagList.forEach(async (tag) => {
+        const findTag = await tags.findOne({ where: { tag } });
+        if (!findTag) tags.create({ tag });
+        if (findTag) tags.update({ count: findTag.count + 1 }, { where: { tag }, returning: true });
+      });
+
       // send email notification
       await mailer.sentNotificationMail({
         username: req.user.username,
@@ -110,7 +118,18 @@ const articles = {
   updateArticle: async (req, res) => {
     const { id } = req.user;
     const { slug: oldSlug } = req.params;
-    const { title, body, tagList } = req.body;
+    const { title, body } = req.body;
+
+    let { tagList: newTags } = req.body;
+
+    if (!req.is('application/json')) {
+      newTags = !newTags ? '[]' : newTags;
+      newTags = JSON.parse(newTags);
+    } else {
+      newTags = !newTags ? [] : newTags;
+    }
+    newTags = newTags.map(tag => tag.toLowerCase());
+
     try {
       const slug = `${title
         .toLowerCase()
@@ -119,14 +138,14 @@ const articles = {
         .substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
       const description = body.substring(0, 100);
       const totalArticleReadTime = readTime.totalReadTime(body);
-
+      const findArticle = await article.findOne({ where: { slug: oldSlug } });
       let updatedArticle = await article.update(
         {
           title,
           body,
           slug,
           description,
-          tagList,
+          tagList: newTags,
           readTime: totalArticleReadTime
         },
         {
@@ -140,6 +159,37 @@ const articles = {
         return res.status(404).send({
           status: res.statusCode,
           error: 'Article not found'
+        });
+      }
+
+      // tag registration
+      const oldTags = findArticle.tagList;
+
+      if (newTags) {
+        oldTags.forEach(async (tag) => {
+          if (!newTags.includes(tag)) {
+            const findTag = await tags.findOne({ where: { tag } });
+            if (findTag.count === 1) await tags.destroy({ where: { tag } });
+            if (findTag.count > 1) {
+              await tags.update(
+                { count: findTag.count - 1 },
+                { where: { tag }, returning: true }
+              );
+            }
+          }
+        });
+
+        newTags.forEach(async (tag) => {
+          if (!oldTags.includes(tag)) {
+            const findTag = await tags.findOne({ where: { tag } });
+            if (!findTag) await tags.create({ tag });
+            if (findTag) {
+              await tags.update(
+                { count: findTag.count + 1 },
+                { where: { tag }, returning: true }
+              );
+            }
+          }
         });
       }
 
@@ -166,7 +216,7 @@ const articles = {
     } catch (err) {
       res.status(500).send({
         status: res.statusCode,
-        errorMessage: 'Server failed to handle your request'
+        errorMessage: err.message
       });
     }
   },
@@ -180,13 +230,29 @@ const articles = {
   deleteArticle: async (req, res) => {
     const { id } = req.user;
     const { slug } = req.params;
-    const row = await article.update({ deleted: 1 }, { where: { slug, deleted: 0, author: id } });
+    const row = await article.update(
+      { deleted: 1 },
+      {
+        where: { slug, deleted: 0, author: id },
+        returning: true
+      }
+    );
     if (row[0] === 0) {
       return res.status(404).send({
         status: res.statusCode,
         message: 'No article found'
       });
     }
+    row[1][0].tagList.forEach(async (tag) => {
+      const findTag = await tags.findOne({ where: { tag } });
+      if (findTag.count === 1) await tags.destroy({ where: { tag } });
+      if (findTag.count > 1) {
+        await tags.update(
+          { count: findTag.count - 1 },
+          { where: { tag }, returning: true }
+        );
+      }
+    });
     return res.status(200).send({
       status: res.statusCode,
       message: 'Article deleted successfully'
@@ -784,6 +850,26 @@ const articles = {
       link
     });
     open(`mailto:?subject=${title}&body=${link}`);
+  },
+
+  getAllTags: async (req, res) => {
+    const tagslist = await tags.findAll({ attributes: ['tag', 'count'] });
+    return res.status(200).send({
+      status: res.statusCode,
+      data: tagslist
+    });
+  },
+
+  getTags: async (req, res) => {
+    const { tag } = req.params;
+    const tagslist = await tags.findAll({
+      attributes: ['tag', 'count'],
+      where: { tag: { [Op.regexp]: `(${tag})` } }
+    });
+    return res.status(200).send({
+      status: res.statusCode,
+      data: tagslist
+    });
   }
 };
 

@@ -75,7 +75,7 @@ describe('Article ', () => {
       });
   });
 
-  it('Should return 400 when try to create article with no parameters', (done) => {
+  it('Should return 400 status when try to create article with no parameters', (done) => {
     chai
       .request(app)
       .post('/api/v1/articles')
@@ -571,7 +571,8 @@ describe('Article ', () => {
       });
   });
 
-  it('should return 3 published articles ', (done) => {
+
+  it('should return 3 published articles', (done) => {
     chai
       .request(app)
       .get('/api/v1/articles?limit=3')
@@ -584,7 +585,7 @@ describe('Article ', () => {
         done();
       });
   });
-  it('should return 2 published articles ', (done) => {
+  it('should return 2 published articles', (done) => {
     chai
       .request(app)
       .get('/api/v1/articles?limit=3&offset=1')
@@ -624,7 +625,7 @@ describe('Article ', () => {
       });
   });
 
-  it('should share articles ', (done) => {
+  it('should share articles and return 200 status', (done) => {
     chai
       .request(app)
       .get(`/api/v1/articles/${dataGenerator.post1.slug}/twitter-share`)
@@ -637,7 +638,7 @@ describe('Article ', () => {
       });
   });
 
-  it('should share articles ', (done) => {
+  it('should share articles', (done) => {
     chai
       .request(app)
       .get(`/api/v1/articles/${dataGenerator.post1.slug}/email-share`)
@@ -650,7 +651,7 @@ describe('Article ', () => {
       });
   });
 
-  it('Should return 401 when provide invalid token', (done) => {
+  it('Should return 401 status when provide invalid token', (done) => {
     chai
       .request(app)
       .post('/api/v1/articles')
@@ -664,6 +665,30 @@ describe('Article ', () => {
         if (err) done(err);
         res.should.have.status(401);
         res.body.should.have.property('errorMessage');
+        done();
+      });
+  });
+
+  it('should get article tags', (done) => {
+    chai
+      .request(app)
+      .get('/api/v1/articles/tags')
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.should.be.an('Object');
+        done();
+      });
+  });
+
+  it('should get article tags', (done) => {
+    chai
+      .request(app)
+      .get('/api/v1/articles/tags/test')
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.status.should.eql(200);
+        res.body.should.be.an('Object');
         done();
       });
   });
