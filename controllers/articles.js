@@ -749,50 +749,6 @@ const articles = {
   },
 
   /*
-   * Retrieve a single bookmark
-   * for a user.
-   */
-  getBookmarkedArticle: async (req, res) => {
-    const { id: userId } = req.user;
-    const { slug } = req.params;
-    try {
-      const findBookmarks = await bookmark.findOne({ where: { userId } });
-      if (findBookmarks === null) {
-        return res.status(400).send({
-          status: res.statusCode,
-          errorMessage: "Bookmark doesn't exist"
-        });
-      }
-      const findBookmarkedArticle = await article.findOne({
-        where: { slug, id: findBookmarks.articleId },
-        attributes: ['title', 'slug', 'author']
-      });
-      const author = await User.findOne({
-        where: { id: findBookmarkedArticle.author },
-        attributes: ['username', 'image']
-      });
-      findBookmarkedArticle.author = author;
-      if (findBookmarkedArticle === null) {
-        res.status(400).send({
-          status: res.statusCode,
-          errorMessage: 'Article not found'
-        });
-      }
-      res.status(200).send({
-        status: res.statusCode,
-        data: findBookmarkedArticle
-      });
-    } catch (error) {
-      if (error.message) {
-        res.status(500).send({
-          status: res.statusCode,
-          errorMessage: 'Server failed to handle the request'
-        });
-      }
-    }
-  },
-
-  /*
    * delete bookmark
    */
   deleteBookmark: async (req, res) => {
