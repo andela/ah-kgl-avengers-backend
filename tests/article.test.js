@@ -409,20 +409,6 @@ describe('Article ', () => {
         });
     });
 
-    it('Return 400 when single bookmark missed', (done) => {
-      chai
-        .request(app)
-        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          if (err) done(err);
-          res.should.be.an('Object');
-          res.body.should.have.property('status').eql(400);
-          res.body.should.have.property('errorMessage');
-          done();
-        });
-    });
-
     it('Bookmark an article', (done) => {
       chai
         .request(app)
@@ -478,19 +464,7 @@ describe('Article ', () => {
         });
     });
 
-    it('User should be able to view bookmarked article', (done) => {
-      chai
-        .request(app)
-        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          if (err) done(err);
-          res.should.be.an('Object');
-          done();
-        });
-    });
-
-    it('User should be able to delete a bookmarked article', (done) => {
+    it('deletes a bookmark', (done) => {
       chai
         .request(app)
         .delete(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
@@ -503,7 +477,7 @@ describe('Article ', () => {
         });
     });
 
-    it('Should return 400 when tried to delete non-bookmarked article', (done) => {
+    it("Fails since the bookmark doesn't exist", (done) => {
       chai
         .request(app)
         .delete(`/api/v1/bookmarks/${dataGenerator.post2.slug}`)
@@ -570,7 +544,6 @@ describe('Article ', () => {
         done();
       });
   });
-
 
   it('should return 3 published articles', (done) => {
     chai

@@ -12,15 +12,9 @@ router.get('/articles/feeds', verifyToken, articlesController.getFeeds);
 
 router.get('/user/:username/articles', verifyToken, articlesController.authorArticles);
 
-router.get(
-  '/articles/tags',
-  articlesController.getAllTags
-);
+router.get('/articles/tags', articlesController.getAllTags);
 
-router.get(
-  '/articles/tags/:tag',
-  articlesController.getTags
-);
+router.get('/articles/tags/:tag', articlesController.getTags);
 // selects all articles
 // TODO: no authentication required
 router.get('/articles', checkToken, articlesController.getAllPublishedArticles);
@@ -75,13 +69,6 @@ router.get('/articles/:slug/ratings', articlesController.getArticleRatings);
 router.post('/bookmarks/:slug', checkToken, validation.slug, articlesController.createBookmark);
 
 router.get('/bookmarks', checkToken, articlesController.getAllBookmarks);
-
-router.get(
-  '/bookmarks/:slug',
-  checkToken,
-  validation.slug,
-  articlesController.getBookmarkedArticle
-);
 
 router.delete('/bookmarks/:slug', checkToken, validation.slug, articlesController.deleteBookmark);
 
