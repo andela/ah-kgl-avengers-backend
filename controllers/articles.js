@@ -353,6 +353,41 @@ const articles = {
       throw error;
     }
   },
+  /*
+   * Retrieving one drafted article based to the author
+   * and the status of the article=draft.
+   */
+  getSingleDraftArticle: async (req, res) => {
+    const { slug } = req.params;
+    const { id } = req.user;
+    try {
+      attributes.exclude.push('author');
+      const response = await article.findOne({
+        where: {
+          author: id,
+          slug,
+          status: 'draft',
+          deleted: 0
+        },
+        attributes,
+      });
+
+      if (!response) {
+        return res.status(404).json({
+          status: res.statusCode,
+          errorMessage: 'Article not found'
+        });
+      }
+
+      return res.status(200).send({
+        status: res.statusCode,
+        article: response,
+        articlesCount: response.length
+      });
+    } catch (error) {
+      throw error;
+    }
+  },
 
   authorArticles: async (req, res) => {
     const { username } = req.params;

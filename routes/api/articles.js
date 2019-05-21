@@ -15,10 +15,11 @@ router.get('/articles/tags', articlesController.getAllTags);
 
 router.get('/articles/tags/:tag', articlesController.getTags);
 // selects all articles
-// TODO: no authentication required
 router.get('/articles', checkToken, articlesController.getAllPublishedArticles);
 
 router.get('/articles/draft', checkToken, articlesController.getAllDraftArticles);
+
+router.get('/articles/draft/:slug', checkToken, articlesController.getSingleDraftArticle);
 
 // Create articles
 router.post('/articles', checkToken, validation.article, articlesController.createArticle);
