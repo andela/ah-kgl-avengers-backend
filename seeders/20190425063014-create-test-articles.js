@@ -14,6 +14,7 @@ export default {
         dataGenerator.postUpdate,
         dataGenerator.postDislike,
         dataGenerator.newFavorite,
+        dataGenerator.articleToBeDeleted,
       ],
       {},
       {}

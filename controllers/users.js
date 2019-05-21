@@ -189,7 +189,7 @@ class Users {
         process.env.SECRET,
         { expiresIn: 3600 }
       );
-      res.status(201).send({
+      return res.status(201).send({
         status: res.statusCode,
         token,
         data: {
@@ -203,7 +203,7 @@ class Users {
         where: { username: displayName }
       });
       if (error.errors[0].type) {
-        res.status(422).send({
+        return res.status(422).send({
           status: res.statusCode,
           message: `${error.errors[0].value} already exits, please login with ${
             existingUser.provider
@@ -245,7 +245,7 @@ class Users {
       email
     });
 
-    res.status(200).send({
+    return res.status(200).send({
       status: res.statusCode,
       message: 'Reset email sent! check your email'
     });

@@ -94,49 +94,6 @@ const Reports = {
     }
   },
 
-  /**
-   * Authenticated user should be able to report
-   * an article that doesn't obey rules and regulations.
-   *
-   * @param {*} req request object.
-   * @param {*} res response object.
-   * @returns {*}   response to be returned.
-   */
-  deleteReportedArticle: async (req, res) => {
-    const { slug } = req.params;
-    const { role } = req.user;
-    if (role !== 'admin') {
-      return res.status(401).send({
-        status: res.statusCode,
-        error: 'Unauthorized to make this request',
-      });
-    }
-    try {
-      const findArticle = await article.findOne({ where: { slug } });
-      if (!findArticle) {
-        return res.status(404).send({
-          status: res.statusCode,
-          error: 'The article was not found',
-        });
-      }
-      const destroy = await article.destroy({ where: { slug } });
-      if (!destroy) {
-        return res.status(500).send({
-          status: res.statusCode,
-          error: 'Failed to delete the article'
-        });
-      }
-      return res.status(200).send({
-        status: res.statusCode,
-        message: 'Article delete successfully'
-      });
-    } catch (error) {
-      return res.status(500).send({
-        status: res.statusCode,
-        error: 'Server failed to handle your request',
-      });
-    }
-  },
 };
 
 export default Reports;
