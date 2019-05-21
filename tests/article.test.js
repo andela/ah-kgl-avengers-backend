@@ -10,6 +10,9 @@ chai.should();
 chai.use(chaiHttp);
 
 let tokenValue;
+const tokens = {
+  user2: ''
+};
 
 describe('Article ', () => {
   before((done) => {
@@ -17,6 +20,14 @@ describe('Article ', () => {
       .getUser1Token()
       .then((res) => {
         tokenValue = res.body.user.token;
+      })
+      .catch(() => {
+        done();
+      });
+    utils
+      .getUser2Token()
+      .then((res) => {
+        tokens.user2 = res.body.user.token;
         done();
       })
       .catch(() => {
@@ -161,6 +172,33 @@ describe('Article ', () => {
         if (err) done(err);
         res.body.should.have.property('status').eql(200);
         res.body.should.have.property('data');
+        done();
+      });
+  });
+
+  it('Should return a drafted article because the token is from the author', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/draft/${dataGenerator.post3.slug}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.have.property('status').eql(200);
+        res.body.should.have.property('article');
+        done();
+      });
+  });
+
+  it('Should fail to get a drafted article because the token is not from the author', (done) => {
+    console.log(tokens.user2);
+
+    chai
+      .request(app)
+      .get(`/api/v1/articles/draft/${dataGenerator.post3.slug}`)
+      .set('Authorization', `Bearer ${tokens.user2}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.have.property('status').eql(404);
         done();
       });
   });
