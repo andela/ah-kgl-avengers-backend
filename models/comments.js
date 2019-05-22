@@ -36,6 +36,14 @@ export default (sequelize, DataTypes) => {
       },
       endIndex: {
         type: DataTypes.INTEGER
+      },
+      status: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        defaultValue: 'show',
+        validate: {
+          isIn: [['hide', 'show']]
+        }
       }
     },
     {}

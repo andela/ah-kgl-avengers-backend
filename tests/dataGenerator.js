@@ -310,6 +310,7 @@ export default {
     body: 'Thanks fo the article, its a great article',
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    status: 'show',
     createdAt,
     updatedAt
   },
@@ -319,6 +320,7 @@ export default {
     body: 'Hey tester, I want to know how you do tests?',
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    status: 'show',
     createdAt,
     updatedAt
   },
@@ -329,6 +331,7 @@ export default {
     body: 'It can take another post, I will work on it',
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    status: 'show',
     createdAt,
     updatedAt
   },
@@ -342,6 +345,7 @@ export default {
     endIndex: 80,
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    status: 'show',
     createdAt,
     updatedAt
   },
@@ -355,6 +359,7 @@ export default {
     endIndex: 80,
     author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa74',
     post: 'c90dee64-663d-4d8b-b34d-12acba22cd30',
+    status: 'show',
     createdAt,
     updatedAt
   },
@@ -441,5 +446,26 @@ export default {
     favorited: true,
     createdAt,
     updatedAt
-  }
+  },
+
+  // comment4 with highlight text
+  reply1: {
+    id: '2f0bab3d-54f0-41bb-b20e-b3456b28346f',
+    reply: 'It can take another post, I will work on it',
+    userId: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
+    commentId: '18e1bbf9-e707-4925-a992-c59f1fc748aa',
+    status: 'show',
+    createdAt,
+    updatedAt
+  },
+
+  reply2: {
+    id: '2f0bab3d-54f0-41bb-b20e-b3456b28342f',
+    reply: 'It can take another post',
+    userId: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
+    commentId: '18e1bbf9-e707-4925-a992-c59f1fc748aa',
+    status: 'show',
+    createdAt,
+    updatedAt
+  },
 };

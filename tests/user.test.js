@@ -359,6 +359,16 @@ describe('User', () => {
         });
     });
 
+    it('should fail as the username is not valid', (done) => {
+      chai
+        .request(app)
+        .get('/api/v1/users/profile/none')
+        .end((err, res) => {
+          res.should.have.status(400);
+          done();
+        });
+    });
+
     it('Should get 400 when viewing profile of user with invalid parameter', (done) => {
       chai
         .request(app)
