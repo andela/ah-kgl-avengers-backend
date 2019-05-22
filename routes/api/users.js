@@ -42,7 +42,6 @@ router.put('/auth/reset/:token', userControllers.updatePassword);
 router.post('/auth/logout', checkToken, userControllers.logout);
 
 // User functionality
-router.get('/users/authors', checkToken, userControllers.getAllAuthors);
 router.get(
   '/profiles/:username',
   checkToken,
