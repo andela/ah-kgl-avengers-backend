@@ -119,6 +119,8 @@ const articles = {
     const { id } = req.user;
     const { slug: oldSlug } = req.params;
     const { title, body } = req.body;
+    let { status = 'draft' } = req.body;
+    status = status.toLowerCase();
 
     let { tagList: newTags } = req.body;
 
@@ -144,6 +146,7 @@ const articles = {
           title,
           body,
           slug,
+          status,
           description,
           tagList: newTags,
           readTime: totalArticleReadTime
@@ -171,10 +174,7 @@ const articles = {
             const findTag = await tags.findOne({ where: { tag } });
             if (findTag.count === 1) await tags.destroy({ where: { tag } });
             if (findTag.count > 1) {
-              await tags.update(
-                { count: findTag.count - 1 },
-                { where: { tag }, returning: true }
-              );
+              await tags.update({ count: findTag.count - 1 }, { where: { tag }, returning: true });
             }
           }
         });
@@ -184,10 +184,7 @@ const articles = {
             const findTag = await tags.findOne({ where: { tag } });
             if (!findTag) await tags.create({ tag });
             if (findTag) {
-              await tags.update(
-                { count: findTag.count + 1 },
-                { where: { tag }, returning: true }
-              );
+              await tags.update({ count: findTag.count + 1 }, { where: { tag }, returning: true });
             }
           }
         });
@@ -216,7 +213,7 @@ const articles = {
     } catch (err) {
       res.status(500).send({
         status: res.statusCode,
-        errorMessage: err.message
+        error: err.message
       });
     }
   },
@@ -385,13 +382,13 @@ const articles = {
           status: 'draft',
           deleted: 0
         },
-        attributes,
+        attributes
       });
 
       if (!response) {
         return res.status(404).json({
           status: res.statusCode,
-          errorMessage: 'Article not found'
+          error: 'Article not found'
         });
       }
 
@@ -420,12 +417,14 @@ const articles = {
       const findAll = await article.findAll({
         where: { status: 'published', deleted: 0, author: findUser.id },
         attributes,
-        include: [{
-          model: User,
-          attributes: ['username', 'email', 'bio', 'image']
-        }],
+        include: [
+          {
+            model: User,
+            attributes: ['username', 'email', 'bio', 'image']
+          }
+        ],
         limit,
-        offset,
+        offset
       });
 
       return res.status(200).send({
@@ -527,7 +526,7 @@ const articles = {
       if (!articleToView) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'Article not found'
+          error: 'Article not found'
         });
       }
 
@@ -550,7 +549,7 @@ const articles = {
       if (error.message) {
         return res.status(500).send({
           status: res.statusCode,
-          errorMessage: error.message
+          error: error.message
         });
       }
     }
@@ -575,7 +574,7 @@ const articles = {
       if (!result) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'Article not found'
+          error: 'Article not found'
         });
       }
       // Drafts are not rated
@@ -595,7 +594,7 @@ const articles = {
 
       // Check if the user has no review yet on that article
       // Add user rating
-      // And all ratings made on the article to get an average
+      // Add all ratings made on the article to get an average
       // Calculate the average rating
       const articleRatings = await ratings.findOne({ where: { post: result.id, user } });
       if (articleRatings == null) {
@@ -693,9 +692,9 @@ const articles = {
         ratings: formatedRatings
       });
     } catch (error) {
-      res.status(500).json({
+      return res.status(500).json({
         status: res.statusCode,
-        errorMessage: 'The server failed to handle your request'
+        error: 'The server failed to handle your request'
       });
     }
   },
@@ -713,7 +712,7 @@ const articles = {
       if (!findArticle) {
         return res.status(404).send({
           status: res.statusCode,
-          errorMessage: 'The article your trying to bookmark does not exit'
+          error: 'The article your trying to bookmark does not exit'
         });
       }
 
@@ -721,7 +720,7 @@ const articles = {
       if (checkExist) {
         return res.status(400).send({
           status: res.statusCode,
-          errorMessage: 'You have already bookmarked this article'
+          error: 'You have already bookmarked this article'
         });
       }
 
@@ -743,7 +742,7 @@ const articles = {
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        errorMessage: 'The server failed to handle your request'
+        error: 'The server failed to handle your request'
       });
     }
   },
@@ -763,11 +762,11 @@ const articles = {
       if (findBookmarks.length === 0) {
         return res.status(400).send({
           status: res.statusCode,
-          errorMessage: "You don't have any bookmarked article"
+          error: "You don't have any bookmarked article"
         });
       }
 
-      // If the user has bookmarked article, format them
+      // If the user has bookmarked articles, format them
       bookmarkedArticles = await Promise.all(
         findBookmarks.map(async (item) => {
           const findBookmarkedArticle = await article.findOne({
@@ -790,12 +789,10 @@ const articles = {
       });
     } catch (error) {
       // Return server side error
-      if (error.message) {
-        res.status(500).send({
-          status: res.statusCode,
-          errorMessage: 'Something went wrong'
-        });
-      }
+      return res.status(500).send({
+        status: res.statusCode,
+        error: 'Something went wrong'
+      });
     }
   },
 
@@ -822,7 +819,7 @@ const articles = {
         message: 'Bookmark cleared successfully'
       });
     } catch (error) {
-      res.status(500).send({
+      return res.status(500).send({
         status: res.statusCode,
         message: 'Server failed to handle the request'
       });
@@ -860,22 +857,22 @@ const articles = {
   },
 
   getAllTags: async (req, res) => {
-    const tagslist = await tags.findAll({ attributes: ['tag', 'count'] });
+    const tagsList = await tags.findAll({ attributes: ['tag', 'count'] });
     return res.status(200).send({
       status: res.statusCode,
-      data: tagslist
+      data: tagsList
     });
   },
 
   getTags: async (req, res) => {
     const { tag } = req.params;
-    const tagslist = await tags.findAll({
+    const tagsList = await tags.findAll({
       attributes: ['tag', 'count'],
       where: { tag: { [Op.regexp]: `(${tag})` } }
     });
     return res.status(200).send({
       status: res.statusCode,
-      data: tagslist
+      data: tagsList
     });
   }
 };

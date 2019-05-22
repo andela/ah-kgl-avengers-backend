@@ -123,7 +123,7 @@ describe('Comments', () => {
           done(err);
         }
         res.should.have.status(404);
-        res.body.should.have.property('errorMessage', 'Comment to update not found');
+        res.body.should.have.property('error', 'Comment to update not found');
         done();
       });
   });
@@ -141,7 +141,7 @@ describe('Comments', () => {
           done(err);
         }
         res.should.have.status(404);
-        res.body.should.have.property('errorMessage', 'Comment to update not found');
+        res.body.should.have.property('error', 'Comment to update not found');
 
         done();
       });

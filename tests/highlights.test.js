@@ -54,7 +54,7 @@ describe('Highlighted Comments', () => {
         })
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -97,7 +97,7 @@ describe('Highlighted Comments', () => {
         })
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -119,7 +119,7 @@ describe('Highlighted Comments', () => {
         })
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -144,7 +144,7 @@ describe('Highlighted Comments', () => {
         .send()
         .end((err, res) => {
           res.should.have.status(404);
-          res.body.should.have.property('errorMessage').eql('Article not found');
+          res.body.should.have.property('error').eql('Article not found');
           done();
         });
     });

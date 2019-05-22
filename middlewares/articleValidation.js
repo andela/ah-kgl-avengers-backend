@@ -82,7 +82,7 @@ const articleValidation = {
     if (!oneArticle) {
       return res.status(404).send({
         status: res.statusCode,
-        errorMessage: 'No article found, please create an article first'
+        error: 'No article found, please create an article first'
       });
     }
     oneArticle.link = link;

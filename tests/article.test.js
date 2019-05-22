@@ -190,8 +190,6 @@ describe('Article ', () => {
   });
 
   it('Should fail to get a drafted article because the token is not from the author', (done) => {
-    console.log(tokens.user2);
-
     chai
       .request(app)
       .get(`/api/v1/articles/draft/${dataGenerator.post3.slug}`)
@@ -242,7 +240,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.should.have.status(404);
           res.body.should.be.an('Object');
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -442,7 +440,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.should.be.an('Object');
           res.body.should.have.property('status').eql(400);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -469,7 +467,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.body.status.should.eql(400);
           res.body.should.be.an('Object');
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -483,7 +481,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.body.should.be.an('Object');
           res.body.status.should.eql(404);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -578,7 +576,7 @@ describe('Article ', () => {
         if (err) done(err);
         res.should.have.status(404);
         res.body.should.be.an('Object');
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -618,7 +616,7 @@ describe('Article ', () => {
       .end((err, res) => {
         if (err) done(err);
         res.body.status.should.eql(404);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -675,7 +673,7 @@ describe('Article ', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(401);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });

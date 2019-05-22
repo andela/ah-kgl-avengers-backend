@@ -229,7 +229,7 @@ describe('User', () => {
         if (err) done(err);
         res.body.should.be.a('object');
         res.should.have.status(400);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -246,7 +246,7 @@ describe('User', () => {
         if (err) done(err);
         res.body.should.be.a('object');
         res.should.have.status(400);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -409,7 +409,7 @@ describe('User', () => {
             if (err) done(err);
             res.should.have.status(401);
             res.body.should.be.an('Object');
-            res.body.should.have.property('errorMessage');
+            res.body.should.have.property('error');
             done();
           });
       });

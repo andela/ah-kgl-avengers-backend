@@ -82,7 +82,7 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(404);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -137,7 +137,7 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(404);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -180,7 +180,7 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(404);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -210,7 +210,7 @@ describe('Like, Dislike and Favorite', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(404);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });

@@ -30,7 +30,7 @@ passport.use(
         });
         if (user.activated === 0) {
           return done(null, false, {
-            errorMessage: 'Please first activate your account'
+            error: 'Please first activate your account'
           });
         }
         if (!user) {

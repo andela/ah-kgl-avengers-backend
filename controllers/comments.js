@@ -46,9 +46,9 @@ export default {
         highlightedText = await post.body.slice(startIndex, endIndex);
       }
       if (highlightedText !== text) {
-        res.status(404).send({
+        return res.status(404).send({
           status: 404,
-          errorMessage: 'Highlighted text not found'
+          error: 'Highlighted text not found'
         });
       }
 
@@ -86,14 +86,12 @@ export default {
           updatedAt: comment.updatedAt,
           body: comment.body,
           highlightedText: comment.highlightedText
-          // author
         }
       });
     } catch (e) {
       return res.status(500).json({
         status: res.statusCode,
-        error: e.message || '',
-        message: 'Something happened on the server'
+        error: 'Something happened on the server'
       });
     }
   },
@@ -171,8 +169,7 @@ export default {
     } catch (e) {
       return res.status(500).json({
         status: res.statusCode,
-        error: e.message || '',
-        message: 'Something happened on the server'
+        error: 'Something happened on the server'
       });
     }
   },
@@ -193,7 +190,6 @@ export default {
     const { slug, commentId } = req.params;
     const { id } = req.user;
 
-    // validate input in a middleware
     if (!body || body.trim() === '') {
       return res.status(400).json({
         status: res.statusCode,
@@ -228,7 +224,7 @@ export default {
       if (highlightedText !== text) {
         return res.status(404).send({
           status: 404,
-          errorMessage: 'Highlighted text is not found'
+          error: 'Highlighted text is not found'
         });
       }
       const updatedComment = await Comments.update(
@@ -251,7 +247,7 @@ export default {
       if (updatedComment[0] === 0) {
         return res.status(404).json({
           status: res.statusCode,
-          errorMessage: 'Comment to update not found'
+          error: 'Comment to update not found'
         });
       }
 
@@ -347,7 +343,7 @@ export default {
     if (!findArticle) {
       return res.status(404).send({
         status: 404,
-        errorMessage: 'Article not found'
+        error: 'Article not found'
       });
     }
 
@@ -357,12 +353,7 @@ export default {
       attributes: ['highlightedText'],
       include: [{ model: User, attributes: ['username', 'image'] }]
     });
-    if (!highlighted) {
-      return res.status(404).send({
-        status: 404,
-        errorMessage: 'There are no comments for this article'
-      });
-    }
+
     return res.status(200).send({
       status: 200,
       highlighted
