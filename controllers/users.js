@@ -320,23 +320,6 @@ class Users {
   }
 
   /**
-   * get a list of authors
-   * @param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @returns {object} res
-   */
-  static async getAllAuthors(req, res) {
-    const result = await User.findAll({
-      attributes: ['image', 'username', 'email']
-    });
-    return res.status(200).send({
-      status: res.statusCode,
-      data: result
-    });
-  }
-
-  /**
    * get author profile
    * @param {object} req
    * @param {object} res
@@ -625,10 +608,11 @@ class Users {
   }
 
   /**
-   *
+   * get a list of authors
    * @param {object} req
    * @param {object} res
-   * @returns {object} get all users
+   * @param {object} next
+   * @returns {object} get all users/authors
    */
   static async getAllUsers(req, res) {
     const { limit = 10, offset = 0 } = req.query;
