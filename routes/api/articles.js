@@ -3,6 +3,7 @@ import articlesController from '../../controllers/articles';
 import validation from '../../middlewares/articleValidation';
 import tokenChecker from '../../middlewares/passportCustom';
 import commentController from '../../controllers/comments';
+import replComment from '../../controllers/reply';
 
 const router = express.Router();
 const { checkToken, verifyToken } = tokenChecker;
@@ -47,6 +48,15 @@ router.delete('/articles/:slug/comments/:id', checkToken, commentController.dele
 
 // get highlighted texts on the article
 router.get('/articles/:slug/commented-text', checkToken, commentController.getHighlighted);
+
+// reply to the comment
+router.post('/comment/:commentId', checkToken, replComment.createReply);
+
+// update the reply to the comment
+router.put('/comment/:replyId/update', checkToken, replComment.editReply);
+
+// delete the reply to the comment
+router.delete('/comment/:replyId/delete', checkToken, replComment.deleteCommentReply);
 
 // Rate an  article
 router.post(

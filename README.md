@@ -1,7 +1,7 @@
 # Authors' Haven
 
 [![Build Status](https://travis-ci.com/andela/ah-kgl-avengers-backend.svg?branch=develop)](https://travis-ci.com/andela/ah-kgl-avengers-backend)
-[![Coverage Status](https://coveralls.io/repos/github/andela/ah-kgl-avengers-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/ah-kgl-avengers-backend?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/andela/ah-kgl-avengers-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/ah-kgl-avengers-backend?branch=develop&kill_cache=1)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
  A blogging platform for the creative at heart.

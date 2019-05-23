@@ -14,6 +14,7 @@ const { email: email2 } = dataGenerator.user2;
 const { email: email3 } = dataGenerator.user3;
 const { email: email4 } = dataGenerator.user4;
 const { email: email5 } = dataGenerator.user5;
+const { email: email7 } = dataGenerator.user7;
 
 const admin = dataGenerator.user5;
 const password = 'testuser';
@@ -35,6 +36,11 @@ export default {
     .request(app)
     .post('/api/v1/auth/login')
     .send({ email: email4, password }),
+
+  getUser7Token: () => chai
+    .request(app)
+    .post('/api/v1/auth/login')
+    .send({ email: email7, password }),
 
   getAdminToken: () => chai
     .request(app)

@@ -3,7 +3,7 @@ import subscribe from '../helpers/subscribe';
 import mailer from '../config/verificationMail';
 
 const {
-  Comments, User, article, likeComments, CommentEdits
+  Comments, User, article, likeComments, CommentEdits, replies
 } = models;
 
 const { Op } = models.Sequelize;
@@ -148,6 +148,11 @@ export default {
             attributes: ['body', 'createdAt'],
             order: [['createdAt', 'ASC']]
           });
+          const commentReplies = await replies.findAll({
+            where: { commentId: comment.id, status: 'show' },
+            attributes: ['reply', 'createdAt'],
+            order: [['createdAt', 'ASC']]
+          });
           return {
             id: comment.id,
             createdAt: comment.createdAt,
@@ -156,7 +161,8 @@ export default {
             highlightedText: comment.hightedText,
             author: comment.User,
             likes: comment.likeComments.length,
-            editHistory
+            editHistory,
+            commentReplies
           };
         })
       );
@@ -185,10 +191,10 @@ export default {
    */
   update: async (req, res) => {
     const {
-      text = null, startIndex = null, endIndex = null, body
+      text = null, startIndex = null, endIndex = null, body, status
     } = req.body;
     const { slug, commentId } = req.params;
-    const { id } = req.user;
+    const { id, role } = req.user;
 
     if (!body || body.trim() === '') {
       return res.status(400).json({
@@ -227,29 +233,37 @@ export default {
           error: 'Highlighted text is not found'
         });
       }
+
+      const findComment = await Comments.findOne({ where: { id: commentId } });
+      if (!findComment) {
+        return res.status(404).send({
+          status: res.statusCode,
+          error: 'The comment is not found'
+        });
+      }
+      if (role !== 'admin' && id !== findComment.author) {
+        return res.status(401).send({
+          status: res.statusCode,
+          error: 'You are not authorized to update this comment'
+        });
+      }
+
       const updatedComment = await Comments.update(
         {
           highlightedText: text,
           startIndex,
           endIndex,
-          body
+          body: role === 'admin' ? findComment.body : body,
+          status: role === 'admin' ? status : 'show'
         },
         {
           where: {
             id: commentId,
             post: CommentedArticle.id,
-            author: id
           },
           returning: true
         }
       );
-
-      if (updatedComment[0] === 0) {
-        return res.status(404).json({
-          status: res.statusCode,
-          error: 'Comment to update not found'
-        });
-      }
 
       const editHistory = await CommentEdits.findAll({
         where: { commentId },

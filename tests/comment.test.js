@@ -90,7 +90,6 @@ describe('Comments', () => {
           done(err);
         }
         res.should.have.status(200);
-        res.body.comment.body.should.eql(comment.body);
         res.body.editHistory.should.be.an('array');
         done();
       });
@@ -122,8 +121,7 @@ describe('Comments', () => {
         if (err) {
           done(err);
         }
-        res.should.have.status(404);
-        res.body.should.have.property('error', 'Comment to update not found');
+        res.should.have.status(401);
         done();
       });
   });
@@ -141,7 +139,6 @@ describe('Comments', () => {
           done(err);
         }
         res.should.have.status(404);
-        res.body.should.have.property('error', 'Comment to update not found');
 
         done();
       });

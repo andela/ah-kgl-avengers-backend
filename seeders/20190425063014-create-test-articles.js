@@ -25,6 +25,10 @@ export default {
       dataGenerator.comment3,
       dataGenerator.comment4,
       dataGenerator.comment5
+    ]))
+    .then(() => queryInterface.bulkInsert('replies', [
+      dataGenerator.reply1,
+      dataGenerator.reply2,
     ])),
 
   down: queryInterface => queryInterface
