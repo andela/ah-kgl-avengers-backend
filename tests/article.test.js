@@ -10,6 +10,9 @@ chai.should();
 chai.use(chaiHttp);
 
 let tokenValue;
+const tokens = {
+  user2: ''
+};
 
 describe('Article ', () => {
   before((done) => {
@@ -17,6 +20,14 @@ describe('Article ', () => {
       .getUser1Token()
       .then((res) => {
         tokenValue = res.body.user.token;
+      })
+      .catch(() => {
+        done();
+      });
+    utils
+      .getUser2Token()
+      .then((res) => {
+        tokens.user2 = res.body.user.token;
         done();
       })
       .catch(() => {
@@ -165,6 +176,31 @@ describe('Article ', () => {
       });
   });
 
+  it('Should return a drafted article because the token is from the author', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/draft/${dataGenerator.post3.slug}`)
+      .set('Authorization', `Bearer ${tokenValue}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.have.property('status').eql(200);
+        res.body.should.have.property('article');
+        done();
+      });
+  });
+
+  it('Should fail to get a drafted article because the token is not from the author', (done) => {
+    chai
+      .request(app)
+      .get(`/api/v1/articles/draft/${dataGenerator.post3.slug}`)
+      .set('Authorization', `Bearer ${tokens.user2}`)
+      .end((err, res) => {
+        if (err) done(err);
+        res.body.should.have.property('status').eql(404);
+        done();
+      });
+  });
+
   it('Should return 404 when articles author not found', (done) => {
     chai
       .request(app)
@@ -204,7 +240,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.should.have.status(404);
           res.body.should.be.an('Object');
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -404,21 +440,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.should.be.an('Object');
           res.body.should.have.property('status').eql(400);
-          res.body.should.have.property('errorMessage');
-          done();
-        });
-    });
-
-    it('Return 400 when single bookmark missed', (done) => {
-      chai
-        .request(app)
-        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          if (err) done(err);
-          res.should.be.an('Object');
-          res.body.should.have.property('status').eql(400);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -445,7 +467,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.body.status.should.eql(400);
           res.body.should.be.an('Object');
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -459,7 +481,7 @@ describe('Article ', () => {
           if (err) done(err);
           res.body.should.be.an('Object');
           res.body.status.should.eql(404);
-          res.body.should.have.property('errorMessage');
+          res.body.should.have.property('error');
           done();
         });
     });
@@ -478,19 +500,7 @@ describe('Article ', () => {
         });
     });
 
-    it('User should be able to view bookmarked article', (done) => {
-      chai
-        .request(app)
-        .get(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          if (err) done(err);
-          res.should.be.an('Object');
-          done();
-        });
-    });
-
-    it('User should be able to delete a bookmarked article', (done) => {
+    it('deletes a bookmark', (done) => {
       chai
         .request(app)
         .delete(`/api/v1/bookmarks/${dataGenerator.post1.slug}`)
@@ -503,7 +513,7 @@ describe('Article ', () => {
         });
     });
 
-    it('Should return 400 when tried to delete non-bookmarked article', (done) => {
+    it("Fails since the bookmark doesn't exist", (done) => {
       chai
         .request(app)
         .delete(`/api/v1/bookmarks/${dataGenerator.post2.slug}`)
@@ -566,11 +576,10 @@ describe('Article ', () => {
         if (err) done(err);
         res.should.have.status(404);
         res.body.should.be.an('Object');
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
-
 
   it('should return 3 published articles', (done) => {
     chai
@@ -607,7 +616,7 @@ describe('Article ', () => {
       .end((err, res) => {
         if (err) done(err);
         res.body.status.should.eql(404);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });
@@ -664,7 +673,7 @@ describe('Article ', () => {
       .end((err, res) => {
         if (err) done(err);
         res.should.have.status(401);
-        res.body.should.have.property('errorMessage');
+        res.body.should.have.property('error');
         done();
       });
   });

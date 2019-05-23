@@ -56,7 +56,7 @@ class Users {
     } catch (e) {
       return res.status(400).send({
         status: 400,
-        errorMessage: e.errors[0].message
+        error: e.errors[0].message
       });
     }
   }
@@ -87,12 +87,12 @@ class Users {
     const user = await User.findOne({ where: { email } });
     if (user.activated === 0) {
       return res.status(400).send({
-        errorMessage: `The account with email ${email} is not activated`
+        error: `The account with email ${email} is not activated`
       });
     }
     if (user.activated !== 1) {
       return res.status(400).send({
-        errorMessage: 'You account is not valid'
+        error: 'You account is not valid'
       });
     }
     const {
@@ -105,7 +105,7 @@ class Users {
     if (hash !== hashInputPassword) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'The password is not correct'
+        error: 'The password is not correct'
       });
     }
 
@@ -353,14 +353,14 @@ class Users {
     if (!checkUser) {
       return res.status(404).send({
         status: 404,
-        errorMessage: 'The User is not registered'
+        error: 'The User is not registered'
       });
     }
 
     if (checkUser.id !== req.user.id && req.user.role === 'user') {
       return res.status(401).send({
         status: 401,
-        errorMessage: 'You are not allowed to update this profile'
+        error: 'You are not allowed to update this profile'
       });
     }
     const updated = await User.update(
@@ -586,14 +586,7 @@ class Users {
     if (!findUser) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'The User does not exist'
-      });
-    }
-
-    if (findUser.activated === 0) {
-      return res.status(400).send({
-        status: 400,
-        errorMessage: 'The User has not yet activated his/her account'
+        error: 'The User does not exist'
       });
     }
 
@@ -650,14 +643,7 @@ class Users {
     if (!findUser) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'The user with that username is not found'
-      });
-    }
-
-    if (findUser.activated === -1) {
-      return res.status(400).send({
-        status: 400,
-        errorMessage: 'The User you are trying to delete is already deleted'
+        error: 'The user with that username is not found'
       });
     }
 
@@ -697,7 +683,7 @@ class Users {
       if (!findUser) {
         return res.status(400).send({
           status: 400,
-          errorMessage: 'The user with that username is not found'
+          error: 'The user with that username is not found'
         });
       }
 
@@ -723,7 +709,7 @@ class Users {
       if (e.name === 'SequelizeValidationError') {
         return res.status(400).send({
           status: 400,
-          errorMessage: 'the role has to be between user and admin'
+          error: 'the role has to be between user and admin'
         });
       }
       return res.status(500).json({
@@ -746,7 +732,7 @@ class Users {
     if (!role || (role !== 'admin' && role !== 'user')) {
       return res.status(400).send({
         status: 400,
-        errorMessage: 'Please Provide role with values admin or user in queries'
+        error: 'Please Provide role with values admin or user in queries'
       });
     }
 

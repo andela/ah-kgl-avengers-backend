@@ -3,7 +3,6 @@ import articlesController from '../../controllers/articles';
 import validation from '../../middlewares/articleValidation';
 import tokenChecker from '../../middlewares/passportCustom';
 import commentController from '../../controllers/comments';
-import commentText from '../../controllers/commentText';
 
 const router = express.Router();
 const { checkToken, verifyToken } = tokenChecker;
@@ -12,20 +11,15 @@ router.get('/articles/feeds', verifyToken, articlesController.getFeeds);
 
 router.get('/user/:username/articles', verifyToken, articlesController.authorArticles);
 
-router.get(
-  '/articles/tags',
-  articlesController.getAllTags
-);
+router.get('/articles/tags', articlesController.getAllTags);
 
-router.get(
-  '/articles/tags/:tag',
-  articlesController.getTags
-);
+router.get('/articles/tags/:tag', articlesController.getTags);
 // selects all articles
-// TODO: no authentication required
 router.get('/articles', checkToken, articlesController.getAllPublishedArticles);
 
 router.get('/articles/draft', checkToken, articlesController.getAllDraftArticles);
+
+router.get('/articles/draft/:slug', checkToken, articlesController.getSingleDraftArticle);
 
 // Create articles
 router.post('/articles', checkToken, validation.article, articlesController.createArticle);
@@ -51,14 +45,8 @@ router.put('/articles/:slug/comments/:commentId', checkToken, commentController.
 // delete a comment
 router.delete('/articles/:slug/comments/:id', checkToken, commentController.delete);
 
-// comment on highlighted text
-router.post('/articles/:slug/text-comment', checkToken, commentText.createTextComment);
-
-// comment on highlighted text
-router.put('/articles/text-comment/:commentId', checkToken, commentText.updateComment);
-
 // get highlighted texts on the article
-router.get('/articles/:slug/text-comment', checkToken, commentText.getHighlighted);
+router.get('/articles/:slug/commented-text', checkToken, commentController.getHighlighted);
 
 // Rate an  article
 router.post(
@@ -75,13 +63,6 @@ router.get('/articles/:slug/ratings', articlesController.getArticleRatings);
 router.post('/bookmarks/:slug', checkToken, validation.slug, articlesController.createBookmark);
 
 router.get('/bookmarks', checkToken, articlesController.getAllBookmarks);
-
-router.get(
-  '/bookmarks/:slug',
-  checkToken,
-  validation.slug,
-  articlesController.getBookmarkedArticle
-);
 
 router.delete('/bookmarks/:slug', checkToken, validation.slug, articlesController.deleteBookmark);
 

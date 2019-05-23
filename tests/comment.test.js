@@ -44,7 +44,7 @@ describe('Comments', () => {
       .end((err, res) => {
         res.should.have.status(201);
         res.body.comment.body.should.be.a('string');
-        res.body.comment.author.should.be.an('object');
+        res.body.comment.id.should.be.a('string');
         done();
       });
   });
@@ -122,7 +122,8 @@ describe('Comments', () => {
         if (err) {
           done(err);
         }
-        res.should.have.status(400);
+        res.should.have.status(404);
+        res.body.should.have.property('error', 'Comment to update not found');
         done();
       });
   });
@@ -139,7 +140,9 @@ describe('Comments', () => {
         if (err) {
           done(err);
         }
-        res.should.have.status(400);
+        res.should.have.status(404);
+        res.body.should.have.property('error', 'Comment to update not found');
+
         done();
       });
   });
@@ -154,7 +157,8 @@ describe('Comments', () => {
         if (err) {
           done(err);
         }
-        res.should.have.status(400);
+        res.should.have.status(404);
+        res.body.should.have.property('error', 'Article not found');
         done();
       });
   });

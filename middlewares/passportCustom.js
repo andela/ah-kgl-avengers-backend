@@ -7,14 +7,14 @@ export default {
       // setting the user information to be accessed on req object as req.user
       req.user = user;
       if (err) {
-        return res.status(520).send({ errorMessage: { body: [err.message] } });
+        return res.status(520).send({ error: { body: [err.message] } });
       }
       // check if token is in headers and if not return related customized errors
       if (!user) {
         const status = info.message === 'user does not exist' ? 404 : 401;
         return res.status(status).send({
           status,
-          errorMessage: info.message
+          error: info.message
         });
       }
 
@@ -29,7 +29,7 @@ export default {
         req.user = user;
       }
       if (err) {
-        return res.status(520).send({ errorMessage: { body: [err.message] } });
+        return res.status(520).send({ error: { body: [err.message] } });
       }
       return next();
     })(req, res, next);
@@ -41,17 +41,17 @@ export default {
       if (!user) {
         return res.status(401).send({
           status: 401,
-          errorMessage: 'You are not authorized to make this request provide token'
+          error: 'You are not authorized to make this request provide token'
         });
       }
       if (user.role !== 'super-admin' && user.role !== 'admin') {
         return res.status(401).send({
           status: 401,
-          errorMessage: 'You are not authorized to make this request'
+          error: 'You are not authorized to make this request'
         });
       }
       if (err) {
-        return res.status(520).send({ errorMessage: { body: [err.message] } });
+        return res.status(520).send({ error: { body: [err.message] } });
       }
       return next();
     })(req, res, next);
@@ -63,11 +63,11 @@ export default {
       if (!user || user.role !== 'super-admin') {
         return res.status(401).send({
           status: 401,
-          errorMessage: 'You are not authorized to make this request provide token'
+          error: 'You are not authorized to make this request provide token'
         });
       }
       if (err) {
-        return res.status(520).send({ errorMessage: { body: [err.message] } });
+        return res.status(520).send({ error: { body: [err.message] } });
       }
       return next();
     })(req, res, next);

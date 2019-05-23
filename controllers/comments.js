@@ -6,6 +6,7 @@ const {
   Comments, User, article, likeComments, CommentEdits
 } = models;
 
+const { Op } = models.Sequelize;
 export default {
   /**
    *  Only authenticated users can add comments on articles
@@ -14,7 +15,9 @@ export default {
    *  @return {object} res
    * */
   create: async (req, res) => {
-    const { body } = req.body;
+    const {
+      text = null, startIndex = null, endIndex = null, body
+    } = req.body;
     const { slug } = req.params;
     const { id: authorID } = req.user;
 
@@ -22,8 +25,15 @@ export default {
       // check if the article exists
       const post = await article.findOne({
         where: { slug },
-        attributes: ['id']
+        attributes: ['id', 'body'],
+        include: [
+          {
+            model: User,
+            attributes: ['username', 'image']
+          }
+        ]
       });
+
       if (!post) {
         return res.status(404).json({
           status: res.statusCode,
@@ -31,17 +41,28 @@ export default {
         });
       }
 
-      // get comment author username
-      const author = await User.findOne({
-        where: { id: authorID },
-        attributes: ['username', 'image']
-      });
+      let highlightedText = null;
+      if (text !== null) {
+        highlightedText = await post.body.slice(startIndex, endIndex);
+      }
+      if (highlightedText !== text) {
+        return res.status(404).send({
+          status: 404,
+          error: 'Highlighted text not found'
+        });
+      }
 
       // save the comment
-      const comment = await Comments.create({
-        body,
-        author: authorID,
-        post: post.id
+      let comment = await Comments.findOrCreate({
+        where: {
+          body,
+          highlightedText: text,
+          startIndex,
+          endIndex,
+          author: authorID,
+          post: post.id
+        },
+        defaults: { body }
       });
 
       // send email notification
@@ -49,13 +70,14 @@ export default {
         username: req.user.username,
         subscribeTo: post.id,
         slug: post.slug,
-        title: 'new comment',
+        title: 'New comment',
         action: 'has left a comment on an article'
       });
 
       // register user as a subscriber to the commented article
       subscribe(req.user.id, post.id);
 
+      comment = Object.assign(comment[0], {});
       return res.status(201).json({
         status: res.statusCode,
         comment: {
@@ -63,14 +85,13 @@ export default {
           createdAt: comment.createdAt,
           updatedAt: comment.updatedAt,
           body: comment.body,
-          author
+          highlightedText: comment.highlightedText
         }
       });
     } catch (e) {
       return res.status(500).json({
         status: res.statusCode,
-        error: e.message || '',
-        message: 'Something happened on the server'
+        error: 'Something happened on the server'
       });
     }
   },
@@ -148,8 +169,7 @@ export default {
     } catch (e) {
       return res.status(500).json({
         status: res.statusCode,
-        error: e.message || '',
-        message: 'Something happened on the server'
+        error: 'Something happened on the server'
       });
     }
   },
@@ -164,7 +184,9 @@ export default {
    *
    */
   update: async (req, res) => {
-    const { body } = req.body;
+    const {
+      text = null, startIndex = null, endIndex = null, body
+    } = req.body;
     const { slug, commentId } = req.params;
     const { id } = req.user;
 
@@ -178,7 +200,7 @@ export default {
     try {
       const CommentedArticle = await article.findOne({
         where: { slug },
-        attributes: ['id'],
+        attributes: ['id', 'body'],
         include: {
           model: User,
           attributes: ['username', 'id']
@@ -186,14 +208,32 @@ export default {
       });
 
       if (!CommentedArticle) {
-        return res.status(400).json({
+        return res.status(404).json({
           status: res.statusCode,
           error: 'Article not found'
         });
       }
 
+      let highlightedText = null;
+
+      if (text !== null && startIndex && endIndex) {
+        // get the new text that is going to be commented on
+        highlightedText = await CommentedArticle.body.slice(startIndex, endIndex);
+      }
+      // if text provided in body and one specified by indices are not matching
+      if (highlightedText !== text) {
+        return res.status(404).send({
+          status: 404,
+          error: 'Highlighted text is not found'
+        });
+      }
       const updatedComment = await Comments.update(
-        { body },
+        {
+          highlightedText: text,
+          startIndex,
+          endIndex,
+          body
+        },
         {
           where: {
             id: commentId,
@@ -205,7 +245,7 @@ export default {
       );
 
       if (updatedComment[0] === 0) {
-        return res.status(400).json({
+        return res.status(404).json({
           status: res.statusCode,
           error: 'Comment to update not found'
         });
@@ -213,7 +253,7 @@ export default {
 
       const editHistory = await CommentEdits.findAll({
         where: { commentId },
-        attributes: ['body', 'createdAt']
+        attributes: ['body', 'highlightedText', 'createdAt']
       });
       const comment = updatedComment[1][0];
 
@@ -285,5 +325,38 @@ export default {
         error: e.message
       });
     }
+  },
+
+  /**
+   * This method gets all the highlighted texts on the article
+   * @param {Object} req
+   * @param {Object} res
+   * @returns {Object} Object of highlighted texts on the article
+   */
+  getHighlighted: async (req, res) => {
+    const { slug } = req.params;
+
+    // check if the article with slug provided is in db
+    const findArticle = await article.findOne({
+      where: { slug }
+    });
+    if (!findArticle) {
+      return res.status(404).send({
+        status: 404,
+        error: 'Article not found'
+      });
+    }
+
+    // now get all the highlighted texts associated to that article
+    const highlighted = await Comments.findAll({
+      where: { post: findArticle.id, highlightedText: { [Op.ne]: null } },
+      attributes: ['highlightedText'],
+      include: [{ model: User, attributes: ['username', 'image'] }]
+    });
+
+    return res.status(200).send({
+      status: 200,
+      highlighted
+    });
   }
 };

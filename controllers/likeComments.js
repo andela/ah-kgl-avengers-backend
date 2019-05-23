@@ -25,7 +25,7 @@ class LikeComments {
       if (!findComment) {
         return res.status(404).send({
           status: 404,
-          errorMessage: 'The Comment is not found'
+          error: 'The Comment is not found'
         });
       }
       const isLiked = await likeComments.findOne({
@@ -59,7 +59,7 @@ class LikeComments {
     } catch (err) {
       return res.status(500).send({
         status: 500,
-        errorMessage: 'Something went wrong'
+        error: 'Something went wrong'
       });
     }
   }

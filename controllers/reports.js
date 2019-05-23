@@ -23,7 +23,7 @@ const Reports = {
       if (!findArticle) {
         return res.status(404).send({
           status: res.statusCode,
-          error: 'The article you\'re trying to report is not found',
+          error: "The article you're trying to report is not found"
         });
       }
 
@@ -31,26 +31,21 @@ const Reports = {
       if (findReport) {
         return res.status(400).send({
           status: res.statusCode,
-          error: 'You have already reported this article',
+          error: 'You have already reported this article'
         });
       }
-      const report = await Report.create({ reporter, message, articleId: findArticle.id });
-      if (!report) {
-        return res.status(500).send({
-          status: res.statusCode,
-          error: 'Failed to handle this request',
-        });
-      }
+      await Report.create({ reporter, message, articleId: findArticle.id });
+
       delete findArticle.get().id;
       return res.status(200).send({
         status: res.statusCode,
         message,
-        article: findArticle,
+        article: findArticle
       });
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        error: 'Server failed to handle your request',
+        error: 'Server failed to handle your request'
       });
     }
   },
@@ -68,28 +63,31 @@ const Reports = {
     if (role !== 'admin') {
       return res.status(401).send({
         status: res.statusCode,
-        error: 'Unauthorized to make this request',
+        error: 'Unauthorized to make this request'
       });
     }
     try {
       const allReports = await Report.findAll({
-        attributes: { exclude: ['id', 'articleId', 'reporter'], },
-        include: [{
-          model: User,
-          attributes: ['username', 'email', 'bio']
-        }, {
-          model: article,
-          attributes: ['title', 'slug', 'description']
-        }]
+        attributes: { exclude: ['id', 'articleId', 'reporter'] },
+        include: [
+          {
+            model: User,
+            attributes: ['username', 'email', 'bio']
+          },
+          {
+            model: article,
+            attributes: ['title', 'slug', 'description']
+          }
+        ]
       });
       return res.status(200).send({
         status: res.statusCode,
-        data: allReports,
+        data: allReports
       });
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        error: 'Server failed to handle your request',
+        error: 'Server failed to handle your request'
       });
     }
   },

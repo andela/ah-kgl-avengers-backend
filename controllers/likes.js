@@ -21,7 +21,7 @@ class Likes {
       if (!checkArticle) {
         res.status(404).send({
           status: 404,
-          errorMessage: 'The Article you are trying to like is not found'
+          error: 'The Article you are trying to like is not found'
         });
       }
 
@@ -82,7 +82,7 @@ class Likes {
     if (!checkArticle) {
       res.status(404).send({
         status: 404,
-        errorMessage: 'The Article you are trying to like is not found'
+        error: 'The Article you are trying to like is not found'
       });
     }
 
@@ -130,7 +130,7 @@ class Likes {
       if (!checkArticle) {
         res.status(404).send({
           status: 404,
-          errorMessage: 'The Article can not be favorited'
+          error: 'The Article can not be favorited'
         });
       }
 
@@ -199,7 +199,7 @@ class Likes {
       if (!findUser) {
         return res.status(404).send({
           status: 404,
-          errorMessage: 'You have not favorites articles'
+          error: 'You have not favorites articles'
         });
       }
 
