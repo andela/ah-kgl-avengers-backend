@@ -35,18 +35,4 @@ router.post(
   reportController.reportArticle
 );
 
-/**
- * URL      : /api/v1/report/article/:slug
- * Method   : DELETE.
- * Header   : Authorization Bearer <token>
- *
- * Only admin will be able to delete reported article.
- */
-router.delete(
-  '/report/articles/:slug',
-  checkToken,
-  validation.slug,
-  reportController.deleteReportedArticle
-);
-
 export default router;

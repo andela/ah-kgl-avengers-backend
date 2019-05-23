@@ -101,7 +101,7 @@ describe('Reporting an article', () => {
 
   it('Admin should take decision (delete) reported article', (done) => {
     chai.request(app)
-      .delete(`/api/v1/report/articles/${data.post1.slug}`)
+      .delete(`/api/v1/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
@@ -112,9 +112,9 @@ describe('Reporting an article', () => {
       });
   });
 
-  it('Should fail to delete article when not admin', (done) => {
+  it('Should fail to delete article when not the author or article not reported', (done) => {
     chai.request(app)
-      .delete(`/api/v1/report/articles/${data.post6.slug}`)
+      .delete(`/api/v1/articles/${data.post4.slug}`)
       .set('Authorization', `Bearer ${nonAdminToken}`)
       .end((err, res) => {
         if (err) done(err);
@@ -127,7 +127,7 @@ describe('Reporting an article', () => {
 
   it('Should fail to delete article when not exist', (done) => {
     chai.request(app)
-      .delete(`/api/v1/report/articles/${data.post1.slug}`)
+      .delete(`/api/v1/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);

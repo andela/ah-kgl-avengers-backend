@@ -520,7 +520,7 @@ describe('Article ', () => {
   it('Author should be able to delete an article', (done) => {
     chai
       .request(app)
-      .delete(`/api/v1/articles/${dataGenerator.post1.slug}`)
+      .delete(`/api/v1/articles/${dataGenerator.articleToBeDeleted.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
         if (err) done(err);
@@ -540,7 +540,7 @@ describe('Article ', () => {
         if (err) done(err);
         res.should.have.status(404);
         res.body.should.be.an('Object');
-        res.body.should.have.property('message');
+        res.body.should.have.property('error');
         done();
       });
   });

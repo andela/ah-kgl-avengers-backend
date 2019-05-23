@@ -253,6 +253,21 @@ export default {
     createdAt,
     updatedAt
   },
+  // Article to be deleted
+  articleToBeDeleted: {
+    id: 'c90dee64-663d-4d8b-b34d-12acba22cd41',
+    author: 'dfef16f9-11a7-4eae-9ba0-7038c6ccaa73',
+    title: 'this is my second favorite article',
+    slug: 'this-is-my-second-favorite-article69f9fccd69',
+    description: 'second disliked article',
+    body:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
+    status: 'published',
+    tagList: JSON.stringify(['lorem']),
+    deleted: 0,
+    createdAt,
+    updatedAt
+  },
   // 1 Min read article
   post7: {
     title: 'this is my second favorite article',

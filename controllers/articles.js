@@ -5,7 +5,7 @@ import readTime from '../helpers/readingTime';
 import mailer from '../config/verificationMail';
 
 const {
-  article, User, bookmark, likes, subscribers, ratings, tags
+  article, User, bookmark, likes, subscribers, ratings, tags, Report,
 } = models;
 const { Op } = models.Sequelize;
 const attributes = {
@@ -228,35 +228,51 @@ const articles = {
    * we set the flag to the article that it is deleted.
    */
   deleteArticle: async (req, res) => {
-    const { id } = req.user;
+    const { id, role } = req.user;
     const { slug } = req.params;
-    const row = await article.update(
-      { deleted: 1 },
-      {
-        where: { slug, deleted: 0, author: id },
-        returning: true
+    try {
+      // Check if article exists.
+      const findArticle = await article.findOne({ where: { slug } });
+
+      if (!findArticle) {
+        return res.status(404).send({
+          status: res.statusCode,
+          error: 'The article is not found',
+        });
       }
-    );
-    if (row[0] === 0) {
-      return res.status(404).send({
+      // Check if article is reported
+      const reported = await Report.findOne({ where: { articleId: findArticle.id } });
+      // Check if someone deleting article is the owner or admin.
+      if (findArticle.author !== id && (role !== 'admin' || !reported)) {
+        return res.status(401).send({
+          status: res.statusCode,
+          error: 'Unauthorized to delete this article',
+        });
+      }
+      await article.destroy({
+        where: { slug }, returning: true
+      });
+
+      findArticle.tagList.forEach(async (tag) => {
+        const findTag = await tags.findOne({ where: { tag } });
+        if (findTag.count === 1) await tags.destroy({ where: { tag } });
+        if (findTag.count > 1) {
+          await tags.update(
+            { count: findTag.count - 1 },
+            { where: { tag }, returning: true }
+          );
+        }
+      });
+      return res.status(200).send({
         status: res.statusCode,
-        message: 'No article found'
+        message: 'Article deleted successfully'
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: res.statusCode,
+        error: 'Server failed to handle your request',
       });
     }
-    row[1][0].tagList.forEach(async (tag) => {
-      const findTag = await tags.findOne({ where: { tag } });
-      if (findTag.count === 1) await tags.destroy({ where: { tag } });
-      if (findTag.count > 1) {
-        await tags.update(
-          { count: findTag.count - 1 },
-          { where: { tag }, returning: true }
-        );
-      }
-    });
-    return res.status(200).send({
-      status: res.statusCode,
-      message: 'Article deleted successfully'
-    });
   },
 
   /*
