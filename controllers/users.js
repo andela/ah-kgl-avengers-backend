@@ -118,7 +118,7 @@ class Users {
           username
         },
         process.env.SECRET,
-        { expiresIn: 3600 }
+        { expiresIn: 2592000 }
       );
       return res.status(200).json({
         status: 200,

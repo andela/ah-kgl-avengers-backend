@@ -32,7 +32,8 @@ describe('Reporting an article', () => {
   });
 
   it('User should be able to report article', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post(`/api/v1/report/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({ message: 'Violating terms' })
@@ -45,7 +46,8 @@ describe('Reporting an article', () => {
   });
 
   it('Should return 404 when reporting unavailable article', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post(`/api/v1/report/articles/${data.invalidSlug.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({ message: 'Violating terms' })
@@ -59,7 +61,8 @@ describe('Reporting an article', () => {
   });
 
   it('Should fail to report article twice', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .post(`/api/v1/report/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({ message: 'Violating terms' })
@@ -73,7 +76,8 @@ describe('Reporting an article', () => {
   });
 
   it('Admin should be able to get all reported articles', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .get('/api/v1/report/articles')
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
@@ -87,7 +91,8 @@ describe('Reporting an article', () => {
   });
 
   it('Should not get all reported when not admin', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .get('/api/v1/report/articles')
       .set('Authorization', `Bearer ${nonAdminToken}`)
       .end((err, res) => {
@@ -100,7 +105,8 @@ describe('Reporting an article', () => {
   });
 
   it('Admin should take decision (delete) reported article', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .delete(`/api/v1/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
@@ -113,7 +119,8 @@ describe('Reporting an article', () => {
   });
 
   it('Should fail to delete article when not the author or article not reported', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .delete(`/api/v1/articles/${data.post4.slug}`)
       .set('Authorization', `Bearer ${nonAdminToken}`)
       .end((err, res) => {
@@ -126,7 +133,8 @@ describe('Reporting an article', () => {
   });
 
   it('Should fail to delete article when not exist', (done) => {
-    chai.request(app)
+    chai
+      .request(app)
       .delete(`/api/v1/articles/${data.post1.slug}`)
       .set('Authorization', `Bearer ${tokenValue}`)
       .end((err, res) => {
