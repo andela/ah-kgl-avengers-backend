@@ -15,7 +15,7 @@ ENV.config();
 const config = {
   /**
    * Function to send the activation mail to the user.
-   * below params are all required to successfully send the email
+   * below params are all required to successfully send the email.
    *
    * @param { name, id, email } params
    */
@@ -63,7 +63,7 @@ const config = {
     const template = Handlebars.compile(source);
     const { username, email } = params;
     const tokenToSend = await jwt.sign({ email }, process.env.SECRET);
-    const url = `${process.env.SERVER_ADDRESS}/api/v1/update_password/${tokenToSend}`;
+    const url = `${process.env.FRONT_END_URL}/updatePassword/${tokenToSend}`;
     const envelope = {
       from: process.env.SENDER,
       to: email,
