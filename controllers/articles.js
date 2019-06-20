@@ -5,7 +5,7 @@ import readTime from '../helpers/readingTime';
 import mailer from '../config/verificationMail';
 
 const {
-  article, User, bookmark, likes, subscribers, ratings, tags, Report,
+  article, User, bookmark, likes, subscribers, ratings, tags, Report
 } = models;
 const { Op } = models.Sequelize;
 const attributes = {
@@ -27,6 +27,22 @@ const getAverageRating = (data) => {
   return Number(average.toFixed(2));
 };
 
+const generateDescription = (body) => {
+  // adjust the text to only remain with complete words
+  const reduceText = (text, length) => {
+    if (text.charAt(length) === ' ') {
+      return text.substring(0, length);
+    }
+    return reduceText(text, length + 1);
+  };
+  // remove the tags and all element attributes in the content to remain with only text
+  const cleanText = body.replace(/<\/?[^>]+(>|$)/g, '');
+  if (cleanText.length < 100) {
+    return cleanText;
+  }
+  return reduceText(cleanText, 99);
+};
+
 const articles = {
   /*
    * Creating an article
@@ -36,7 +52,9 @@ const articles = {
    */
   createArticle: async (req, res) => {
     try {
-      const { title, body, status } = req.body;
+      const {
+        title, body, status, featuredImage
+      } = req.body;
       const { id: author } = req.user;
       const flag = status === undefined ? 'draft' : status.toLowerCase();
       const totalArticleReadTime = readTime.totalReadTime(body);
@@ -54,7 +72,7 @@ const articles = {
         .split(' ')
         .join('-')
         .substring(0, 40)}${crypto.randomBytes(5).toString('hex')}`;
-      const description = body.substring(0, 100);
+      const description = generateDescription(body);
 
       const createdArticle = await article.create({
         title,
@@ -64,6 +82,7 @@ const articles = {
         description,
         status: flag,
         tagList,
+        featuredImage,
         readTime: totalArticleReadTime
       });
 
@@ -97,6 +116,7 @@ const articles = {
           body: createdArticle.body,
           slug: createdArticle.slug,
           tags: createdArticle.tagList,
+          featuredImage: createdArticle.featuredImage,
           totalArticleReadTime
         }
       });
@@ -118,7 +138,7 @@ const articles = {
   updateArticle: async (req, res) => {
     const { id } = req.user;
     const { slug: oldSlug } = req.params;
-    const { title, body } = req.body;
+    const { title, body, featuredImage } = req.body;
     let { status = 'draft' } = req.body;
     status = status.toLowerCase();
 
@@ -138,7 +158,7 @@ const articles = {
         .split(' ')
         .join('-')
         .substring(0, 20)}${crypto.randomBytes(5).toString('hex')}`;
-      const description = body.substring(0, 100);
+      const description = generateDescription(body);
       const totalArticleReadTime = readTime.totalReadTime(body);
       const findArticle = await article.findOne({ where: { slug: oldSlug } });
       let updatedArticle = await article.update(
@@ -149,6 +169,7 @@ const articles = {
           status,
           description,
           tagList: newTags,
+          featuredImage: featuredImage || findArticle.featuredImage,
           readTime: totalArticleReadTime
         },
         {
@@ -207,7 +228,9 @@ const articles = {
           body: updatedArticle.body,
           slug: updatedArticle.slug,
           ratings: updatedArticle.ratings,
-          tagList: updatedArticle.tagList
+          tagList: updatedArticle.tagList,
+          featuredImage: updatedArticle.featuredImage,
+          findArticle: updatedArticle.findArticle
         }
       });
     } catch (err) {
@@ -234,7 +257,7 @@ const articles = {
       if (!findArticle) {
         return res.status(404).send({
           status: res.statusCode,
-          error: 'The article is not found',
+          error: 'The article is not found'
         });
       }
       // Check if article is reported
@@ -243,21 +266,19 @@ const articles = {
       if (findArticle.author !== id && (role !== 'admin' || !reported)) {
         return res.status(401).send({
           status: res.statusCode,
-          error: 'Unauthorized to delete this article',
+          error: 'Unauthorized to delete this article'
         });
       }
       await article.destroy({
-        where: { slug }, returning: true
+        where: { slug },
+        returning: true
       });
 
       findArticle.tagList.forEach(async (tag) => {
         const findTag = await tags.findOne({ where: { tag } });
         if (findTag.count === 1) await tags.destroy({ where: { tag } });
         if (findTag.count > 1) {
-          await tags.update(
-            { count: findTag.count - 1 },
-            { where: { tag }, returning: true }
-          );
+          await tags.update({ count: findTag.count - 1 }, { where: { tag }, returning: true });
         }
       });
       return res.status(200).send({
@@ -267,7 +288,7 @@ const articles = {
     } catch (error) {
       return res.status(500).send({
         status: res.statusCode,
-        error: 'Server failed to handle your request',
+        error: 'Server failed to handle your request'
       });
     }
   },
@@ -318,8 +339,10 @@ const articles = {
             description: publishedArticle.description,
             slug: publishedArticle.slug,
             tagList: publishedArticle.tagList,
+            updatedArticle: publishedArticle.updatedArticle,
             ratings: publishedArticle.ratings,
             readTime: publishedArticle.readTime,
+            featuredImage: publishedArticle.featuredImage,
             likes: publishedArticle.likes
           };
         })
@@ -476,6 +499,7 @@ const articles = {
             tagList: feedArticle.tagList,
             readTime: feedArticle.readTime,
             averageRating,
+            featuredImage: feedArticle.featuredImage,
             createdAt: feedArticle.createdAt,
             updatedAt: feedArticle.updatedAt,
             author
@@ -539,6 +563,7 @@ const articles = {
           description: articleToView.description,
           slug: articleToView.slug,
           tagList: articleToView.tagList,
+          featuredImage: articleToView.featuredImage,
           ratings: articleToView.ratings,
           readTime: articleToView.readTime,
           author: articleToView.User,

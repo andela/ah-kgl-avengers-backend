@@ -46,6 +46,10 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.JSON,
         allowNull: true
       },
+      featuredImage: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
       readTime: {
         type: DataTypes.STRING,
         allowNull: true

@@ -127,6 +127,7 @@ export default {
     body:
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg)',
     tagList: JSON.stringify(['lorem']),
     deleted: 0,
     createdAt,
@@ -144,6 +145,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -159,6 +161,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'draft',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -174,6 +177,7 @@ export default {
       'Lorem ipsum dolor sit amet,consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -189,6 +193,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -204,6 +209,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -219,6 +225,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -234,6 +241,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -249,6 +257,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -264,6 +273,7 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'published',
     tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg',
     deleted: 0,
     createdAt,
     updatedAt
@@ -275,7 +285,8 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'`,
-    status: 'published'
+    status: 'published',
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
   },
   // More than 1 Min read article
   post8: {
@@ -291,14 +302,16 @@ export default {
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.'`,
-    status: 'published'
+    status: 'published',
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
   },
   testPostWithStatus: {
     title: 'Myfavorite article',
     body:
       'Lorem m ipsum dolor sit amet, consectetur adipiscing elit. Nulla faucibus ipsum non metus finibus ultricies. Donec ac auctor dui, sed fringilla est. Duis et pellentesque nisl, a gravida felis. Ut tempor felis id dignissim congue. Nunc blandit nunc sit amet dui pharetra, quis porttitor sem ullamcorper. Suspendisse faucibus imperdiet lacinia.',
     status: 'draft',
-    tagList: JSON.stringify(['lorem'])
+    tagList: JSON.stringify(['lorem']),
+    featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
   },
 
   invalidSlug: {
@@ -467,5 +480,5 @@ export default {
     status: 'show',
     createdAt,
     updatedAt
-  },
+  }
 };

@@ -37,6 +37,10 @@ const articleValidation = {
         .min(5)
         .trim()
         .required(),
+      featuredImage: Joi.string()
+        .trim()
+        .uri()
+        .required(),
       tagList: Joi.array(),
       categories: Joi.array(),
       status: Joi.string()

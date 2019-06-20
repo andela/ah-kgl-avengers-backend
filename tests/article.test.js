@@ -46,7 +46,8 @@ describe('Article ', () => {
         body:
           'One to Many and One to One relationships are pretty straightforward to create on Sequelize.',
         status: 'published',
-        tagList: ['Lorem']
+        tagList: ['Lorem'],
+        featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
       })
       .end((err, res) => {
         if (err) done(err);
@@ -124,7 +125,8 @@ describe('Article ', () => {
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: 'I am being updated',
-        body: 'See they have update me'
+        body: 'See they have update me',
+        featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
       })
       .end((err, res) => {
         if (err) done(err);
@@ -141,7 +143,8 @@ describe('Article ', () => {
       .set('Authorization', `Bearer ${tokenValue}`)
       .send({
         title: 'I am being updated',
-        body: 'See they have update me'
+        body: 'See they have update me',
+        featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
       })
       .end((err, res) => {
         if (err) done(err);
@@ -419,7 +422,8 @@ describe('Article ', () => {
       .send({
         title: '5 Things About Sequelize',
         body:
-          'One to Many and One to One relationships are pretty straightforward to create on Sequelize.'
+          'One to Many and One to One relationships are pretty straightforward to create on Sequelize.',
+        featuredImage: 'https://image.shutterstock.com/image-photo/group-people-260nw-602783837.jpg'
       })
       .end((err, res) => {
         if (err) done(err);
