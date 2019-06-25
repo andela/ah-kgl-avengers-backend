@@ -2,7 +2,6 @@ import express from 'express';
 import passport from 'passport';
 import userControllers from '../../controllers/users';
 import userValidations from '../../middlewares/userValidation';
-import multerConfig from '../../config/multerConfig';
 import tokenChecker from '../../middlewares/passportCustom';
 
 const router = express.Router({});
@@ -41,14 +40,6 @@ router.put('/auth/reset/:token', userControllers.updatePassword);
 // User logout
 router.post('/auth/logout', checkToken, userControllers.logout);
 
-// User functionality
-router.get(
-  '/profiles/:username',
-  checkToken,
-  userValidations.validUser,
-  userControllers.getOneAuthor
-);
-
 // Follow
 router.post('/profiles/:username/follow', checkToken, userControllers.follow);
 
@@ -58,7 +49,6 @@ router.delete('/profiles/:username/follow', checkToken, userControllers.unFollow
 router.put(
   '/users/profile/:username/update',
   checkToken,
-  multerConfig,
   userControllers.updateProfile
 );
 

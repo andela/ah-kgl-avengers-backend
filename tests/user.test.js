@@ -343,18 +343,9 @@ describe('User', () => {
         .get('/api/v1/users/profile/tester1')
         .end((err, res) => {
           res.should.have.status(200);
-          done();
-        });
-    });
-
-    it('Should get author\'s profile', (done) => {
-      chai
-        .request(app)
-        .get('/api/v1/profiles/tester1')
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          res.should.have.status(200);
-          res.body.should.have.property('data');
+          res.body.profile.should.have.property('firstName');
+          res.body.profile.should.have.property('lastName');
+          res.body.profile.should.have.property('email');
           done();
         });
     });
@@ -365,30 +356,6 @@ describe('User', () => {
         .get('/api/v1/users/profile/none')
         .end((err, res) => {
           res.should.have.status(400);
-          done();
-        });
-    });
-
-    it('Should get 400 when viewing profile of user with invalid parameter', (done) => {
-      chai
-        .request(app)
-        .get('/api/v1/profiles/%20')
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          res.should.have.status(400);
-          res.body.should.have.property('errors');
-          done();
-        });
-    });
-
-    it('Should get 400 when passed invalid user', (done) => {
-      chai
-        .request(app)
-        .get('/api/v1/profiles/tester10')
-        .set('Authorization', `Bearer ${tokenValue}`)
-        .end((err, res) => {
-          res.should.have.status(400);
-          res.body.should.have.property('errors');
           done();
         });
     });
