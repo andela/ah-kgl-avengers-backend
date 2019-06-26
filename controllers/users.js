@@ -139,7 +139,7 @@ class Users {
     const { displayName, emails, provider } = req.user;
     try {
       const existingUser = await User.findOne({
-        where: { username: displayName } && { provider } && { activated: 1 }
+        where: { username: displayName, provider, activated: 1 }
       });
       if (existingUser) {
         const token = jwt.sign(
@@ -199,9 +199,7 @@ class Users {
       if (error.errors[0].type) {
         return res.status(422).send({
           status: res.statusCode,
-          message: `${error.errors[0].value} already exits, please login with ${
-            existingUser.provider
-          } `
+          message: `${error.errors[0].value} already exits, please login with ${existingUser.provider === 'google-plus' ? 'google' : existingUser.provider}`
         });
       }
     }
