@@ -43,16 +43,6 @@ describe('User', () => {
     });
   });
 
-  it('should return an object with status 200 when a user login with Facebook OAuth', (done) => {
-    chai
-      .request(app)
-      .post('/api/v1/oauth/facebook')
-      .send({ access_token: facebookToken })
-      .end((err, res) => {
-        res.body.should.be.a('object');
-        done();
-      });
-  });
   it('should return an object with status 200 when a user login with Google OAuth', (done) => {
     chai
       .request(app)

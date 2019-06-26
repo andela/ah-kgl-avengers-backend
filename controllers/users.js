@@ -166,7 +166,7 @@ class Users {
       }
 
       const user = new User({
-        provider: provider === 'google-plus' ? 'google' : 'facebook',
+        provider,
         email: emails[0].value,
         username: displayName,
         following: JSON.stringify({ ids: [] }),
@@ -205,7 +205,9 @@ class Users {
       if (error.errors[0].type) {
         return res.status(422).send({
           status: res.statusCode,
-          message: `${error.errors[0].value} already exits, please login with ${existingUser.provider === 'google-plus' ? 'google' : existingUser.provider}`
+          message: `${error.errors[0].value} already exits, please login with ${
+            existingUser.provider === 'google-plus' ? 'google' : existingUser.provider
+          }`
         });
       }
     }
@@ -314,7 +316,6 @@ class Users {
       }))
       .catch(err => next(err));
   }
-
 
   /**
    *
