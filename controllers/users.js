@@ -35,8 +35,8 @@ class Users {
         activated: isAdmin ? 1 : 0
       });
       /* check if there is user who is authenticated and if he is a super-admin
-      *and send a *reset password email and if not then send activation email
-      */
+       *and send a *reset password email and if not then send activation email
+       */
       if (isAdmin) {
         mailer.sentResetMail({
           username: userCreate.username,
@@ -95,9 +95,7 @@ class Users {
     const {
       salt, hash, id, role, username
     } = user;
-    const hashInputPassword = crypto
-      .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
-      .toString('hex');
+    const hashInputPassword = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
 
     if (hash !== hashInputPassword) {
       return res.status(400).send({
@@ -149,7 +147,7 @@ class Users {
             emails
           },
           process.env.SECRET,
-          { expiresIn: 3600 }
+          { expiresIn: 2592000 }
         );
         return res.status(200).send({
           status: res.statusCode,
@@ -158,7 +156,11 @@ class Users {
           data: {
             username: existingUser.username,
             email: existingUser.email,
-            provider: existingUser.provider
+            provider: existingUser.provider,
+            lastName: existingUser.lastName,
+            firstName: existingUser.firstName,
+            image: existingUser.image,
+            bio: existingUser.bio
           }
         });
       }
@@ -180,7 +182,7 @@ class Users {
           emails
         },
         process.env.SECRET,
-        { expiresIn: 3600 }
+        { expiresIn: 2592000 }
       );
       return res.status(201).send({
         status: res.statusCode,
@@ -189,7 +191,11 @@ class Users {
         data: {
           username: newUser.username,
           email: newUser.email,
-          provider: newUser.provider
+          provider: newUser.provider,
+          lastName: newUser.lastName,
+          firstName: newUser.firstName,
+          image: newUser.image,
+          bio: newUser.bio
         }
       });
     } catch (error) {
@@ -273,9 +279,7 @@ class Users {
 
     // update password
     const salt = crypto.randomBytes(16).toString('hex');
-    const hash = crypto
-      .pbkdf2Sync(password, salt, 1000, 64, 'sha512')
-      .toString('hex');
+    const hash = crypto.pbkdf2Sync(password, salt, 1000, 64, 'sha512').toString('hex');
     await User.update(
       {
         salt,
@@ -311,26 +315,6 @@ class Users {
       .catch(err => next(err));
   }
 
-  /**
-   * get author profile
-   * @param {object} req
-   * @param {object} res
-   * @param {object} next
-   * @returns {object} res
-   */
-  static async getOneAuthor(req, res) {
-    const { username } = req.params;
-    const profile = await User.findOne({
-      attributes: ['id', 'username', 'bio', 'image'],
-      where: {
-        username
-      }
-    });
-    return res.status(200).send({
-      status: 200,
-      data: profile
-    });
-  }
 
   /**
    *
@@ -359,11 +343,13 @@ class Users {
       {
         username: body.username,
         bio: body.bio,
-        image: req.file ? req.file.url : null
+        image: body.image || null,
+        firstName: body.firstName || null,
+        lastName: body.lastName || null
       },
       {
         where: { username },
-        attributes: ['username', 'bio', 'image'],
+        attributes: ['username', 'bio', 'image', 'firstName', 'lastName', 'email'],
         returning: true
       }
     );
@@ -373,7 +359,10 @@ class Users {
       profile: {
         username: updated[1][0].username,
         bio: updated[1][0].bio,
-        image: updated[1][0].image
+        image: updated[1][0].image,
+        email: updated[1][0].email,
+        firstName: updated[1][0].firstName,
+        lastName: updated[1][0].lastName
       }
     });
   }
@@ -415,9 +404,7 @@ class Users {
 
       //  check if the user is already followed
       const followingUsers = JSON.parse(user.dataValues.following).ids;
-      const existInFollowing = followingUsers.find(
-        followID => followID === userExists.id
-      );
+      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
       if (existInFollowing) {
         return res.status(400).json({
           status: 400,
@@ -427,14 +414,10 @@ class Users {
 
       // add a new user to the list of followed users
       followingUsers.push(userExists.dataValues.id);
-      await User.update(
-        { following: JSON.stringify({ ids: followingUsers }) },
-        { where: { id } }
-      );
+      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
 
       // update the followed user's followers list
-      const followedUsersFollowers = JSON.parse(userExists.dataValues.followers)
-        .ids;
+      const followedUsersFollowers = JSON.parse(userExists.dataValues.followers).ids;
       followedUsersFollowers.push(id);
       await User.update(
         {
@@ -511,9 +494,7 @@ class Users {
       });
       //  check if the user is already followed
       let followingUsers = JSON.parse(user.dataValues.following).ids;
-      const existInFollowing = followingUsers.find(
-        followID => followID === userExists.id
-      );
+      const existInFollowing = followingUsers.find(followID => followID === userExists.id);
 
       if (!existInFollowing) {
         return res.status(400).json({
@@ -522,16 +503,11 @@ class Users {
         });
       }
 
-      followingUsers = followingUsers.filter(
-        followedUser => followedUser !== userExists.id
-      );
+      followingUsers = followingUsers.filter(followedUser => followedUser !== userExists.id);
 
       // update the un-followed user's followers list
-      let unFollowedUserFollowers = JSON.parse(userExists.dataValues.followers)
-        .ids;
-      unFollowedUserFollowers = unFollowedUserFollowers.filter(
-        followerID => followerID !== id
-      );
+      let unFollowedUserFollowers = JSON.parse(userExists.dataValues.followers).ids;
+      unFollowedUserFollowers = unFollowedUserFollowers.filter(followerID => followerID !== id);
       await User.update(
         {
           followers: JSON.stringify({ ids: unFollowedUserFollowers })
@@ -541,10 +517,7 @@ class Users {
         }
       );
 
-      await User.update(
-        { following: JSON.stringify({ ids: followingUsers }) },
-        { where: { id } }
-      );
+      await User.update({ following: JSON.stringify({ ids: followingUsers }) }, { where: { id } });
 
       subscribe(id, userExists.id);
 
@@ -587,7 +560,10 @@ class Users {
       profile: {
         username: findUser.username,
         bio: findUser.bio,
-        image: findUser.image
+        image: findUser.image,
+        email: findUser.email,
+        firstName: findUser.firstName,
+        lastName: findUser.lastName
       }
     });
   }
@@ -603,14 +579,7 @@ class Users {
     const { limit = 10, offset = 0 } = req.query;
     const findUsers = await User.findAll({
       where: { activated: 1 },
-      attributes: [
-        'firstName',
-        'lastName',
-        'role',
-        'email',
-        'username',
-        'image'
-      ],
+      attributes: ['firstName', 'lastName', 'role', 'email', 'username', 'image'],
       limit,
       offset
     });
