@@ -329,14 +329,8 @@ const articles = {
           const articleLikes = await likes.findAndCountAll({
             where: { articleId: publishedArticle.id, status: 'liked' }
           });
-
-          const articleDislikes = await likes.findAndCountAll({
-            where: { articleId: publishedArticle.id, status: 'disliked' }
-          });
-
           const articleRatings = getAverageRating(ArticleRatings);
           publishedArticle.likes = articleLikes.count;
-          publishedArticle.dislikes = articleDislikes.count;
           publishedArticle.ratings = articleRatings;
 
           return {
@@ -349,8 +343,7 @@ const articles = {
             ratings: publishedArticle.ratings,
             readTime: publishedArticle.readTime,
             featuredImage: publishedArticle.featuredImage,
-            likes: publishedArticle.likes,
-            dislikes: publishedArticle.dislikes
+            likes: publishedArticle.likes
           };
         })
       );
@@ -562,6 +555,8 @@ const articles = {
       }
 
       articleToView.ratings = getAverageRating(articleToView.ratings);
+      const getArticleId = await article.findOne({ where: { slug } });
+      articleToView.dislikes = await likes.findAndCountAll({ where: { articleId: getArticleId.id, status: 'disliked' } });
       return res.status(200).send({
         status: res.statusCode,
         article: {
@@ -574,7 +569,8 @@ const articles = {
           ratings: articleToView.ratings,
           readTime: articleToView.readTime,
           author: articleToView.User,
-          likes: articleToView.likes.length
+          likes: articleToView.likes.length,
+          dislikes: articleToView.dislikes.count
         }
       });
     } catch (error) {

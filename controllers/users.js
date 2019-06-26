@@ -205,7 +205,7 @@ class Users {
       if (error.errors[0].type) {
         return res.status(422).send({
           status: res.statusCode,
-          message: `${error.errors[0].value} already exits, please login with ${
+          message: `${error.errors[0].value} your account already exits, please login with ${
             existingUser.provider === 'google-plus' ? 'google' : existingUser.provider
           }`
         });
