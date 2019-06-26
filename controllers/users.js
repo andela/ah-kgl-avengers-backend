@@ -139,7 +139,7 @@ class Users {
     const { displayName, emails, provider } = req.user;
     try {
       const existingUser = await User.findOne({
-        where: { username: displayName } && { provider }
+        where: { username: displayName } && { provider } && { activated: 1 }
       });
       if (existingUser) {
         const token = jwt.sign(
@@ -154,6 +154,7 @@ class Users {
         return res.status(200).send({
           status: res.statusCode,
           token,
+          message: `Welcome back ${existingUser.username}`,
           data: {
             username: existingUser.username,
             email: existingUser.email,
@@ -163,19 +164,14 @@ class Users {
       }
 
       const user = new User({
-        provider,
+        provider: provider === 'google-plus' ? 'google' : 'facebook',
         email: emails[0].value,
         username: displayName,
         following: JSON.stringify({ ids: [] }),
-        followers: JSON.stringify({ ids: [] })
+        followers: JSON.stringify({ ids: [] }),
+        activated: 1
       });
       const newUser = await user.save();
-
-      mailer.sentActivationMail({
-        name: displayName,
-        id: newUser.id,
-        email: newUser.email
-      });
 
       const token = jwt.sign(
         {
@@ -189,6 +185,7 @@ class Users {
       return res.status(201).send({
         status: res.statusCode,
         token,
+        message: `${newUser.username}, your account has been created successfully`,
         data: {
           username: newUser.username,
           email: newUser.email,

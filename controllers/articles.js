@@ -329,8 +329,14 @@ const articles = {
           const articleLikes = await likes.findAndCountAll({
             where: { articleId: publishedArticle.id, status: 'liked' }
           });
+
+          const articleDislikes = await likes.findAndCountAll({
+            where: { articleId: publishedArticle.id, status: 'disliked' }
+          });
+
           const articleRatings = getAverageRating(ArticleRatings);
           publishedArticle.likes = articleLikes.count;
+          publishedArticle.dislikes = articleDislikes.count;
           publishedArticle.ratings = articleRatings;
 
           return {
@@ -343,7 +349,8 @@ const articles = {
             ratings: publishedArticle.ratings,
             readTime: publishedArticle.readTime,
             featuredImage: publishedArticle.featuredImage,
-            likes: publishedArticle.likes
+            likes: publishedArticle.likes,
+            dislikes: publishedArticle.dislikes
           };
         })
       );
