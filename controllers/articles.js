@@ -477,6 +477,7 @@ const articles = {
             attributes: ['username', 'email', 'bio', 'image']
           }
         ],
+        order: [['updatedAt', 'DESC']],
         limit,
         offset
       });
@@ -799,7 +800,7 @@ const articles = {
         findBookmarks.map(async (item) => {
           const findBookmarkedArticle = await article.findOne({
             where: { id: item.articleId },
-            attributes: ['title', 'slug', 'author']
+            attributes,
           });
           const author = await User.findOne({
             where: { id: findBookmarkedArticle.author },
