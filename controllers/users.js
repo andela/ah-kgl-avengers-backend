@@ -712,6 +712,94 @@ class Users {
       profiles: findUsers
     });
   }
+
+
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} get followers array
+   */
+  static async getFollowers(req, res) {
+    const { limit = 10, offset = 0 } = req.query;
+    const { username } = req.params;
+
+    try {
+      const findFollowers = await User.findOne({
+        where: {
+          username,
+          activated: 1
+        },
+        attributes: ['followers'],
+        limit,
+        offset
+      });
+      const getIds = JSON.parse(findFollowers.followers).ids;
+      const arrayFollowers = await Promise.all(
+        getIds.map(async (user) => {
+          const userProfile = await User.findOne({ where: { id: user }, attributes: ['username', 'image'] });
+          return {
+            username: userProfile.username,
+            image: userProfile.image
+          };
+        })
+      );
+      return res.status(200).send({
+        status: 200,
+        followers: arrayFollowers,
+        count: arrayFollowers.length
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: res.statusCode,
+        errors: 'Server failed to handle your request',
+      });
+    }
+  }
+
+  /**
+   *
+   * @param {object} req
+   * @param {object} res
+   * @returns {object} get following array
+   */
+  static async getFollowings(req, res) {
+    const { limit = 10, offset = 0 } = req.query;
+    const { username } = req.params;
+
+    try {
+      const findFollowers = await User.findOne({
+        where: {
+          username,
+          activated: 1
+        },
+        attributes: ['following'],
+        limit,
+        offset
+      });
+      const getIds = JSON.parse(findFollowers.following).ids;
+
+      const arrayFollowings = await Promise.all(
+        getIds.map(async (user) => {
+          const userProfile = await User.findOne({ where: { id: user }, attributes: ['username', 'image'] });
+          return {
+            username: userProfile.username,
+            image: userProfile.image
+          };
+        })
+      );
+      return res.status(200).send({
+        status: 200,
+        followers: arrayFollowings,
+        count: arrayFollowings.length
+      });
+    } catch (error) {
+      return res.status(500).send({
+        status: res.statusCode,
+        errors: 'Server failed to handle your request',
+      });
+    }
+  }
 }
 
 export default Users;

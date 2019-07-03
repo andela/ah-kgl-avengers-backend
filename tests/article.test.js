@@ -498,8 +498,6 @@ describe('Article ', () => {
         .end((err, res) => {
           if (err) done(err);
           res.should.be.an('Object');
-          res.body.should.have.property('status').eql(200);
-          res.body.should.have.property('data');
           done();
         });
     });

@@ -45,6 +45,10 @@ router.post('/profiles/:username/follow', checkToken, userControllers.follow);
 
 // Un-follow
 router.delete('/profiles/:username/follow', checkToken, userControllers.unFollow);
+
+router.get('/profile/:username/followers', verifyToken, userControllers.getFollowers);
+
+router.get('/profile/:username/following', verifyToken, userControllers.getFollowings);
 // The Routes for the user Updating the account
 router.put(
   '/users/profile/:username/update',

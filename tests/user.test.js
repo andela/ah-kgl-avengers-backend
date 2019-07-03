@@ -279,6 +279,37 @@ describe('User', () => {
           done();
         });
     });
+
+    context('Return Followers of the user', () => {
+      it('should return a 200 status code and array of authors that I follow', (done) => {
+        chai
+          .request(app)
+          .get('/api/v1/profile/tester2/followers')
+          .set('Authorization', `Bearer ${tokenValue}`)
+          .send()
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.followers.should.be.an('array');
+            done();
+          });
+      });
+    });
+
+    context('Return Authors that I Follow', () => {
+      it('should return a 200 status code and array of authors that I follow', (done) => {
+        chai
+          .request(app)
+          .get('/api/v1/profile/tester2/following')
+          .set('Authorization', `Bearer ${tokenValue}`)
+          .send()
+          .end((err, res) => {
+            res.should.have.status(200);
+            res.body.followers.should.be.an('array');
+            done();
+          });
+      });
+    });
+
     it('should return a 200 status code and user profile', (done) => {
       chai
         .request(app)
