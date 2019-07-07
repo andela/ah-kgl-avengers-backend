@@ -35,7 +35,7 @@ describe('Comments', () => {
       });
   });
 
-  it('Adds a comment to an article', (done) => {
+  xit('Adds a comment to an article', (done) => {
     chai
       .request(app)
       .post(`/api/v1/articles/${dataGenerator.post1.slug}/comments`)
@@ -49,7 +49,7 @@ describe('Comments', () => {
       });
   });
 
-  it('Should fail to comment when article not found', (done) => {
+  xit('Should fail to comment when article not found', (done) => {
     chai
       .request(app)
       .post(`/api/v1/articles/${dataGenerator.invalidSlug.slug}/comments`)

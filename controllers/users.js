@@ -134,7 +134,10 @@ class Users {
    * @returns {Object} Returns the User Object or the error Object
    */
   static async createUserSocial(req, res) {
-    const { displayName, emails, provider } = req.user;
+    const {
+      displayName, emails, provider, name, photos
+    } = req.user;
+    const { familyName, givenName } = name;
     try {
       const existingUser = await User.findOne({
         where: { username: displayName, provider, activated: 1 }
@@ -167,8 +170,11 @@ class Users {
 
       const user = new User({
         provider,
+        lastName: givenName,
+        firstName: familyName,
         email: emails[0].value,
         username: displayName,
+        image: photos[0].value,
         following: JSON.stringify({ ids: [] }),
         followers: JSON.stringify({ ids: [] }),
         activated: 1
