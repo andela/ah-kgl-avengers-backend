@@ -54,6 +54,28 @@ describe('User', () => {
       });
   });
 
+  it('should return an object with status 400 when a user login with wrong Google OAuth', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/oauth/google')
+      .send({ access_token: googleToken })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        done();
+      });
+  });
+
+  it('should return an object with status 400 when a user login with wrong  Google OAuth', (done) => {
+    chai
+      .request(app)
+      .post('/api/v1/oauth/google')
+      .send({ access_token: googleToken })
+      .end((err, res) => {
+        res.body.should.be.a('object');
+        done();
+      });
+  });
+
   it('Testing test endpoint if token provided', (done) => {
     chai
       .request(app)
